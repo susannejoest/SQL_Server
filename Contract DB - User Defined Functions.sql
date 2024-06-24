@@ -1,4 +1,4 @@
-USE [DAQ-1445_ContractsDB_App_DESQL016_Divestment]
+USE [DAQ-1445_TheVendor_App_DESQL016_Divestment]
 GO
 /****** Object:  UserDefinedFunction [dbo].[CUF_GETCONTRACTPRODUCTGROUPS]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
@@ -658,13 +658,13 @@ BEGIN
    RETURN @companyNames
 END
 GO
-/****** Object:  UserDefinedFunction [dbo].[Takeda_CompanyOrIndividual]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  UserDefinedFunction [dbo].[TheCompany_CompanyOrIndividual]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE Function [dbo].[Takeda_CompanyOrIndividual](@Temp VarChar(255))
-/* call Select dbo.Takeda_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
+CREATE Function [dbo].[TheCompany_CompanyOrIndividual](@Temp VarChar(255))
+/* call Select dbo.TheCompany_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
 Returns VarChar(250)
 
 AS
@@ -763,8 +763,8 @@ Begin
 					OR  @Temp like '%[^A-Z]MR[^A-Z]%'
 					OR  @Temp like 'MR[^A-Z]%'
 					THEN 'I' 
-				WHEN	LEN(replace(dbo.Takeda_RemoveNonAlphaNonNumNonSpace(@Temp),'  ',' '))
-					- LEN(dbo.Takeda_RemoveNonAlphaNonNumericCharacters(@Temp)) = 1 /* one space, first and last name? */
+				WHEN	LEN(replace(dbo.TheCompany_RemoveNonAlphaNonNumNonSpace(@Temp),'  ',' '))
+					- LEN(dbo.TheCompany_RemoveNonAlphaNonNumericCharacters(@Temp)) = 1 /* one space, first and last name? */
 					THEN 'I'
 				WHEN @Temp not like '%,%' THEN 'C' /* Individuals should have a comma in the name for Last, First */
 				WHEN @Temp like '%[A-Z], [A-Z]%' /* Smith, Joe */ THEN 'I'/* T for test */
@@ -777,13 +777,13 @@ Begin
 End
 
 GO
-/****** Object:  UserDefinedFunction [dbo].[Takeda_CountQuestionMarkCharChineseEtc_Varchar255]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  UserDefinedFunction [dbo].[TheCompany_CountQuestionMarkCharChineseEtc_Varchar255]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE Function [dbo].[Takeda_CountQuestionMarkCharChineseEtc_Varchar255](@Temp VarChar(255))
-/* call Select dbo.Takeda_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
+CREATE Function [dbo].[TheCompany_CountQuestionMarkCharChineseEtc_Varchar255](@Temp VarChar(255))
+/* call Select dbo.TheCompany_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
 Returns int
 
 AS
@@ -833,17 +833,17 @@ lblEnd:
 
 End
 
-/* select [dbo].[Takeda_CountQuestionMarkCharChineseEtc_Varchar255] ('Колоркон Лимитед test') as idx
+/* select [dbo].[TheCompany_CountQuestionMarkCharChineseEtc_Varchar255] ('Колоркон Лимитед test') as idx
  from TCONTRACTRELATION
 
-exec [dbo].[Takeda_CountQuestionMarkCharChineseEtc_Varchar255] 'test' */
+exec [dbo].[TheCompany_CountQuestionMarkCharChineseEtc_Varchar255] 'test' */
 GO
-/****** Object:  UserDefinedFunction [dbo].[Takeda_fn_TitleCase]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  UserDefinedFunction [dbo].[TheCompany_fn_TitleCase]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE FUNCTION [dbo].[Takeda_fn_TitleCase]
+CREATE FUNCTION [dbo].[TheCompany_fn_TitleCase]
 (@Value varchar(8000), @Exceptions varchar(8000),@UCASEWordLength tinyint)
 returns varchar(8000)
 as
@@ -957,7 +957,7 @@ end
 
 /*
 update tcontract
-set contract = dbo.Takeda_fn_TitleCase(contract,'IT|HR|TP|SG',2)
+set contract = dbo.TheCompany_fn_TitleCase(contract,'IT|HR|TP|SG',2)
 where executorid = 86302
 */
 
@@ -971,13 +971,13 @@ where executorid = 86302
 
 	*/
 GO
-/****** Object:  UserDefinedFunction [dbo].[Takeda_GetFirstLetterOfEachWord]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  UserDefinedFunction [dbo].[TheCompany_GetFirstLetterOfEachWord]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE Function [dbo].[Takeda_GetFirstLetterOfEachWord](@Temp VarChar(1000))
-/* call Select dbo.Takeda_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
+CREATE Function [dbo].[TheCompany_GetFirstLetterOfEachWord](@Temp VarChar(1000))
+/* call Select dbo.TheCompany_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
 Returns VarChar(250)
 
 AS
@@ -1006,14 +1006,14 @@ End
 
 
 GO
-/****** Object:  UserDefinedFunction [dbo].[Takeda_GetFirstWordInString]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  UserDefinedFunction [dbo].[TheCompany_GetFirstWordInString]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE Function [dbo].[Takeda_GetFirstWordInString](@Temp VarChar(255))
-/* call Select dbo.Takeda_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
+CREATE Function [dbo].[TheCompany_GetFirstWordInString](@Temp VarChar(255))
+/* call Select dbo.TheCompany_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
 Returns VarChar(250)
 
 AS
@@ -1045,13 +1045,13 @@ End
 
  
 GO
-/****** Object:  UserDefinedFunction [dbo].[Takeda_RemoveAccents_Varchar255]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  UserDefinedFunction [dbo].[TheCompany_RemoveAccents_Varchar255]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create Function [dbo].[Takeda_RemoveAccents_Varchar255](@Temp VarChar(255))
-/* call Select dbo.Takeda_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
+create Function [dbo].[TheCompany_RemoveAccents_Varchar255](@Temp VarChar(255))
+/* call Select dbo.TheCompany_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
 Returns VarChar(255)
 
 AS
@@ -1105,13 +1105,13 @@ End
 
 
 GO
-/****** Object:  UserDefinedFunction [dbo].[Takeda_RemoveNonAlphaCharacters]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  UserDefinedFunction [dbo].[TheCompany_RemoveNonAlphaCharacters]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE Function [dbo].[Takeda_RemoveNonAlphaCharacters](@Temp VarChar(1000))
-/* call Select dbo.Takeda_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
+CREATE Function [dbo].[TheCompany_RemoveNonAlphaCharacters](@Temp VarChar(1000))
+/* call Select dbo.TheCompany_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
 Returns VarChar(1000)
 AS
 Begin
@@ -1126,13 +1126,13 @@ Begin
     Return UPPER(@Temp)
 End
 GO
-/****** Object:  UserDefinedFunction [dbo].[Takeda_RemoveNonAlphaNonNumericCharacters]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  UserDefinedFunction [dbo].[TheCompany_RemoveNonAlphaNonNumericCharacters]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE Function [dbo].[Takeda_RemoveNonAlphaNonNumericCharacters](@Temp VarChar(255))
-/* call Select dbo.Takeda_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
+CREATE Function [dbo].[TheCompany_RemoveNonAlphaNonNumericCharacters](@Temp VarChar(255))
+/* call Select dbo.TheCompany_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
 Returns VarChar(255)
 
 AS
@@ -1151,13 +1151,13 @@ Begin
 
 End
 GO
-/****** Object:  UserDefinedFunction [dbo].[Takeda_RemoveNonAlphaNonNumNonSpace]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  UserDefinedFunction [dbo].[TheCompany_RemoveNonAlphaNonNumNonSpace]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE Function [dbo].[Takeda_RemoveNonAlphaNonNumNonSpace](@Temp VarChar(1000))
-/* call Select dbo.Takeda_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
+CREATE Function [dbo].[TheCompany_RemoveNonAlphaNonNumNonSpace](@Temp VarChar(1000))
+/* call Select dbo.TheCompany_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
 Returns VarChar(1000)
 
 AS
@@ -1175,13 +1175,13 @@ Begin
     Return UPPER(@Temp)
 End
 GO
-/****** Object:  UserDefinedFunction [dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  UserDefinedFunction [dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE Function [dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash](@Temp VarChar(1000))
-/* Takeda A/S etc. */
+CREATE Function [dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash](@Temp VarChar(1000))
+/* TheCompany A/S etc. */
 Returns VarChar(1000)
 
 AS
@@ -1201,13 +1201,13 @@ AS
 	End
 
 GO
-/****** Object:  UserDefinedFunction [dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonHyphen]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  UserDefinedFunction [dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonHyphen]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE Function [dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonHyphen](@Temp VarChar(1000))
-/* call Select dbo.Takeda_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
+CREATE Function [dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonHyphen](@Temp VarChar(1000))
+/* call Select dbo.TheCompany_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
 Returns VarChar(1000)
 
 AS
@@ -1228,13 +1228,13 @@ End
 
 
 GO
-/****** Object:  UserDefinedFunction [dbo].[Takeda_RemoveNonAlphaNonSpace]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  UserDefinedFunction [dbo].[TheCompany_RemoveNonAlphaNonSpace]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE Function [dbo].[Takeda_RemoveNonAlphaNonSpace](@Temp VarChar(1000))
-/* call Select dbo.Takeda_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
+CREATE Function [dbo].[TheCompany_RemoveNonAlphaNonSpace](@Temp VarChar(1000))
+/* call Select dbo.TheCompany_RemoveNonAlphaCharacters('abc1234def5678ghi90jkl') */
 Returns VarChar(1000)
 
 AS
