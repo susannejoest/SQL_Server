@@ -1,4 +1,4 @@
-USE [DAQ-1445_Contiki_App_DESQL016_Divestment]
+USE [DAQ-1445_ContractsDB_App_DESQL016_Divestment]
 GO
 /****** Object:  UserDefinedFunction [dbo].[CUF_GETCONTRACTPRODUCTGROUPS]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
