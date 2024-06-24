@@ -1,5 +1,5 @@
 
-/****** Object:  View [dbo].[V_Takeda_KWS_2_JPS_TPRODUCT_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_2_JPS_TPRODUCT_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -9,7 +9,7 @@ GO
 
 CREATE view
 
-[dbo].[V_Takeda_KWS_2_JPS_TPRODUCT_ContractID]
+[dbo].[V_TheCompany_KWS_2_JPS_TPRODUCT_ContractID]
 /* to do: include spaces with Productgroup name */
 as 
 
@@ -62,9 +62,9 @@ as
 				THEN 1 ELSE 0 END) 
 			as PrdGrpMatch_FirstWord_FLAG
 
-	FROM T_Takeda_KeyWordSearch s 	
+	FROM T_TheCompany_KeyWordSearch s 	
 		/* left join must encompass all hits, narrow down with WHERE */
-		left join T_Takeda_TPRODUCTGROUP c
+		left join T_TheCompany_TPRODUCTGROUP c
 			on  c.[Product_LettersNumbersOnly]
 			LIKE (CASE WHEN UPPER(s.[KeyWordFirstWord_LettersOnly_UPPER]) 
 				in ('xxx') /* noise words */ 
@@ -78,8 +78,8 @@ as
 					END)
 				AND  c.[Product_LettersNumbersOnly] is not null /* e.g. customer id 232816 안유배 교수님 blanked out like in Ariba Chinese ones, leads to cartesian product */
 				/* cannot set min keyword length to 6 since e.g. AS Productgroup would be excluded */
-		inner join T_Takeda_ContractData_JPSunrise_Products_In_Contracts t on c.PRODUCTGROUPID = t.PRODUCTGROUPID
-		inner join [dbo].[T_Takeda_ContractData_JP_Sunrise_ExecutedAgreements] a on t.contractid = a.contractid
+		inner join T_TheCompany_ContractData_JPSunrise_Products_In_Contracts t on c.PRODUCTGROUPID = t.PRODUCTGROUPID
+		inner join [dbo].[T_TheCompany_ContractData_JP_Sunrise_ExecutedAgreements] a on t.contractid = a.contractid
 		WHERE /* g.[Contract Id] ='CW2548994'
 		AND */ s.KeyWordType='Product' 
 		AND (
@@ -101,15 +101,15 @@ as
 			)
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_3_JPS_TPRODUCT_ContractID_Extended]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_3_JPS_TPRODUCT_ContractID_Extended]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_KWS_3_JPS_TPRODUCT_ContractID_Extended]
-/* creates T_Takeda_KWS_ProductID_ContractID */
+CREATE view [dbo].[V_TheCompany_KWS_3_JPS_TPRODUCT_ContractID_Extended]
+/* creates T_TheCompany_KWS_ProductID_ContractID */
 as 
 
 	SELECT  
@@ -170,12 +170,12 @@ as
 	, [KeyWordVarchar255]
 		AS ProductKeyword_Any
 
-	FROM [dbo].[V_Takeda_KWS_2_JPS_TPRODUCT_ContractID] u /* big definition query */
+	FROM [dbo].[V_TheCompany_KWS_2_JPS_TPRODUCT_ContractID] u /* big definition query */
 	WHERE u.contractid > 0 /* no NULLS */
 	AND ( [KeyWord_ExclusionFlag] = 0 OR [PrdGrpMatch_EXACT_Flag] = 1) /* - only if exact match */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_2_ARB_TCOMPANY_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_2_ARB_TCOMPANY_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -185,7 +185,7 @@ GO
 
 CREATE view
 
-[dbo].[V_Takeda_KWS_2_ARB_TCOMPANY_ContractID]
+[dbo].[V_TheCompany_KWS_2_ARB_TCOMPANY_ContractID]
 /* to do: include spaces with company name */
 as 
 
@@ -378,9 +378,9 @@ as
 		as CompanyMatch_BeginsWithKeyword
 
 
-	FROM T_Takeda_KeyWordSearch s 	
+	FROM T_TheCompany_KeyWordSearch s 	
 		/* left join must encompass all hits, narrow down with WHERE */
-		inner join [T_Takeda_ContractData_ARB_1VCOMPANY] c
+		inner join [T_TheCompany_ContractData_ARB_1VCOMPANY] c
 			on  c.[Company_LettersNumbersOnly_UPPER]
 				LIKE (CASE 
 						WHEN s.KeyWordFirstWord_LEN <= 4 THEN /* 4 - using first word in case surplus suffix information at back */
@@ -418,14 +418,14 @@ as
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_0Ariba_CompareVendorsToRawDump2]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_0Ariba_CompareVendorsToRawDump2]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 create View
 
-[dbo].[V_Takeda_KWS_0Ariba_CompareVendorsToRawDump2]
+[dbo].[V_TheCompany_KWS_0Ariba_CompareVendorsToRawDump2]
 
 as
 
@@ -438,8 +438,8 @@ then 'USA or BLANK' else 'Non-US Country' END) as CompanyIsUS
 , r.CompanyCountry
 , MAX([Project - Project Name]) as MaxContractName
 , COUNT(*) as ActiveContractCount	
-from T_Takeda_Ariba_Dump_Raw r 
-inner join [dbo].[V_Takeda_KWS_2_ARB_TCOMPANY_ContractID] c 
+from T_TheCompany_Ariba_Dump_Raw r 
+inner join [dbo].[V_TheCompany_KWS_2_ARB_TCOMPANY_ContractID] c 
 on r.[Project - Project Id] = c.ContractID
 where State = 'Active'
 group by r.[Affected Parties - Common Supplier]
@@ -470,14 +470,14 @@ FROM         dbo.TCONTRACT RIGHT OUTER JOIN
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VPRODUCTGROUP]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VPRODUCTGROUP]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_VPRODUCTGROUP]
+CREATE view [dbo].[V_TheCompany_VPRODUCTGROUP]
 
 as
 
@@ -522,22 +522,22 @@ as
 	/* and Productgroupid in (6196) */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KeyWordSearch]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KeyWordSearch]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE view [dbo].[V_Takeda_KeyWordSearch]
+CREATE view [dbo].[V_TheCompany_KeyWordSearch]
 
 as
 
 	select 
 		* 
-	from T_Takeda_KeyWordSearch
+	from T_TheCompany_KeyWordSearch
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_5c_JPS_DESCRIPTION_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_5c_JPS_DESCRIPTION_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -552,7 +552,7 @@ GO
 
 
 CREATE view 
-[dbo].[V_Takeda_KWS_5c_JPS_DESCRIPTION_ContractID]
+[dbo].[V_TheCompany_KWS_5c_JPS_DESCRIPTION_ContractID]
 
 as 
 
@@ -561,8 +561,8 @@ as
 		, s.KeyWordType
 		, p.CONTRACTID
 		, p.contractnumber
-	FROM [V_Takeda_KeyWordSearch] s 
-		inner join T_Takeda_ContractData_JP_Sunrise_ExecutedAgreements p /* was left join leading to empty contract ids */
+	FROM [V_TheCompany_KeyWordSearch] s 
+		inner join T_TheCompany_ContractData_JP_Sunrise_ExecutedAgreements p /* was left join leading to empty contract ids */
 			on (p.[Name of Agreement] like 
 				(CASE WHEN s.KeyWordLength < 4 THEN
 				 '%[^a-z]'+s.KeyWordVarchar255+'[^a-z]%'
@@ -573,21 +573,21 @@ as
 	/* WHERE s.KeyWordType = 'Product' */
 	WHERE 
 		p.contractid not in (
-			select contractid from T_Takeda_KWS_3_JPS_TCompany_ContractID_Extended
+			select contractid from T_TheCompany_KWS_3_JPS_TCompany_ContractID_Extended
 				UNION
-			select contractid from T_Takeda_KWS_3_JPS_TProduct_ContractID_Extended
+			select contractid from T_TheCompany_KWS_3_JPS_TProduct_ContractID_Extended
 				UNION 
-			select contractid from T_Takeda_KWS_2_JPS_InternalPartner_ContractID
+			select contractid from T_TheCompany_KWS_2_JPS_InternalPartner_ContractID
 				UNION 
-			select  contractid from T_Takeda_KWS_2_JPS_Territories_ContractID
+			select  contractid from T_TheCompany_KWS_2_JPS_Territories_ContractID
 				UNION
-			select contractid from T_Takeda_KWS_2_JPS_TCOMPANYCountry_ContractID
+			select contractid from T_TheCompany_KWS_2_JPS_TCOMPANYCountry_ContractID
 		/*		UNION
-			select contractid from T_Takeda_KWS_2_JPS_Tag_ContractID */ 
+			select contractid from T_TheCompany_KWS_2_JPS_Tag_ContractID */ 
 			)
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VDepartment_Parsed]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDepartment_Parsed]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -595,7 +595,7 @@ GO
 
 
 CREATE view
-[dbo].[V_Takeda_VDepartment_Parsed]
+[dbo].[V_TheCompany_VDepartment_Parsed]
 
 as 
 /* for hierarchy query */
@@ -648,7 +648,7 @@ FROM TDEPARTMENT d
 	DEPARTMENT_CODE like ',%' /* Internal Partners only */ */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_Hierarchy_NewTry]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Hierarchy_NewTry]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -659,7 +659,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_Hierarchy_NewTry]
+CREATE view [dbo].[V_TheCompany_Hierarchy_NewTry]
 
 as
 
@@ -700,7 +700,7 @@ FROM
 , 'N/A' AS DEPARTMENT_CODE
 , 0 AS PARENTID
 
-FROM [dbo].[V_Takeda_VDepartment_Parsed]
+FROM [dbo].[V_TheCompany_VDepartment_Parsed]
 WHERE DEPARTMENTID = 1 ) "H NA"
 
 UNION ALL
@@ -734,7 +734,7 @@ SELECT *
 , DEPARTMENT_CODE
 , PARENTID
 
-FROM V_Takeda_VDepartment_Parsed 
+FROM V_TheCompany_VDepartment_Parsed 
 WHERE  
 DEPARTMENTID IN('201789' /* CCO */ ,'100100' /* Territories - Region */ , '203831' /* Territories - Alphabetical */ , '203831' /* Territories - Alphabetical */,'10004' /* Internal Partner*/)
  ) "H0"
@@ -774,7 +774,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENTID
 , d.DEPARTMENT_CODE
 , d.PARENTID
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '0' AS LEVEL
 ,DEPARTMENT AS L0
 ,NULL AS L1
@@ -801,7 +801,7 @@ FROM V_Takeda_VDepartment_Parsed d , ( SELECT
 , DEPARTMENT_CODE
 , PARENTID
 
-FROM V_Takeda_VDepartment_Parsed 
+FROM V_TheCompany_VDepartment_Parsed 
 WHERE  
 DEPARTMENTID IN('201789' /* CCO */ ,'100100' /* Territories - Region */ , '203831' /* Territories - Alphabetical */,'10004' /* Internal Partner*/)
  ) "H0"
@@ -853,7 +853,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '1' AS LEVEL
 , "H0".DEPARTMENT AS L0
 ,  d.DEPARTMENT AS L1
@@ -884,7 +884,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENTID
 , d.DEPARTMENT_CODE
 , d.PARENTID
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '0' AS LEVEL
 ,DEPARTMENT AS L0
 ,NULL AS L1
@@ -911,7 +911,7 @@ FROM V_Takeda_VDepartment_Parsed d , ( SELECT
 , DEPARTMENT_CODE
 , PARENTID
 
-FROM V_Takeda_VDepartment_Parsed 
+FROM V_TheCompany_VDepartment_Parsed 
 WHERE  
 DEPARTMENTID IN('201789' /* CCO */ ,'100100' /* Territories - Region */ , '203831' /* Territories - Alphabetical */,'10004' /* Internal Partner*/)
  ) "H0"
@@ -969,7 +969,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '2' AS LEVEL
 , "H1".L0 AS L0
 , "H1".L1 AS L1
@@ -1008,7 +1008,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '1' AS LEVEL
 , "H0".DEPARTMENT AS L0
 ,  d.DEPARTMENT AS L1
@@ -1039,7 +1039,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENTID
 , d.DEPARTMENT_CODE
 , d.PARENTID
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '0' AS LEVEL
 ,DEPARTMENT AS L0
 ,NULL AS L1
@@ -1066,7 +1066,7 @@ FROM V_Takeda_VDepartment_Parsed d , ( SELECT
 , DEPARTMENT_CODE
 , PARENTID
 
-FROM V_Takeda_VDepartment_Parsed 
+FROM V_TheCompany_VDepartment_Parsed 
 WHERE  
 DEPARTMENTID IN('201789' /* CCO */ ,'100100' /* Territories - Region */ , '203831' /* Territories - Alphabetical */,'10004' /* Internal Partner*/)
  ) "H0"
@@ -1129,7 +1129,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '3' AS LEVEL
 , "H2".L0 AS L0
 , "H2".L1 AS L1
@@ -1170,7 +1170,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '2' AS LEVEL
 , "H1".L0 AS L0
 , "H1".L1 AS L1
@@ -1209,7 +1209,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '1' AS LEVEL
 , "H0".DEPARTMENT AS L0
 ,  d.DEPARTMENT AS L1
@@ -1240,7 +1240,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENTID
 , d.DEPARTMENT_CODE
 , d.PARENTID
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '0' AS LEVEL
 ,DEPARTMENT AS L0
 ,NULL AS L1
@@ -1267,7 +1267,7 @@ FROM V_Takeda_VDepartment_Parsed d , ( SELECT
 , DEPARTMENT_CODE
 , PARENTID
 
-FROM V_Takeda_VDepartment_Parsed 
+FROM V_TheCompany_VDepartment_Parsed 
 WHERE  
 DEPARTMENTID IN('201789' /* CCO */ ,'100100' /* Territories - Region */ , '203831' /* Territories - Alphabetical */,'10004' /* Internal Partner*/)
  ) "H0"
@@ -1336,7 +1336,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '4' AS LEVEL
 , "H3".L0 AS L0
 , "H3".L1 AS L1
@@ -1379,7 +1379,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '3' AS LEVEL
 , "H2".L0 AS L0
 , "H2".L1 AS L1
@@ -1420,7 +1420,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '2' AS LEVEL
 , "H1".L0 AS L0
 , "H1".L1 AS L1
@@ -1459,7 +1459,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '1' AS LEVEL
 , "H0".DEPARTMENT AS L0
 ,  d.DEPARTMENT AS L1
@@ -1490,7 +1490,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENTID
 , d.DEPARTMENT_CODE
 , d.PARENTID
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '0' AS LEVEL
 ,DEPARTMENT AS L0
 ,NULL AS L1
@@ -1517,7 +1517,7 @@ FROM V_Takeda_VDepartment_Parsed d , ( SELECT
 , DEPARTMENT_CODE
 , PARENTID
 
-FROM V_Takeda_VDepartment_Parsed 
+FROM V_TheCompany_VDepartment_Parsed 
 WHERE  
 DEPARTMENTID IN('201789' /* CCO */ ,'100100' /* Territories - Region */ , '203831' /* Territories - Alphabetical */,'10004' /* Internal Partner*/)
  ) "H0"
@@ -1591,7 +1591,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENTID
 , d.DEPARTMENT_CODE
 , d.PARENTID
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '5' AS LEVEL
 , "H4".L0 AS L0
 , "H4".L1 AS L1
@@ -1638,7 +1638,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '4' AS LEVEL
 , "H3".L0 AS L0
 , "H3".L1 AS L1
@@ -1681,7 +1681,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '3' AS LEVEL
 , "H2".L0 AS L0
 , "H2".L1 AS L1
@@ -1722,7 +1722,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '2' AS LEVEL
 , "H1".L0 AS L0
 , "H1".L1 AS L1
@@ -1761,7 +1761,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '1' AS LEVEL
 , "H0".DEPARTMENT AS L0
 ,  d.DEPARTMENT AS L1
@@ -1792,7 +1792,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENTID
 , d.DEPARTMENT_CODE
 , d.PARENTID
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '0' AS LEVEL
 ,DEPARTMENT AS L0
 ,NULL AS L1
@@ -1819,7 +1819,7 @@ FROM V_Takeda_VDepartment_Parsed d , ( SELECT
 , DEPARTMENT_CODE
 , PARENTID
 
-FROM V_Takeda_VDepartment_Parsed 
+FROM V_TheCompany_VDepartment_Parsed 
 WHERE  
 DEPARTMENTID IN('201789' /* CCO */ ,'100100' /* Territories */,'10004' /* Internal Partner*/)
  ) "H0"
@@ -1894,7 +1894,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '6' AS LEVEL
 , "H5".L0 AS L0
 , "H5".L1 AS L1
@@ -1944,7 +1944,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENTID
 , d.DEPARTMENT_CODE
 , d.PARENTID
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '5' AS LEVEL
 , "H4".L0 AS L0
 , "H4".L1 AS L1
@@ -1991,7 +1991,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '4' AS LEVEL
 , "H3".L0 AS L0
 , "H3".L1 AS L1
@@ -2034,7 +2034,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '3' AS LEVEL
 , "H2".L0 AS L0
 , "H2".L1 AS L1
@@ -2075,7 +2075,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '2' AS LEVEL
 , "H1".L0 AS L0
 , "H1".L1 AS L1
@@ -2114,7 +2114,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '1' AS LEVEL
 , "H0".DEPARTMENT AS L0
 ,  d.DEPARTMENT AS L1
@@ -2145,7 +2145,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENTID
 , d.DEPARTMENT_CODE
 , d.PARENTID
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '0' AS LEVEL
 ,DEPARTMENT AS L0
 ,NULL AS L1
@@ -2172,7 +2172,7 @@ FROM V_Takeda_VDepartment_Parsed d , ( SELECT
 , DEPARTMENT_CODE
 , PARENTID
 
-FROM V_Takeda_VDepartment_Parsed 
+FROM V_TheCompany_VDepartment_Parsed 
 WHERE  
 DEPARTMENTID IN('201789' /* CCO */ ,'100100' /* Territories */,'10004' /* Internal Partner*/)
  ) "H0"
@@ -2249,7 +2249,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '7' AS LEVEL
 , "H6".L0 AS L0
 , "H6".L1 AS L1
@@ -2298,7 +2298,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '6' AS LEVEL
 , "H5".L0 AS L0
 , "H5".L1 AS L1
@@ -2348,7 +2348,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENTID
 , d.DEPARTMENT_CODE
 , d.PARENTID
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '5' AS LEVEL
 , "H4".L0 AS L0
 , "H4".L1 AS L1
@@ -2395,7 +2395,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '4' AS LEVEL
 , "H3".L0 AS L0
 , "H3".L1 AS L1
@@ -2438,7 +2438,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '3' AS LEVEL
 , "H2".L0 AS L0
 , "H2".L1 AS L1
@@ -2479,7 +2479,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '2' AS LEVEL
 , "H1".L0 AS L0
 , "H1".L1 AS L1
@@ -2518,7 +2518,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '1' AS LEVEL
 , "H0".DEPARTMENT AS L0
 ,  d.DEPARTMENT AS L1
@@ -2549,7 +2549,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENTID
 , d.DEPARTMENT_CODE
 , d.PARENTID
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '0' AS LEVEL
 ,DEPARTMENT AS L0
 ,NULL AS L1
@@ -2576,7 +2576,7 @@ FROM V_Takeda_VDepartment_Parsed d , ( SELECT
 , DEPARTMENT_CODE
 , PARENTID
 
-FROM V_Takeda_VDepartment_Parsed 
+FROM V_TheCompany_VDepartment_Parsed 
 WHERE  
 DEPARTMENTID IN('201789' /* CCO */ ,'100100' /* Territories */,'10004' /* Internal Partner*/)
  ) "H0"
@@ -2655,7 +2655,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '8' AS LEVEL
 , "H7".L0 AS L0
 , "H7".L1 AS L1
@@ -2704,7 +2704,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '7' AS LEVEL
 , "H6".L0 AS L0
 , "H6".L1 AS L1
@@ -2753,7 +2753,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '6' AS LEVEL
 , "H5".L0 AS L0
 , "H5".L1 AS L1
@@ -2803,7 +2803,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENTID
 , d.DEPARTMENT_CODE
 , d.PARENTID
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '5' AS LEVEL
 , "H4".L0 AS L0
 , "H4".L1 AS L1
@@ -2850,7 +2850,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '4' AS LEVEL
 , "H3".L0 AS L0
 , "H3".L1 AS L1
@@ -2893,7 +2893,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '3' AS LEVEL
 , "H2".L0 AS L0
 , "H2".L1 AS L1
@@ -2934,7 +2934,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '2' AS LEVEL
 , "H1".L0 AS L0
 , "H1".L1 AS L1
@@ -2973,7 +2973,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENT_CODE
 , d.PARENTID
 
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '1' AS LEVEL
 , "H0".DEPARTMENT AS L0
 ,  d.DEPARTMENT AS L1
@@ -3004,7 +3004,7 @@ END) AS DPT_LOWEST_ID_TO_SHOW
 , d.DEPARTMENTID
 , d.DEPARTMENT_CODE
 , d.PARENTID
-FROM V_Takeda_VDepartment_Parsed d , ( SELECT 
+FROM V_TheCompany_VDepartment_Parsed d , ( SELECT 
 '0' AS LEVEL
 ,DEPARTMENT AS L0
 ,NULL AS L1
@@ -3031,7 +3031,7 @@ FROM V_Takeda_VDepartment_Parsed d , ( SELECT
 , DEPARTMENT_CODE
 , PARENTID
 
-FROM V_Takeda_VDepartment_Parsed 
+FROM V_TheCompany_VDepartment_Parsed 
 WHERE  
 DEPARTMENTID IN('201789' /* CCO */ ,'100100' /* Territories */,'10004' /* Internal Partner*/)
  ) "H0"
@@ -3199,12 +3199,12 @@ SELECT	AT.AUDITTRAILID,
 	ON	P.PERSONID				= E.PERSONID
 
 GO
-/****** Object:  View [dbo].[V_Takeda_UserCreatedDate]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_UserCreatedDate]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE view [dbo].[V_Takeda_UserCreatedDate] as
+CREATE view [dbo].[V_TheCompany_UserCreatedDate] as
 
   select v.audittrailid as ATID
   , v.displayname as ATCreatorName
@@ -3216,7 +3216,7 @@ CREATE view [dbo].[V_Takeda_UserCreatedDate] as
   where a.objecttypeid = 35 /* user */ and eventid = 1 /*create*/
   
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_0_ContikiView_LNC]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_0_ContikiView_LNC]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3228,7 +3228,7 @@ GO
 
 
 
-CREATE view  [dbo].[V_Takeda_KWS_0_ContikiView_LNC]
+CREATE view  [dbo].[V_TheCompany_KWS_0_ContikiView_LNC]
 
 as 
 
@@ -3258,7 +3258,7 @@ select
       /* ,isnull([Additional Comments],'') as [Comments] */
       ,0 AS [Number of Attachments]
 
-      ,(CASE WHEN [Contract Type] <> 'Inter Company Agreements' THEN [Outside party] ELSE 'Intercompany Takeda (Two or more Takeda Entities)' END) as [Company Names] /* Inter Company Agreements where contractid = 'TAX-18003134' */
+      ,(CASE WHEN [Contract Type] <> 'Inter Company Agreements' THEN [Outside party] ELSE 'Intercompany TheCompany (Two or more TheCompany Entities)' END) as [Company Names] /* Inter Company Agreements where contractid = 'TAX-18003134' */
       
 	  ,0 AS [Company Count] 
 	  , '' as [Company Countries] 
@@ -3272,7 +3272,7 @@ select
       , '' AS [Contract Responsible Email]
       , '' AS [Responsible Primary User Group]
    
-      , [Takeda entity/first party] AS [Internal Partners]  
+      , [TheCompany entity/first party] AS [Internal Partners]  
       , 0 AS [Internal Partners Count]
       , '' AS [Territories]
       , null AS [Territories Count]
@@ -3296,10 +3296,10 @@ select
       , 'https://shire.axxerion.us/axxerion/sso' as [LinkToContractURL]
       , [DateTableRefreshed] 
 
-  FROM [dbo].[T_Takeda_KWS_0_Data_LINC] d
+  FROM [dbo].[T_TheCompany_KWS_0_Data_LINC] d
   where Reference = 'TAX-18003134'
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_5c_LNC_DESCRIPTION_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_5c_LNC_DESCRIPTION_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3311,7 +3311,7 @@ GO
 
 
 CREATE view 
-[dbo].[V_Takeda_KWS_5c_LNC_DESCRIPTION_ContractID]
+[dbo].[V_TheCompany_KWS_5c_LNC_DESCRIPTION_ContractID]
 
 as 
 
@@ -3320,8 +3320,8 @@ as
 		, s.KeyWordType
 		, p.CONTRACTID
 		, p.contractnumber
-	FROM [V_Takeda_KeyWordSearch] s 
-		inner join V_Takeda_KWS_0_ContikiView_LNC p /* was left join leading to empty contract ids */
+	FROM [V_TheCompany_KeyWordSearch] s 
+		inner join V_TheCompany_KWS_0_ContikiView_LNC p /* was left join leading to empty contract ids */
 			on (p.[Contract Description] like 
 				(CASE WHEN s.KeyWordLength < 4 THEN
 				 '%[^a-z]'+s.KeyWordVarchar255+'[^a-z]%'
@@ -3332,21 +3332,21 @@ as
 	/* WHERE s.KeyWordType = 'Product' */
 	  WHERE 
 		p.contractid not in (
-			select contractid from T_Takeda_KWS_3_LNC_TCompany_ContractID_Extended
+			select contractid from T_TheCompany_KWS_3_LNC_TCompany_ContractID_Extended
 			/* DOES NOT EXIST YET  UNION
-			select contractid from V_Takeda_KWS_3_LNC_TProduct_ContractID_Extended */
+			select contractid from V_TheCompany_KWS_3_LNC_TProduct_ContractID_Extended */
 				UNION
-			select contractid from T_Takeda_KWS_2_LNC_InternalPartner_ContractID
+			select contractid from T_TheCompany_KWS_2_LNC_InternalPartner_ContractID
 			/*	UNION 
-			 DOES NOT EXIST YET select  contractid from T_Takeda_KWS_2_LNC_Territories_ContractID
+			 DOES NOT EXIST YET select  contractid from T_TheCompany_KWS_2_LNC_Territories_ContractID
 				UNION 
-			select contractid from T_Takeda_KWS_2_LNC_TCOMPANYCountry_ContractID
+			select contractid from T_TheCompany_KWS_2_LNC_TCOMPANYCountry_ContractID
 				UNION */
-		/*	select contractid from T_Takeda_KWS_2_LNC_Tag_ContractID */
+		/*	select contractid from T_TheCompany_KWS_2_LNC_Tag_ContractID */
 			)  
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_0_ContikiView_JPS]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_0_ContikiView_JPS]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3355,7 +3355,7 @@ GO
 
 
 
-CREATE view  [dbo].[V_Takeda_KWS_0_ContikiView_JPS]
+CREATE view  [dbo].[V_TheCompany_KWS_0_ContikiView_JPS]
 
 as 
 
@@ -3364,7 +3364,7 @@ select
       [Contractnumber] as [Contractnumber]
       , [Name of Agreement] as [Contract Description]
 	  , '' as [Contract Relation]
-      , [dbo].[Takeda_RemoveNonAlphaNonSpace]( [Category(master)]) as [Agreement Type] /* 0002 License out */
+      , [dbo].[TheCompany_RemoveNonAlphaNonSpace]( [Category(master)]) as [Agreement Type] /* 0002 License out */
 	  , 'Yes' as 'Agreement Type Divestment'	 
       , 'Active' as [Status] /* State = 'Active', 'Completed' 
 		means [Contract Status] of Published, Draft, Draft Amendment, Pending, On Hold, or Expired */
@@ -3383,7 +3383,7 @@ select
       , ISNULL([Company],'') as [Company Names] /* do not use all suppliers concat, since project name is also there */
       , 1 AS [Company Count], '' as [CompanyCountries]
       , '' as [Confidentiality Flag]
-       , 'Yukako.Ichiyanagi@takeda.com' AS [Super User Email]
+       , 'Yukako.Ichiyanagi@TheCompany.com' AS [Super User Email]
       , 'International Legal, Japan' AS [Super User Primary User Group]
       , 1 as [Super User Active Flag]
       , [Person in charge] as [Owner Name]
@@ -3394,7 +3394,7 @@ select
    
       , [Internal_Partner] AS [Internal Partners]  
       , 1 AS [Internal Partners Count]
-      , [dbo].[Takeda_RemoveNonAlphaNonSpace]([Territory(master)]) AS [Territories] /* remove 001 etc. */
+      , [dbo].[TheCompany_RemoveNonAlphaNonSpace]([Territory(master)]) AS [Territories] /* remove 001 etc. */
       , (case when [Territory(master)] IS null then 0 else 1 end) AS [Territories Count]
       , '' AS [Active Ingredients]
       , '' AS [Trade Names]
@@ -3415,14 +3415,14 @@ select
 		, '' as Comments
 
 	/* Link and Date */
-      ,'https://mytakeda.sharepoint.com/teams/site002-2/lcdb/Lists/List_e/DispForm.aspx?ID=' + convert(varchar(255),ContractID) as [LinkToContractURL]
+      ,'https://myTheCompany.sharepoint.com/teams/site002-2/lcdb/Lists/List_e/DispForm.aspx?ID=' + convert(varchar(255),ContractID) as [LinkToContractURL]
       ,[DateTableRefreshed] as [DateTableRefreshed] 
 
-	  /* ,(case when [contractnumber] in (select [TxtFldUnique] from [dbo].[T_Takeda_Adhoc_ContractNumber]) Then 1 else 0 end) as ListFlag */
-  FROM [dbo].[T_Takeda_ContractData_JP_Sunrise_ExecutedAgreements] d
+	  /* ,(case when [contractnumber] in (select [TxtFldUnique] from [dbo].[T_TheCompany_Adhoc_ContractNumber]) Then 1 else 0 end) as ListFlag */
+  FROM [dbo].[T_TheCompany_ContractData_JP_Sunrise_ExecutedAgreements] d
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWSR_0_JPS]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWSR_0_JPS]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3434,8 +3434,8 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_KWSR_0_JPS]
-/* be sure to run [Takeda_KeyWordSearch] */
+CREATE view [dbo].[V_TheCompany_KWSR_0_JPS]
+/* be sure to run [TheCompany_KeyWordSearch] */
 as
 
 		SELECT
@@ -3545,17 +3545,17 @@ as
 					 
 		 /* ALL */
 		 , s.*
-	 FROM   [V_Takeda_KWS_0_ContikiView_JPS] s
-			inner join T_Takeda_KWS_7_JPS_ContractID_SummaryByContractID u
+	 FROM   [V_TheCompany_KWS_0_ContikiView_JPS] s
+			inner join T_TheCompany_KWS_7_JPS_ContractID_SummaryByContractID u
 				on s.contractid = u.[ContractID]
 
 GO
-/****** Object:  View [dbo].[V_Takeda_Edit_DuplicateCompanies_Base]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Edit_DuplicateCompanies_Base]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE VIEW [dbo].[V_Takeda_Edit_DuplicateCompanies_Base]
+CREATE VIEW [dbo].[V_TheCompany_Edit_DuplicateCompanies_Base]
 
 as
 
@@ -3572,7 +3572,7 @@ as
 	group by LTRIM(RTRIM(UPPER(c.COMPANY))), c.company, c.companyid
 
 GO
-/****** Object:  View [dbo].[V_Takeda_Edit_DuplicateCompanies]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Edit_DuplicateCompanies]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3580,7 +3580,7 @@ GO
 
 
 
-CREATE VIEW [dbo].[V_Takeda_Edit_DuplicateCompanies]
+CREATE VIEW [dbo].[V_TheCompany_Edit_DuplicateCompanies]
 
 as
 
@@ -3606,12 +3606,12 @@ WHERE LTRIM(RTRIM(UPPER(cp.COMPANY))) =CompanyTrim
 FOR XML PATH('')),1,1,'') AS CompanyList
 
 FROM
-	dbo.V_Takeda_Edit_DuplicateCompanies_Base b
+	dbo.V_TheCompany_Edit_DuplicateCompanies_Base b
 GROUP BY CompanyTrim
 HAVING COUNT(COMPANYID)>1
  
 GO
-/****** Object:  View [dbo].[V_Takeda_VDEPARTMENT_Entities_Diligent_Union_Alias]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDEPARTMENT_Entities_Diligent_Union_Alias]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3619,7 +3619,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_VDEPARTMENT_Entities_Diligent_Union_Alias]
+CREATE view [dbo].[V_TheCompany_VDEPARTMENT_Entities_Diligent_Union_Alias]
 
 as 
 
@@ -3635,12 +3635,12 @@ SELECT [EntityName] as DLE_EntityName /* Diligent name or Alias */
       ,[Comments] as DLE_Comments
       ,[MaxNoSignatures] as DLE_MaxNoSignatures
       ,[SignatureRules] as DLE_SignatureRules
-	  , left([dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName]),255) as DLE_EntityName_NonFwSlash
+	  , left([dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName]),255) as DLE_EntityName_NonFwSlash
 
-	, dbo.Takeda_RemoveNonAlphaNonNumericCharacters([EntityName]) as DLE_EntityName_NonAlphaNonNum
+	, dbo.TheCompany_RemoveNonAlphaNonNumericCharacters([EntityName]) as DLE_EntityName_NonAlphaNonNum
 	, 'NameMain' as DLE_EntMainNameOrAlias
 from
-	T_Takeda_Entities_DiligentData
+	T_TheCompany_Entities_DiligentData
 
 	UNION 
 
@@ -3656,16 +3656,16 @@ SELECT [AliasName] as DLE_EntityName /* Diligent name or Alias */
       ,[Comments] as DLE_Comments
       ,[MaxNoSignatures] as DLE_MaxNoSignatures
       ,[SignatureRules] as DLE_SignatureRules
-	  , left([dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([AliasName]),255) as DLE_EntityName_NonFwSlash
+	  , left([dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([AliasName]),255) as DLE_EntityName_NonFwSlash
 
-	, dbo.Takeda_RemoveNonAlphaNonNumericCharacters([AliasName]) as DLE_EntityName_NonAlphaNonNum
+	, dbo.TheCompany_RemoveNonAlphaNonNumericCharacters([AliasName]) as DLE_EntityName_NonAlphaNonNum
 	, 'NameAlias' as EntMainNameOrAlias
 from
-	T_Takeda_Entities_DiligentData
+	T_TheCompany_Entities_DiligentData
 	WHERE [AliasName] >''
 		and AliasName <> 'Same'
 		and AliasName <> [EntityName]
-		and [dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([AliasName]) <> [dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName])
+		and [dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([AliasName]) <> [dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName])
 
 /* LINC */
 UNION 
@@ -3682,20 +3682,20 @@ SELECT [EntityName_LINC] as DLE_EntityName
       ,[Comments] as DLE_Comments
       ,[MaxNoSignatures] as DLE_MaxNoSignatures
       ,[SignatureRules] as DLE_SignatureRules
-	  , left([dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName_LINC]),255) as DLE_EntityName_NonFwSlash
+	  , left([dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName_LINC]),255) as DLE_EntityName_NonFwSlash
 
-	, dbo.Takeda_RemoveNonAlphaNonNumericCharacters([EntityName_LINC]) as DLE_EntityName_NonAlphaNonNum
+	, dbo.TheCompany_RemoveNonAlphaNonNumericCharacters([EntityName_LINC]) as DLE_EntityName_NonAlphaNonNum
 	, 'NameAlias_LNC' as EntMainNameOrAlias
 from
-	T_Takeda_Entities_DiligentData
+	T_TheCompany_Entities_DiligentData
 	WHERE [EntityName_LINC] >''
 		and [EntityName_LINC] <> [EntityName]
 		and (AliasName  is null or [EntityName_LINC] <> AliasName)
-		and [dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName_LINC]) <> [dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName])
-		and [dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName_LINC]) <> [dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([AliasName])
+		and [dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName_LINC]) <> [dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName])
+		and [dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName_LINC]) <> [dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([AliasName])
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VDepartment_ParsedDpt_InternalPartner]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDepartment_ParsedDpt_InternalPartner]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3705,7 +3705,7 @@ GO
 
 
 CREATE view
-[dbo].[V_Takeda_VDepartment_ParsedDpt_InternalPartner]
+[dbo].[V_TheCompany_VDepartment_ParsedDpt_InternalPartner]
 
 as 
 
@@ -3809,7 +3809,7 @@ select
 			end) 
 		as InternalPartner_Name	
 
-		  , left([dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]((case when /*mik_valid = 1 and  */ charindex(')', d.[DEPARTMENT] ) >1 
+		  , left([dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]((case when /*mik_valid = 1 and  */ charindex(')', d.[DEPARTMENT] ) >1 
 				THEN (case when LEN(d.[DEPARTMENT])>0 
 				THEN right(d.[DEPARTMENT], LEN(d.[DEPARTMENT])
 					- charindex(')', d.[DEPARTMENT])-1) 
@@ -3826,12 +3826,12 @@ select
 
 /* Blueprint */
 
-		  /* T_Takeda_Blueprint_Mapping */
+		  /* T_TheCompany_Blueprint_Mapping */
 		  , m.[Bp_CompanyStatus_Code] 
 		  , m.[Bp_CompanyName]
 		, m.[Bp_CompanyQuickRef]
 
-		/* T_Takeda_Blueprint_CompanyReport */
+		/* T_TheCompany_Blueprint_CompanyReport */
 		/* , c.[Company Name] as BP_CompanyName */
 		 /* , c.[QuickRef] as BP_QuickRef */
 		  , c.[Company number] as BC_CompanyNumber
@@ -3875,7 +3875,7 @@ select
 		 as IP_CostCenter_NonUnique /*	dupe if rep branch offices exist */
 		 /* letters and special chars convert like espanja
 		  */
-		 , convert(varchar(255),dbo.Takeda_RemoveAccents_Varchar255(dbo.Takeda_RemoveNonAlphaCharacters(
+		 , convert(varchar(255),dbo.TheCompany_RemoveAccents_Varchar255(dbo.TheCompany_RemoveNonAlphaCharacters(
 		 (case when /*mik_valid = 1 and  */ charindex(')', d.[DEPARTMENT] ) >1 
 				THEN (case when LEN(d.[DEPARTMENT])>0 
 				THEN right(d.[DEPARTMENT], LEN(d.[DEPARTMENT])
@@ -3892,11 +3892,11 @@ select
 			when d.DEPARTMENT_CODE like '%office%' then 4 else 9 END)
 			as IP_Rank
 			, 'CTK-IP-' + ltrim(str(d.DEPARTMENTID)) as LNC_InternalPartnerID
-FROM  [dbo].[V_Takeda_VDepartment_Parsed] d
-		left join [dbo].[T_Takeda_Entities_MappingDiligentContiki] m 
+FROM  [dbo].[V_TheCompany_VDepartment_Parsed] d
+		left join [dbo].[T_TheCompany_Entities_MappingDiligentContiki] m 
 			on  d.[DEPARTMENTID] = m.[Cnt_CompanyID] 
 				/* and m.[Cnt_CompanyID]  is not null */
-		left join  [dbo].[T_Takeda_Entities_zDiligentCompanyReport] c 
+		left join  [dbo].[T_TheCompany_Entities_zDiligentCompanyReport] c 
 			 on c.[QuickRef] = m.[Bp_CompanyQuickRef]
 		left join TDEPARTMENT dp on d.PARENTID = dp.DEPARTMENTID
 		left join (select departmentid
@@ -3909,7 +3909,7 @@ WHERE  /* MIK_VALID = 1 AND */
 	and d.DEPARTMENTID not in (204113 /* docsign */)
 	/* and d.DEPARTMENT_CODE like '%1350%' */
 GO
-/****** Object:  View [dbo].[V_Takeda_VDEPARTMENT_Entities_LINC]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDEPARTMENT_Entities_LINC]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3921,7 +3921,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_VDEPARTMENT_Entities_LINC]
+CREATE view [dbo].[V_TheCompany_VDEPARTMENT_Entities_LINC]
 
 as 
 
@@ -3940,22 +3940,22 @@ as
 		  ,[Team Contact]
 		  ,[Contact1] */
 		  ,[Description] as LNC_Description
-		, dbo.Takeda_RemoveNonAlphaNonNumericCharacters([Name]) as LNC_EntityName_NonAlphaNonNum
-		, left([dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([Name]),255) as LNC_EntityName_NonFwSlash
+		, dbo.TheCompany_RemoveNonAlphaNonNumericCharacters([Name]) as LNC_EntityName_NonAlphaNonNum
+		, left([dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([Name]),255) as LNC_EntityName_NonFwSlash
 
 		/* Internal Partner Table */
 		, LNC_InternalPartnerID as CTK_InternalPartnerID
 		, [InternalPartnerStatus] as 'CTK_InternalPartnerStatus'
 		, BC_Country as CTK_Country
 	from
-		[dbo].[T_Takeda_Entities_LINC] l left join 
-			[dbo].[V_Takeda_VDepartment_ParsedDpt_InternalPartner] p 
+		[dbo].[T_TheCompany_Entities_LINC] l left join 
+			[dbo].[V_TheCompany_VDepartment_ParsedDpt_InternalPartner] p 
 				on L.[External reference] = p.LNC_InternalPartnerID 
 	WHERE LEN(Name)>3 /* no blanks */
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VDEPARTMENT_Entities_DiligentAndLINC]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDEPARTMENT_Entities_DiligentAndLINC]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3969,7 +3969,7 @@ GO
 
 CREATE view
 
-[dbo].[V_Takeda_VDEPARTMENT_Entities_DiligentAndLINC]
+[dbo].[V_TheCompany_VDEPARTMENT_Entities_DiligentAndLINC]
 
 as
 
@@ -4066,18 +4066,18 @@ as
 		, (case when d.DLE_SAP_Code = L.[LNC_CompanyCode_ExternalReference] then 'Company Code Match' else null end) 
 		as MatchCategory_Code
 
-	FROM [dbo].[V_Takeda_VDEPARTMENT_Entities_Diligent_Union_Alias] d
+	FROM [dbo].[V_TheCompany_VDEPARTMENT_Entities_Diligent_Union_Alias] d
 		full join
-		[dbo].[V_Takeda_VDEPARTMENT_Entities_LINC] l
+		[dbo].[V_TheCompany_VDEPARTMENT_Entities_LINC] l
 			on (d.DLE_SAP_Code = L.[LNC_CompanyCode_ExternalReference] and d.DLE_SAP_Code >'')
 				/*or d.[DLE_EntityName_NonAlphaNonNum] = L.[LNC_EntityName_NonAlphaNonNum]*/
 				or (d.[DLE_EntityName] = L.[LNC_EntityNameAlias]
 					AND d.[DLE_SAP_Code] = l.[LNC_CompanyCode_ExternalReference])
 				/* or d.[DLE_EntityNameAlias] = L.[LNC_EntityName] */
 				or (UPPER(d.[DLE_EntityName_NonFwSlash]) = UPPER(l.[LNC_EntityName_NonFwSlash])
-					AND d.[DLE_SAP_Code] = l.[LNC_CompanyCode_ExternalReference])/* Takeda Pharmaceuticals S.R.L. duplicate name in MD and RO new 11.01.2022 */
+					AND d.[DLE_SAP_Code] = l.[LNC_CompanyCode_ExternalReference])/* TheCompany Pharmaceuticals S.R.L. duplicate name in MD and RO new 11.01.2022 */
 
-/* Takeda GmbH, but rep offices have same code */
+/* TheCompany GmbH, but rep offices have same code */
 /*	WHERE 
 		d.DLE_SAP_Code = L.[LNC_CompanyCode_ExternalReference]
 		OR ((len(d.DLE_SAP_Code)<>4 or  len(L.[LNC_CompanyCode_ExternalReference])<>4) 
@@ -4089,12 +4089,12 @@ as
 	asc
 */
 GO
-/****** Object:  View [dbo].[V_Takeda_VDEPARTMENT_Entities_DiligentAndLINC_SCRUB]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDEPARTMENT_Entities_DiligentAndLINC_SCRUB]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE view [dbo].[V_Takeda_VDEPARTMENT_Entities_DiligentAndLINC_SCRUB]
+CREATE view [dbo].[V_TheCompany_VDEPARTMENT_Entities_DiligentAndLINC_SCRUB]
 
 as
 SELECT  EntNameMain_DLE_or_LNC
@@ -4128,7 +4128,7 @@ SELECT  EntNameMain_DLE_or_LNC
       ,max([LNC_Category]) as LNC_Category_Max
       ,max([LNC_EntityName]) as LNC_EntityName_Max
 
-  FROM [DAQ-1445_Contiki_App_DESQL016_Divestment].[dbo].[V_Takeda_VDEPARTMENT_Entities_DiligentAndLINC]
+  FROM [DAQ-1445_Contiki_App_DESQL016_Divestment].[dbo].[V_TheCompany_VDEPARTMENT_Entities_DiligentAndLINC]
   where 
   entexistsin in ('1 - Diligent + LINC','2 - Diligent Only','3 - LINC Only')
  group by EntNameMain_DLE_or_LNC
@@ -4188,7 +4188,7 @@ ORDER BY dbo.TDOCUMENT.DOCUMENTID
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VDOCUMENT_CONTRACT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDOCUMENT_CONTRACT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4202,7 +4202,7 @@ GO
 
 
 
-CREATE VIEW [dbo].[V_Takeda_VDOCUMENT_CONTRACT]
+CREATE VIEW [dbo].[V_TheCompany_VDOCUMENT_CONTRACT]
 
 AS
 
@@ -4302,7 +4302,7 @@ AS
 		)
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VDOCUMENT_AMENDMENT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDOCUMENT_AMENDMENT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4315,7 +4315,7 @@ GO
 
 
 
-CREATE VIEW [dbo].[V_Takeda_VDOCUMENT_AMENDMENT]
+CREATE VIEW [dbo].[V_TheCompany_VDOCUMENT_AMENDMENT]
 
 AS
 
@@ -4411,7 +4411,7 @@ AS
 		)
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VDOCUMENT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDOCUMENT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4420,7 +4420,7 @@ GO
 
 
 
-CREATE VIEW [dbo].[V_Takeda_VDOCUMENT]
+CREATE VIEW [dbo].[V_TheCompany_VDOCUMENT]
 
 AS
 
@@ -4470,7 +4470,7 @@ SELECT
 	, (SELECT 
 		CAST(STUFF(
 		(SELECT DISTINCT ',' + tg.TAG /*+ ' ('+tg.TagCategory+')'*/
-			FROM ttag /*V_Takeda_TTag_Detail*/ tg
+			FROM ttag /*V_TheCompany_TTag_Detail*/ tg
 				inner join TTAG_IN_OBJECT tj 
 					on tg.tagid = tj.tagid
 			WHERE tj.OBJECTID =d.DOCUMENTID 
@@ -4478,8 +4478,8 @@ SELECT
 			FOR XML PATH('')),1,1,'') AS VARCHAR(255))) AS DocumentTags	/* e.g. change of control */
 		, c.[CONTRACT] as ContractTitle
 	FROM         
-			(select * from V_Takeda_VDOCUMENT_CONTRACT
-				union all select * from V_Takeda_VDOCUMENT_AMENDMENT) d
+			(select * from V_TheCompany_VDOCUMENT_CONTRACT
+				union all select * from V_TheCompany_VDOCUMENT_AMENDMENT) d
 			left join VUSER u on d.DocumentOwnerId = u.USERID
 			inner join tcontract c on d.contractid = c.contractid
 
@@ -4533,22 +4533,22 @@ SELECT
 		)
 */
 GO
-/****** Object:  View [dbo].[V_Takeda_TTAG_Upload_Quality]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_TTAG_Upload_Quality]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE View [dbo].[V_Takeda_TTAG_Upload_Quality]
+CREATE View [dbo].[V_TheCompany_TTAG_Upload_Quality]
 
 as
 
 select 
-'EXEC [dbo].[Takeda_TagUpload_DocumentID] ' + ltrim(str(42))/* Tag Quality Agreement */ /*@TAGID bigint */ + ', ' 
+'EXEC [dbo].[TheCompany_TagUpload_DocumentID] ' + ltrim(str(42))/* Tag Quality Agreement */ /*@TAGID bigint */ + ', ' 
 				+ ltrim(str(7))/* @OBJECTTYPEID bigint 7 = Document */ + ', ' 
 				+ ltrim(str(d.documentid)) /* OBJECTID */ + ';' as ExecSQL
 , title
 
-from V_TAKEDA_VDOCUMENT d
+from V_TheCompany_VDOCUMENT d
 where
 
 	(
@@ -4561,12 +4561,12 @@ where
 union all
 
 	select 
-	'EXEC [dbo].[Takeda_TagUpload_DocumentID] ' + ltrim(str(43))/* Tag Quality Agreement */ /*@TAGID bigint */ + ', ' 
+	'EXEC [dbo].[TheCompany_TagUpload_DocumentID] ' + ltrim(str(43))/* Tag Quality Agreement */ /*@TAGID bigint */ + ', ' 
 					+ ltrim(str(7))/* @OBJECTTYPEID bigint 7 = Document */ + ', ' 
 					+ ltrim(str(d.documentid)) /* OBJECTID */ + ';' as ExecSQL
 	, title
 
-	from V_TAKEDA_VDOCUMENT d
+	from V_TheCompany_VDOCUMENT d
 	where
 
 		(
@@ -4574,7 +4574,7 @@ union all
 		)
 		AND d.documentid not in (select objectid from TTAG_IN_OBJECT where OBJECTTYPEID = 7 /* document */
 		and tagid = 43)
-		/* exec [dbo].[Takeda_TagUpload_DocumentID] 42, 7, 149230 */
+		/* exec [dbo].[TheCompany_TagUpload_DocumentID] 42, 7, 149230 */
 
 /* delete from TTAG_IN_OBJECT where tagid = 42 */
 GO
@@ -4636,13 +4636,13 @@ where
 		(wuic.clienttypeid=2 or wuic.clienttypeid=1))
 
 GO
-/****** Object:  View [dbo].[V_Takeda_User_TLOGON_Last]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_User_TLOGON_Last]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE view [dbo].[V_Takeda_User_TLOGON_Last]
+CREATE view [dbo].[V_TheCompany_User_TLOGON_Last]
 
 as 
 
@@ -4659,7 +4659,7 @@ where USERID in (select USERID from TUSER where MIK_VALID = 1)
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VUSER_IN_USERGROUP]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VUSER_IN_USERGROUP]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4667,7 +4667,7 @@ GO
 
 
 
-CREATE View [dbo].[V_Takeda_VUSER_IN_USERGROUP]
+CREATE View [dbo].[V_TheCompany_VUSER_IN_USERGROUP]
 
 as
 
@@ -4676,7 +4676,7 @@ as
 		, CAST(Replace(STUFF(
 		(SELECT ',' + p.USERGROUP
 		FROM TUSER_IN_USERGROUP s 
-			inner join TUSERGROUP /* [dbo].[V_Takeda_VDEPARTMENT_VUSERGROUP] */ p 
+			inner join TUSERGROUP /* [dbo].[V_TheCompany_VDEPARTMENT_VUSERGROUP] */ p 
 			on s.USERGROUPID = p.USERGROUPID
 		WHERE 
 			s.userid =d.userid 
@@ -4694,7 +4694,7 @@ as
 		/* User group ID List */
 			,CAST(left(Replace(STUFF(
 			(SELECT ',' + STR(p.USERGROUPID)
-			FROM TUSER_IN_USERGROUP s inner join TUSERGROUP /* [dbo].[V_Takeda_VDEPARTMENT_VUSERGROUP] */ p 
+			FROM TUSER_IN_USERGROUP s inner join TUSERGROUP /* [dbo].[V_TheCompany_VDEPARTMENT_VUSERGROUP] */ p 
 				on s.USERGROUPID = p.USERGROUPID
 			WHERE 
 				s.userid =d.userid 
@@ -4719,7 +4719,7 @@ as
 	/* select * from VUSER where LASTNAME like '%joest%'
 	select * from TUSER_IN_USERGROUP where USERID = 83663 */
 GO
-/****** Object:  View [dbo].[V_Takeda_Hierarchy]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Hierarchy]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4730,7 +4730,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_Hierarchy]
+CREATE view [dbo].[V_TheCompany_Hierarchy]
 
 as
 
@@ -7199,14 +7199,14 @@ d.PARENTID = "H8".DEPARTMENTID ) "H9"
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VDEPARTMENT_VUSERGROUP]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDEPARTMENT_VUSERGROUP]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
  CREATE view
-[dbo].[V_Takeda_VDEPARTMENT_VUSERGROUP]
+[dbo].[V_TheCompany_VDEPARTMENT_VUSERGROUP]
 
 as 
 /* includes ALL departments, internal partners or otherwise */
@@ -7314,15 +7314,15 @@ Select
 	GROUP BY s.PRIMARYUSERGROUPID) AS PrimaryGroupUserSuperCount
 	, (case when d.mik_valid = 1 THEN 'Active' Else 'Inactive' END) as Dpt_Status
 from TDEPARTMENT d
-		/* left join V_Takeda_VDepartment_Parsed dp on d.DEPARTMENTID = dp.DptID_Parsed NO- hierarchy source */
-		left join dbo.V_Takeda_Hierarchy h on d.DEPARTMENTID = h.DEPARTMENTID
-		left join V_Takeda_VDepartment_ParsedDpt_InternalPartner p on d.DEPARTMENTID = p.DEPARTMENTID
+		/* left join V_TheCompany_VDepartment_Parsed dp on d.DEPARTMENTID = dp.DptID_Parsed NO- hierarchy source */
+		left join dbo.V_TheCompany_Hierarchy h on d.DEPARTMENTID = h.DEPARTMENTID
+		left join V_TheCompany_VDepartment_ParsedDpt_InternalPartner p on d.DEPARTMENTID = p.DEPARTMENTID
 	FULL join TUSERGROUP g  on d.DEPARTMENTid = g.DEPARTMENTID  /* inner join will not include all records since not all departments have user groups) */
 
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VUSER]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VUSER]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -7333,11 +7333,11 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_VUSER]
+CREATE view [dbo].[V_TheCompany_VUSER]
 
 AS
 
-/* select MAX(len(DOMAINNAME))from v_takeda_vuser */
+/* select MAX(len(DOMAINNAME))from v_TheCompany_vuser */
 SELECT	U.USERID,
 		U.USERINITIAL,
 		U.PATHID,
@@ -7379,7 +7379,7 @@ SELECT	U.USERID,
 		U.UserProfileID,
 		PF.UserProfile
 		, (CASE WHEN pf.userprofile LIKE '%basic%' THEN 'Basic User' 
-			WHEN pf.userprofile LIKE '%left%' THEN 'Has Left Takeda'
+			WHEN pf.userprofile LIKE '%left%' THEN 'Has Left TheCompany'
 			WHEN pf.USERPROFILE IS null then '' 
 			ELSE 'Super User' END) as UserProfileGroup
 
@@ -7414,12 +7414,12 @@ SELECT	U.USERID,
                                                              (SELECT        USERGROUPID
                                                                FROM            TUSERGROUP
                                                                WHERE        (USERGROUP = 'L-Shire')))) 
-			THEN 'L-Shire' ELSE 'L-Takeda' END)
+			THEN 'L-Shire' ELSE 'L-TheCompany' END)
 		as LegacyDomain
 		, uiug.[CustomUserGrp_List]
 
 		, isnull((select GrpDptGroupIsGGC_Tax_Finance_FLAG 
-			from V_Takeda_VDEPARTMENT_VUSERGROUP 
+			from V_TheCompany_VDEPARTMENT_VUSERGROUP 
 			where USERGROUPID = UUG.USERGROUPID),0)
 				as UserPrimaryUserGroup_Is_LegalFinanceTax_FLAG
 
@@ -7467,11 +7467,11 @@ SELECT	U.USERID,
 		LEFT	OUTER
 	  JOIN	dbo.TUserProfile		PF
 		ON	U.UserProfileID			= PF.UserProfileID
-		LEFT OUTER JOIN V_Takeda_VUSER_IN_USERGROUP uiug on U.USERID = uiug.userid
+		LEFT OUTER JOIN V_TheCompany_VUSER_IN_USERGROUP uiug on U.USERID = uiug.userid
 	 WHERE P.PERSONID > 0 /* or 10 duplicate values are included - changed 23-feb-2021 */ 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_UserID_CountractRoleCount_VUSER]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_UserID_CountractRoleCount_VUSER]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -7484,7 +7484,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_UserID_CountractRoleCount_VUSER]
+CREATE view [dbo].[V_TheCompany_UserID_CountractRoleCount_VUSER]
 
 as 
 
@@ -7542,9 +7542,9 @@ SELECT
       ,[Dt_Logoff_Max] 
       ,[Dt_Lastseen_Max]
 	  , u.[LegacyDomain]
-  FROM [Contiki_app].[dbo].[V_Takeda_UserID_CountractRoleCount] r 
-	left join V_Takeda_VUSER u on r.userid = u.USERID /* inner join better , faster? */
-	left join V_Takeda_User_TLOGON_Last L on r.userid = l.userid
+  FROM [Contiki_app].[dbo].[V_TheCompany_UserID_CountractRoleCount] r 
+	left join V_TheCompany_VUSER u on r.userid = u.USERID /* inner join better , faster? */
+	left join V_TheCompany_User_TLOGON_Last L on r.userid = l.userid
   /* where  MIK_VALID = 1 *//* User Mik Valid, Employee May Differ if 
 				someone is still employed but not a Contiki user anymore */
 
@@ -7857,7 +7857,7 @@ SELECT	OT.OBJECTTYPE,
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_TTag_Detail_TagID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_TTag_Detail_TagID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -7867,7 +7867,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_TTag_Detail_TagID]
+CREATE view [dbo].[V_TheCompany_TTag_Detail_TagID]
 
 as
 
@@ -7891,24 +7891,24 @@ as
 
 
 	from TTAG_IN_OBJECT ti
-		/* inner join: new tags must be added in T_Takeda_Tag_in_Document */
+		/* inner join: new tags must be added in T_TheCompany_Tag_in_Document */
 		inner join TTAG t on ti.tagid  = t.tagid
-		inner join [dbo].[T_Takeda_Tag_in_Document] td on ti.tagid = td.tagid
-			inner join t_takeda_tag_categories tc on td.TagCatID = tc.TagCatID
+		inner join [dbo].[T_TheCompany_Tag_in_Document] td on ti.tagid = td.tagid
+			inner join t_TheCompany_tag_categories tc on td.TagCatID = tc.TagCatID
 
-		inner join v_Takeda_Vdocument d on ti.OBJECTID = d.documentid and ti.OBJECTTYPEID = 7 /* Document */
+		inner join v_TheCompany_Vdocument d on ti.OBJECTID = d.documentid and ti.OBJECTTYPEID = 7 /* Document */
 			/* and ti.objecttypeid = d.objecttypeid contract */
 			
 
 GO
-/****** Object:  View [dbo].[V_Takeda_TTag_Summary_DOCUMENTID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_TTag_Summary_DOCUMENTID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_TTag_Summary_DOCUMENTID]
+CREATE view [dbo].[V_TheCompany_TTag_Summary_DOCUMENTID]
 
 as
 
@@ -7917,19 +7917,19 @@ as
 		DOCUMENTID
 		/*,CAST(rtrim(replace( Replace(STUFF(
 			(SELECT DISTINCT ', ' + TagCategory
-			FROM  [dbo].[V_Takeda_TTag_Detail_TagCategory] s
+			FROM  [dbo].[V_TheCompany_TTag_Detail_TagCategory] s
 			WHERE s.DOCUMENTID =d.DOCUMENTID
 			FOR XML PATH('')),1,1,''),'&#x0D' /* carriage return */,''),';','')) as varchar(100))
 		AS TagCategory_List */
 		, STUFF(
 			(SELECT DISTINCT ', ' + TagCategory
-			FROM  [dbo].[T_Takeda_TTag_Summary_TagCategory] s
+			FROM  [dbo].[T_TheCompany_TTag_Summary_TagCategory] s
 			WHERE s.DOCUMENTID =d.DOCUMENTID
 			FOR XML PATH('')),1,1,'')
 		AS TagCategory_List
 	/*	,CAST(rtrim( Replace(STUFF(
 			(SELECT DISTINCT ', ' + s.Tag
-			FROM V_Takeda_TTag_Detail_TagID s
+			FROM V_TheCompany_TTag_Detail_TagID s
 			WHERE s.DOCUMENTID =d.DOCUMENTID
 			group by  s.DOCUMENTID, s.Tag	
 			FOR XML PATH('')),1,1,''),'&#x0D' /* carriage return */,'')) as varchar(100))
@@ -7940,7 +7940,7 @@ as
 
 		, count(distinct TagCatID) as TagCatIDCount
 		/*, count(distinct TagID) as TagIDCount */
-	from [dbo].[V_Takeda_TTag_Detail_TagID] d
+	from [dbo].[V_TheCompany_TTag_Detail_TagID] d
 	Group by DOCUMENTID 
 
 
@@ -8463,14 +8463,14 @@ WHERE OT.FIXED = N'COMPANY'
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_4_ARB_TCOMPANY_Summary]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_4_ARB_TCOMPANY_Summary]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_KWS_4_ARB_TCOMPANY_Summary]
+CREATE view [dbo].[V_TheCompany_KWS_4_ARB_TCOMPANY_Summary]
 as
 
 select top 1000
@@ -8478,7 +8478,7 @@ select top 1000
 	, [KeyWordLettersNumbersOnly_UPPER]
 	,Replace(STUFF(
 		(SELECT  DISTINCT ',' + rs.Company_LettersNumbersOnly_UPPER
-		FROM V_Takeda_KWS_2_ARB_TCompany_ContractID rs
+		FROM V_TheCompany_KWS_2_ARB_TCompany_ContractID rs
 		where  rs.KeyWordVarchar255 = r.KeyWordVarchar255
 		group by rs.Company_LettersNumbersOnly_UPPER
 		FOR XML PATH('')),1,1,''),'&amp;','&') AS Supplier_Short_List
@@ -8486,7 +8486,7 @@ select top 1000
 	, count([ContractID]) as ContractCount
 	,Replace(STUFF(
 		(SELECT DISTINCT ',' + rs.company
-		FROM V_Takeda_KWS_2_ARB_TCompany_ContractID rs
+		FROM V_TheCompany_KWS_2_ARB_TCompany_ContractID rs
 		where  rs.KeyWordVarchar255 = r.KeyWordVarchar255
 		group by rs.Company
 		FOR XML PATH('')),1,1,''),'&amp;','&') AS Company_List 
@@ -8494,21 +8494,21 @@ select top 1000
 	, max(companyid) as CompanyID_Max
 	, Max(Company) as Company_MAX
 from 
-	[dbo].[V_Takeda_KWS_2_ARB_TCompany_ContractID] r
+	[dbo].[V_TheCompany_KWS_2_ARB_TCompany_ContractID] r
 group by 
 	KeyWordVarchar255, [KeyWordLettersNumbersOnly_UPPER]
 order by 
 	KeyWordVarchar255
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_5_ARB_TCOMPANY_summary_gap]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_5_ARB_TCOMPANY_summary_gap]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_KWS_5_ARB_TCOMPANY_summary_gap]
+CREATE view [dbo].[V_TheCompany_KWS_5_ARB_TCOMPANY_summary_gap]
 
 as
 
@@ -8520,8 +8520,8 @@ as
 		, r.Company_List
 		, r.CompanyCount
 		, r.ContractCount
-	from T_Takeda_KeyWordSearch s 
-		left outer join [dbo].[V_Takeda_KWS_4_ARB_TCOMPANY_Summary]  r 
+	from T_TheCompany_KeyWordSearch s 
+		left outer join [dbo].[V_TheCompany_KWS_4_ARB_TCOMPANY_Summary]  r 
 		on s.KeyWordVarchar255 = r.KeyWordVarchar255
 	where [KeyWordType] = 'Company'  
 	order by s.KeyWordVarchar255
@@ -8579,7 +8579,7 @@ SELECT	DAC.DOCUMENTID,
 	ON	CP.CONTRACTID					= DAC.CONTRACTID
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_2_CNT_TPRODUCT_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_2_CNT_TPRODUCT_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -8594,7 +8594,7 @@ GO
 
 CREATE view
 
-[dbo].[V_Takeda_KWS_2_CNT_TPRODUCT_ContractID]
+[dbo].[V_TheCompany_KWS_2_CNT_TPRODUCT_ContractID]
 /* to do: include spaces with Productgroup name */
 as 
 
@@ -8647,9 +8647,9 @@ as
 				THEN 1 ELSE 0 END) 
 			as PrdGrpMatch_FirstWord_FLAG
 
-	FROM T_Takeda_KeyWordSearch s 	
+	FROM T_TheCompany_KeyWordSearch s 	
 		/* left join must encompass all hits, narrow down with WHERE */
-		left join T_Takeda_TPRODUCTGROUP c
+		left join T_TheCompany_TPRODUCTGROUP c
 			on  c.[Product_LettersNumbersOnly]
 			LIKE (CASE WHEN UPPER(s.[KeyWordFirstWord_LettersOnly_UPPER]) 
 				in ('xxx') /* noise words */ 
@@ -8685,15 +8685,15 @@ as
 			)
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_3_CNT_TPRODUCT_ContractID_Extended]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_3_CNT_TPRODUCT_ContractID_Extended]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_KWS_3_CNT_TPRODUCT_ContractID_Extended]
-/* creates T_Takeda_KWS_ProductID_ContractID */
+CREATE view [dbo].[V_TheCompany_KWS_3_CNT_TPRODUCT_ContractID_Extended]
+/* creates T_TheCompany_KWS_ProductID_ContractID */
 as 
 
 	SELECT  
@@ -8772,7 +8772,7 @@ as
 	, [KeyWordVarchar255]
 		AS ProductKeyword_Any
 
-	FROM [dbo].[V_Takeda_KWS_2_CNT_TPRODUCT_ContractID] u /* big definition query */
+	FROM [dbo].[V_TheCompany_KWS_2_CNT_TPRODUCT_ContractID] u /* big definition query */
 	WHERE u.contractid > 0 /* no NULLS */
 	AND ( [KeyWord_ExclusionFlag] = 0 OR [PrdGrpMatch_EXACT_Flag] = 1) /* - only if exact match */
 	/* ACTIVE CONTRACTS */
@@ -8780,14 +8780,14 @@ as
 	/*	and contractid = 13286 */
 	
 GO
-/****** Object:  View [dbo].[V_T_Takeda_ALL_0_MigFlags]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_T_TheCompany_ALL_0_MigFlags]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_T_Takeda_ALL_0_MigFlags]
+CREATE view [dbo].[V_T_TheCompany_ALL_0_MigFlags]
 
 as
 
@@ -8883,7 +8883,7 @@ select
 		AS  MigrateToSystem_Detail
 
 	, (CASE when (COUNTERPARTYNUMBER like '!ARIBA_W%' OR COUNTERPARTYNUMBER like 'Xt_%') then 0
-			when contractid not in (select contractid from [V_Takeda_VDOCUMENT]) then 0 /* no valid files - only Contikimail etc. */
+			when contractid not in (select contractid from [V_TheCompany_VDOCUMENT]) then 0 /* no valid files - only Contikimail etc. */
 			WHEN a.statusid = 5 /* active */ then 1 /* all active agreements */	/* order switched 5-5-2021 */
 			when a.[AgrType_IsHCX_Flag] = 1 then 0 /* 2 = undetermined */
 			When a.[ConfidentialityFLAG_0123] > 0 /*ConfidentialityFlagNAME <>'N/A'*/ then 1 /* if top secret or confidential */
@@ -8893,7 +8893,7 @@ select
 		as MigrateYN_Flag
 
 	, (CASE when (COUNTERPARTYNUMBER like '!ARIBA_W%' OR COUNTERPARTYNUMBER like 'Xt_%') then '9 - RIM (AribaXt)'
-			when contractid not in (select contractid from [V_Takeda_VDOCUMENT]) then '0 - No valid files (only ContikiMail)'
+			when contractid not in (select contractid from [V_TheCompany_VDOCUMENT]) then '0 - No valid files (only ContikiMail)'
 			when a.statusid = 5 /* active */ then '1 - Active contract' /* all active agreements */
 			when a.[AgrType_IsHCX_Flag] = 1 then '9 - RIM (HCX)'
 			When a.[ConfidentialityFLAG_0123] > 0 /*ConfidentialityFlagNAME <>'N/A'*/ THEN '2 - TS/SC/Confidential' /* if top secret or confidential */
@@ -8931,12 +8931,12 @@ select
 
 
 
-FROM T_Takeda_ALL a
-	/*INNER join [V_Takeda_AgreementType] t /* Takeda_2WEEKLY_Maintenance_AgreementTypes sets blank agreement types to type 'OTHER'*/
+FROM T_TheCompany_ALL a
+	/*INNER join [V_TheCompany_AgreementType] t /* TheCompany_2WEEKLY_Maintenance_AgreementTypes sets blank agreement types to type 'OTHER'*/
 		on a.AGREEMENT_TYPEID = t.AgrTypeID /* needed to calculate flags */*/
 	
 
-	/* need not filter with WHERE, used in V_Takeda_ALL */
+	/* need not filter with WHERE, used in V_TheCompany_ALL */
 /* WHERE
 	CONTRACTTYPEID not in (11 /* Legal matter / Case */
 						, 13 /* Test old */
@@ -8945,21 +8945,21 @@ FROM T_Takeda_ALL a
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_Mig_0ProcNetFlag]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Mig_0ProcNetFlag]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[V_Takeda_Mig_0ProcNetFlag]
+create view [dbo].[V_TheCompany_Mig_0ProcNetFlag]
 
 as
 
-select  /* USE V_T_Takeda_ALL_0_MigFlags */
+select  /* USE V_T_TheCompany_ALL_0_MigFlags */
 	*
 
-FROM V_T_Takeda_ALL_0_MigFlags
+FROM V_T_TheCompany_ALL_0_MigFlags
 
-	/* must not filter with WHERE, used in V_Takeda_ALL */
+	/* must not filter with WHERE, used in V_TheCompany_ALL */
 /* WHERE
 	CONTRACTTYPEID not in (11 /* Legal matter / Case */
 						, 13 /* Test old */
@@ -8968,13 +8968,13 @@ FROM V_T_Takeda_ALL_0_MigFlags
 
 
 GO
-/****** Object:  View [dbo].[V_T_Takeda_ALL_NoTS]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_T_TheCompany_ALL_NoTS]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE View [dbo].[V_T_Takeda_ALL_NoTS]
+CREATE View [dbo].[V_T_TheCompany_ALL_NoTS]
 
 as
 
@@ -9094,9 +9094,9 @@ select
       ,[Tags]
       ,[AgreementTypeDivestment]
 
-	  from T_Takeda_ALL
+	  from T_TheCompany_ALL
 GO
-/****** Object:  View [dbo].[V_Takeda_Mig_1T_Takeda_All_ProcNetFlag]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Mig_1T_TheCompany_All_ProcNetFlag]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -9104,12 +9104,12 @@ GO
 
 CREATE view
 
-[dbo].[V_Takeda_Mig_1T_Takeda_All_ProcNetFlag]
+[dbo].[V_TheCompany_Mig_1T_TheCompany_All_ProcNetFlag]
 as
 
 	select * 
-	from V_T_Takeda_ALL_NoTS /* no top secreta, dbo.T_Takeda_ALL */ a 
-	inner join dbo.V_Takeda_Mig_0ProcNetFlag p 
+	from V_T_TheCompany_ALL_NoTS /* no top secreta, dbo.T_TheCompany_ALL */ a 
+	inner join dbo.V_TheCompany_Mig_0ProcNetFlag p 
 		on a.Contractid = p.Contractid_Proc
 				/* WHERE
 			CONTRACTTYPEID not in (11 /* Legal matter / Case */
@@ -9120,13 +9120,13 @@ as
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_TTag_Detail_DOCUMENTID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_TTag_Detail_DOCUMENTID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE view [dbo].[V_Takeda_TTag_Detail_DOCUMENTID]
+CREATE view [dbo].[V_TheCompany_TTag_Detail_DOCUMENTID]
 
 as
 
@@ -9135,14 +9135,14 @@ as
 		DOCUMENTID
 		,CAST(rtrim(replace( Replace(STUFF(
 			(SELECT DISTINCT ', ' +s.TagCategory
-			FROM V_Takeda_TTag_Detail_TagID s
+			FROM V_TheCompany_TTag_Detail_TagID s
 			WHERE s.DOCUMENTID =d.DOCUMENTID
 	
 			FOR XML PATH('')),1,1,''),'&#x0D' /* carriage return */,''),';','')) as varchar(100))
 		AS TagCategory_List
 		,CAST(rtrim( Replace(STUFF(
 			(SELECT DISTINCT ', ' + s.Tag
-			FROM V_Takeda_TTag_Detail_TagID s
+			FROM V_TheCompany_TTag_Detail_TagID s
 			WHERE s.DOCUMENTID =d.DOCUMENTID
 			group by  s.DOCUMENTID, s.Tag	
 			FOR XML PATH('')),1,1,''),'&#x0D' /* carriage return */,'')) as varchar(100))
@@ -9159,14 +9159,14 @@ as
 		/*, td.tagid as custtagid */
 		, count(distinct TagCategory) as TagCategoryCount
 		, count(distinct TagID) as TagIDCount
-	from [dbo].[V_Takeda_TTag_Detail_TagID] d
+	from [dbo].[V_TheCompany_TTag_Detail_TagID] d
 	Group by DOCUMENTID, Title
 	/* order by d.Datecreated desc */
 	/* left join vdocument f on t.OBJECTID = f.DOCUMENTID */
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_3_CNT_TCOMPANY_ContractID_Extended]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_3_CNT_TCOMPANY_ContractID_Extended]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -9174,7 +9174,7 @@ GO
 
 CREATE view 
 
-[dbo].[V_Takeda_KWS_3_CNT_TCOMPANY_ContractID_Extended]
+[dbo].[V_TheCompany_KWS_3_CNT_TCOMPANY_ContractID_Extended]
 
 as
 
@@ -9357,11 +9357,11 @@ SELECT
 		, CompanyMatch_ContainsKeyword
 		, CompanyMatch_BeginsWithKeyword
 
-  FROM T_Takeda_KWS_2_CNT_TCompany_ContractID
-	/* from [dbo].[V_Takeda_KWS_3_TCompany_ContractID] */ 
+  FROM T_TheCompany_KWS_2_CNT_TCompany_ContractID
+	/* from [dbo].[V_TheCompany_KWS_3_TCompany_ContractID] */ 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_4_CNT_TzCOMPANY_summary_KeyWord]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_4_CNT_TzCOMPANY_summary_KeyWord]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -9372,38 +9372,38 @@ GO
 
 
 CREATE view 
-[dbo].[V_Takeda_KWS_4_CNT_TzCOMPANY_summary_KeyWord]
+[dbo].[V_TheCompany_KWS_4_CNT_TzCOMPANY_summary_KeyWord]
 
 as 
 
 	SELECT  KeyWordVarchar255
 		,Replace(STUFF(
 			(SELECT DISTINCT ',' + rs.company
-			FROM T_Takeda_KWS_2_CNT_TCompany_ContractID rs
+			FROM T_TheCompany_KWS_2_CNT_TCompany_ContractID rs
 			where  rs.KeyWordVarchar255 = r.[KeyWordVarchar255]
 			and rs.CompanyExact_Flag = 1
 			FOR XML PATH('')),1,1,''),'&amp;','&') AS Company_List_Exact			
 
 		,Replace(STUFF(
 			(SELECT DISTINCT ',' + rs.[KeyWordCustom1]
-			FROM T_Takeda_KWS_2_CNT_TCompany_ContractID rs
+			FROM T_TheCompany_KWS_2_CNT_TCompany_ContractID rs
 			where  rs.KeyWordVarchar255 = r.[KeyWordVarchar255] and rs.CompanyExact_Flag = 1
 			FOR XML PATH('')),1,1,''),'&amp;','&') AS Custom1_List
 		,Replace(STUFF(
 			(SELECT DISTINCT ',' + rs.[KeyWordCustom2]
-			FROM T_Takeda_KWS_2_CNT_TCompany_ContractID rs
+			FROM T_TheCompany_KWS_2_CNT_TCompany_ContractID rs
 			where  rs.KeyWordVarchar255 = r.[KeyWordVarchar255] and rs.CompanyExact_Flag = 1
 			FOR XML PATH('')),1,1,''),'&amp;','&') AS Custom2_List
 
 		,Replace(STUFF(
 			(SELECT DISTINCT ',' + rs.company
-			FROM T_Takeda_KWS_2_CNT_TCompany_ContractID rs
+			FROM T_TheCompany_KWS_2_CNT_TCompany_ContractID rs
 			where  rs.KeyWordVarchar255 = r.[KeyWordVarchar255] and rs.CompanyExact_Flag = 0
 			FOR XML PATH('')),1,1,''),'&amp;','&') AS Company_List_NotExact
 
 		/*,Replace(STUFF(
 			(SELECT DISTINCT ',' + rs.PRODUCTGROUP
-			FROM V_Takeda_KeyWordSearch_Results_TPRODUCT_ContractID rs
+			FROM V_TheCompany_KeyWordSearch_Results_TPRODUCT_ContractID rs
 			where  rs.KeyWordVarchar255 = r.[KeyWordVarchar255]
 			FOR XML PATH('')),1,1,''),'&amp;','&') AS ProductList*/
 
@@ -9415,7 +9415,7 @@ as
 		, COUNT([ContractID_Company]) as ContractCount
 		, MIN([CompanyMatch_Level]) AS CompanyMatchLevel_Min
 	FROM 
-		[V_Takeda_KWS_3_CNT_TCompany_ContractID_Extended] r
+		[V_TheCompany_KWS_3_CNT_TCompany_ContractID_Extended] r
 	group by 
 		r.[KeyWordVarchar255]
 
@@ -9440,7 +9440,7 @@ SELECT D.DOCUMENTID,
 FROM TDOCUMENT D
 
 GO
-/****** Object:  View [dbo].[V_T_Takeda_ALL_NoTS_CountryAreaRegion]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_T_TheCompany_ALL_NoTS_CountryAreaRegion]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -9449,7 +9449,7 @@ GO
 
 
 
-CREATE view [dbo].[V_T_Takeda_ALL_NoTS_CountryAreaRegion]
+CREATE view [dbo].[V_T_TheCompany_ALL_NoTS_CountryAreaRegion]
 /* usage: Country area region list workbooks 
 \\nycomed.local\shares\AA-Data-Legal-Transfer\Contract_Lists
 */
@@ -9516,15 +9516,15 @@ select [Contract Number]
       ,[DateTableRefreshed] as 'Date Table Refreshed' /* to show in two lines */
 
   FROM 
-	  [Contiki_app].[dbo].[V_T_Takeda_ALL_STD_NoTS] c 
-	  left join [dbo].[V_Takeda_Mig_0ProcNetFlag] p 
+	  [Contiki_app].[dbo].[V_T_TheCompany_ALL_STD_NoTS] c 
+	  left join [dbo].[V_TheCompany_Mig_0ProcNetFlag] p 
 	  /* inner join won't drop records since this table contains all records except for test etc. xt records cases */
 	  on c.contractid = p.contractid_proc
 
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_4_CNT_TCOMPANY_summary_KeyWord]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_4_CNT_TCOMPANY_summary_KeyWord]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -9535,7 +9535,7 @@ GO
 
 
 CREATE view 
-[dbo].[V_Takeda_KWS_4_CNT_TCOMPANY_summary_KeyWord]
+[dbo].[V_TheCompany_KWS_4_CNT_TCOMPANY_summary_KeyWord]
 
 as 
 
@@ -9579,8 +9579,8 @@ as
 		, MAX(s.[End Date]) as StartDate_MAX
 		, MAX(s.[End Date]) as EndDate_MAX
 
-	 FROM   [Contiki_app].[dbo].[V_Takeda_KWS_0_ContikiView_CNT] s
-				inner join T_Takeda_KWS_7_CNT_ContractID_SummaryByContractID u
+	 FROM   [Contiki_app].[dbo].[V_TheCompany_KWS_0_ContikiView_CNT] s
+				inner join T_TheCompany_KWS_7_CNT_ContractID_SummaryByContractID u
 				on s.contractid = u.[ContractID]
 	WHERE 
 		CompanyMatch_Score >0
@@ -9588,13 +9588,13 @@ as
 		CompanyMatch_KeyWord_UPPER /*, companyid */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_5_CNT_TCOMPANY_summary_Keyword_gap]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_5_CNT_TCOMPANY_summary_Keyword_gap]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE view [dbo].[V_Takeda_KWS_5_CNT_TCOMPANY_summary_Keyword_gap]
+CREATE view [dbo].[V_TheCompany_KWS_5_CNT_TCOMPANY_summary_Keyword_gap]
 as
 
 	select top 1000 
@@ -9611,8 +9611,8 @@ as
 
 		, r.[CompanyMatch_Level_Min]
 
-	from T_Takeda_KeyWordSearch s 
-		left join [V_Takeda_KWS_4_CNT_TCOMPANY_summary_KeyWord]  r 
+	from T_TheCompany_KeyWordSearch s 
+		left join [V_TheCompany_KWS_4_CNT_TCOMPANY_summary_KeyWord]  r 
 		on s.KeyWordVarchar255_UPPER = upper(r.CompanyMatch_KeyWord)
 	/* where [KeyWordType] = 'Company'  */
 	order by s.KeyWordVarchar255 ASC
@@ -9666,28 +9666,28 @@ WHERE     (dbo.TOBJECTTYPE.FIXED = N'AMENDMENT')
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_Mig_VAGREEMENT_Type_Proc]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Mig_VAGREEMENT_Type_Proc]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[V_Takeda_Mig_VAGREEMENT_Type_Proc]
+create view [dbo].[V_TheCompany_Mig_VAGREEMENT_Type_Proc]
 AS
 select distinct a.*
-from dbo.TAGREEMENT_TYPE a inner join T_Takeda_ALL c on a.AGREEMENT_TYPEID = c.AGREEMENT_TYPEID
+from dbo.TAGREEMENT_TYPE a inner join T_TheCompany_ALL c on a.AGREEMENT_TYPEID = c.AGREEMENT_TYPEID
 where c.contractid in (select CONTRACTID_proc 
-			from dbo.V_Takeda_Mig_0ProcNetFlag m
+			from dbo.V_TheCompany_Mig_0ProcNetFlag m
 			where m.Proc_NetFlag = 1)
 			
 GO
-/****** Object:  View [dbo].[V_Takeda_VDEPARTMENT_Entities_Diligent_Roxana]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDEPARTMENT_Entities_Diligent_Roxana]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_VDEPARTMENT_Entities_Diligent_Roxana]
+CREATE view [dbo].[V_TheCompany_VDEPARTMENT_Entities_Diligent_Roxana]
 
 as 
 
@@ -9703,36 +9703,36 @@ SELECT [EntityName] as DLE_EntityName
 	  , [Date_Dissolved] as DLE_Date_Dissolved
 
 
-	, dbo.Takeda_RemoveNonAlphaNonNumericCharacters([EntityName]) as DLE_EntityName_NonAlphaNonNum
-	, upper(dbo.Takeda_RemoveNonAlphaNonNumericCharacters([EntityName])) as DLE_EntityName_NonAlphaNonNum_Upper
+	, dbo.TheCompany_RemoveNonAlphaNonNumericCharacters([EntityName]) as DLE_EntityName_NonAlphaNonNum
+	, upper(dbo.TheCompany_RemoveNonAlphaNonNumericCharacters([EntityName])) as DLE_EntityName_NonAlphaNonNum_Upper
 	
-	, left([dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName]),255) as DLE_EntityName_NonFwSlash
-	, left([dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash](UPPER([EntityName])),255) as DLE_EntityName_NonFwSlash_UPPER
+	, left([dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName]),255) as DLE_EntityName_NonFwSlash
+	, left([dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash](UPPER([EntityName])),255) as DLE_EntityName_NonFwSlash_UPPER
 from
-	T_Takeda_Entities_DiligentData_Roxana
+	T_TheCompany_Entities_DiligentData_Roxana
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VDEPARTMENT_Entities_Diligent_Roxana_Xt]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDEPARTMENT_Entities_Diligent_Roxana_Xt]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-create view [dbo].[V_Takeda_VDEPARTMENT_Entities_Diligent_Roxana_Xt]
+create view [dbo].[V_TheCompany_VDEPARTMENT_Entities_Diligent_Roxana_Xt]
 as
 select r.*, d.DLE_EntityName_Clean
-from V_Takeda_VDEPARTMENT_Entities_Diligent_Roxana r 
-left join  V_Takeda_VDEPARTMENT_Entities_Diligent_UNION_ALIAS d 
+from V_TheCompany_VDEPARTMENT_Entities_Diligent_Roxana r 
+left join  V_TheCompany_VDEPARTMENT_Entities_Diligent_UNION_ALIAS d 
 	on r.[DLE_EntityName_NonFwSlash_UPPER] = upper(d.[DLE_EntityName_NonFwSlash] )
-		and r.[DLE_CompanyCode] = d.[DLE_SAP_Code] /* Takeda Pharmaceuticals S.R.L. duplicate name in MD and RO*/
+		and r.[DLE_CompanyCode] = d.[DLE_SAP_Code] /* TheCompany Pharmaceuticals S.R.L. duplicate name in MD and RO*/
 GO
-/****** Object:  View [dbo].[V_T_Takeda_ALL_TS_CountryAreaRegion]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_T_TheCompany_ALL_TS_CountryAreaRegion]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE view [dbo].[V_T_Takeda_ALL_TS_CountryAreaRegion]
+CREATE view [dbo].[V_T_TheCompany_ALL_TS_CountryAreaRegion]
 /* usage: Country area region list workbooks 
 \\nycomed.local\shares\AA-Data-Legal-Transfer\Contract_Lists
 */
@@ -9797,8 +9797,8 @@ select [Contract Number]
       ,[LinkToContractURL]
       ,[DateTableRefreshed]
   FROM 
-	  [Contiki_app].[dbo].[V_T_Takeda_ALL_STD_WithTS] c 
-	  left join [dbo].[V_Takeda_Mig_0ProcNetFlag] p 
+	  [Contiki_app].[dbo].[V_T_TheCompany_ALL_STD_WithTS] c 
+	  left join [dbo].[V_TheCompany_Mig_0ProcNetFlag] p 
 	  /* inner join won't drop records since this table contains all records except for test etc. xt records cases */
 	  on c.contractid = p.contractid_proc
 
@@ -9902,13 +9902,13 @@ WHERE     (dbo.TOBJECTTYPE.FIXED = N'PROJECT')
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_RegForm_UserGrp]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_RegForm_UserGrp]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE view [dbo].[V_Takeda_RegForm_UserGrp]
+CREATE view [dbo].[V_TheCompany_RegForm_UserGrp]
 
 as
 
@@ -9918,7 +9918,7 @@ select TOP 9999
  ug.USERGROUP as 'CustomUserGroup'
 , (CASE WHEN AutomaticUserGroupUploadFlag = 1 THEN 'Yes' ELSE 'No' END) as AutomaticUserGroupUpload
 , GETDATE() as Last_Updated 
-FROM  V_Takeda_VDEPARTMENT_VUSERGROUP ug 
+FROM  V_TheCompany_VDEPARTMENT_VUSERGROUP ug 
 where 
  ug.MIK_VALID = 1
  and ug.usergroupid not in (20 /* Legal */, 130 /* Super users */, 137 /* Read All */,1089 /* Public */,3397 /* Read all Headers */, 4901 /* Top Secret */)
@@ -9928,7 +9928,7 @@ order by ug.USERGROUP
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VDEPARTMENT_Entities_Diligent_Union_Alias_NoLINC]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDEPARTMENT_Entities_Diligent_Union_Alias_NoLINC]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -9936,7 +9936,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_VDEPARTMENT_Entities_Diligent_Union_Alias_NoLINC]
+CREATE view [dbo].[V_TheCompany_VDEPARTMENT_Entities_Diligent_Union_Alias_NoLINC]
 
 as 
 
@@ -9952,12 +9952,12 @@ SELECT [EntityName] as DLE_EntityName /* Diligent name or Alias */
       ,[Comments] as DLE_Comments
       ,[MaxNoSignatures] as DLE_MaxNoSignatures
       ,[SignatureRules] as DLE_SignatureRules
-	  , left([dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName]),255) as DLE_EntityName_NonFwSlash
+	  , left([dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName]),255) as DLE_EntityName_NonFwSlash
 
-	, dbo.Takeda_RemoveNonAlphaNonNumericCharacters([EntityName]) as DLE_EntityName_NonAlphaNonNum
+	, dbo.TheCompany_RemoveNonAlphaNonNumericCharacters([EntityName]) as DLE_EntityName_NonAlphaNonNum
 	, 'NameMain' as DLE_EntMainNameOrAlias
 from
-	T_Takeda_Entities_DiligentData
+	T_TheCompany_Entities_DiligentData
 
 	UNION 
 
@@ -9973,25 +9973,25 @@ SELECT [AliasName] as DLE_EntityName /* Diligent name or Alias */
       ,[Comments] as DLE_Comments
       ,[MaxNoSignatures] as DLE_MaxNoSignatures
       ,[SignatureRules] as DLE_SignatureRules
-	  , left([dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([AliasName]),255) as DLE_EntityName_NonFwSlash
+	  , left([dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([AliasName]),255) as DLE_EntityName_NonFwSlash
 
-	, dbo.Takeda_RemoveNonAlphaNonNumericCharacters([AliasName]) as DLE_EntityName_NonAlphaNonNum
+	, dbo.TheCompany_RemoveNonAlphaNonNumericCharacters([AliasName]) as DLE_EntityName_NonAlphaNonNum
 	, 'NameAlias' as EntMainNameOrAlias
 from
-	T_Takeda_Entities_DiligentData
+	T_TheCompany_Entities_DiligentData
 	WHERE [AliasName] >''
 		and AliasName <> 'Same'
 		and AliasName <> [EntityName]
-		and [dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([AliasName]) <> [dbo].[Takeda_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName])
+		and [dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([AliasName]) <> [dbo].[TheCompany_RemoveNonAlphaNonNumNonSpaceNonFwSlash]([EntityName])
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VDEPARTMENT_Entities_Diligent_Roxana_Xt_InsertSQL]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDEPARTMENT_Entities_Diligent_Roxana_Xt_InsertSQL]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[V_Takeda_VDEPARTMENT_Entities_Diligent_Roxana_Xt_InsertSQL]
+create view [dbo].[V_TheCompany_VDEPARTMENT_Entities_Diligent_Roxana_Xt_InsertSQL]
 as
 
 select r.*
@@ -10000,7 +10000,7 @@ select r.*
 , d.DLE_EntityName_Clean
 , d.DLE_EntityName_Alias
 , d.[DLE_EntMainNameOrAlias]
-, 'INSERT INTO T_Takeda_Entities_DiligentData (
+, 'INSERT INTO T_TheCompany_Entities_DiligentData (
 	[EntityName]
       ,[Country]
       ,[SAP_Code]
@@ -10020,23 +10020,23 @@ select r.*
 		+ ')'
 	as InsertSQL
 
-from V_Takeda_VDEPARTMENT_Entities_Diligent_Roxana r 
-left join  V_Takeda_VDEPARTMENT_Entities_Diligent_UNION_ALIAS_NoLINC d 
+from V_TheCompany_VDEPARTMENT_Entities_Diligent_Roxana r 
+left join  V_TheCompany_VDEPARTMENT_Entities_Diligent_UNION_ALIAS_NoLINC d 
 	on /* r.[DLE_EntityName_NonFwSlash_UPPER] = upper(d.[DLE_EntityName_NonFwSlash] )
 		and */ r.[DLE_CompanyCode] = d.[DLE_SAP_Code] 
-			 /* Takeda Pharmaceuticals S.R.L. duplicate name in MD and RO*/
+			 /* TheCompany Pharmaceuticals S.R.L. duplicate name in MD and RO*/
 		where d.dle_entityname is null
 		/*and r.[DLE_CompanyCode] is not null*/
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VCONTRACT_DEPARTMENTROLES]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VCONTRACT_DEPARTMENTROLES]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE  VIEW [dbo].[V_Takeda_VCONTRACT_DEPARTMENTROLES] 
+CREATE  VIEW [dbo].[V_TheCompany_VCONTRACT_DEPARTMENTROLES] 
 
 AS
 
@@ -10072,7 +10072,7 @@ FROM
 						INNER JOIN dbo.TROLE 
 							ON dbo.TROLE.ROLEID = d.ROLEID 
 
-					/*	LEFT JOIN dbo.V_Takeda_VUSER uo 
+					/*	LEFT JOIN dbo.V_TheCompany_VUSER uo 
 							ON c.ownerid = uo.PERSONID */
 
 WHERE  d.objecttypeid = 1 /* contract */
@@ -10178,18 +10178,18 @@ WHERE     (dbo.TOBJECTTYPE.FIXED = N'CONTRACT')
 ORDER BY dbo.TCONTRACT.CONTRACTID
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VCONTRACT_DPTROLES_FLAT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VCONTRACT_DPTROLES_FLAT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[V_Takeda_VCONTRACT_DPTROLES_FLAT]
+create view [dbo].[V_TheCompany_VCONTRACT_DPTROLES_FLAT]
 
 as
 
 	SELECT
 
-		'V_Takeda_VCONTRACT_DPTROLES_FLAT' /*Number*/ as Dpt_ContractNumber
+		'V_TheCompany_VCONTRACT_DPTROLES_FLAT' /*Number*/ as Dpt_ContractNumber
 	, CONTRACTID AS Dpt_contractid
 
 	/* All Roles */
@@ -10301,7 +10301,7 @@ as
 
 		,CAST(Replace(STUFF(
 		(SELECT ',' + s.ROLE_DEPARTMENT
-		FROM V_Takeda_VCONTRACT_DEPARTMENTROLES s
+		FROM V_TheCompany_VCONTRACT_DEPARTMENTROLES s
 		WHERE s.CONTRACTID =d.CONTRACTID 
 			AND s.ROLEID IN(0,6/*ENTITY*/,100 /*INTERNAL PARTNER*/) 
 			AND s.PARENTID = 10004 /* Internal Partner Root */
@@ -10310,7 +10310,7 @@ as
 
 		,
 		(SELECT max(s.ROLE_DEPARTMENTID)
-		FROM V_Takeda_VCONTRACT_DEPARTMENTROLES s /* inner join [dbo].[V_Takeda_VDepartment_ParsedDpt_InternalPartner] p
+		FROM V_TheCompany_VCONTRACT_DEPARTMENTROLES s /* inner join [dbo].[V_TheCompany_VDepartment_ParsedDpt_InternalPartner] p
 			on s.ROLE_DEPARTMENTID = p.departmentid */
 		WHERE s.CONTRACTID =d.CONTRACTID 
 			AND s.ROLEID IN(0,6/*ENTITY*/,100 /*INTERNAL PARTNER*/) 
@@ -10322,7 +10322,7 @@ as
 
 		,/* CAST(Replace(STUFF(
 		(SELECT max(s.ROLE_DEPARTMENT)
-		FROM V_Takeda_VCONTRACT_DEPARTMENTROLES s /* inner join [dbo].[V_Takeda_VDepartment_ParsedDpt_InternalPartner] p
+		FROM V_TheCompany_VCONTRACT_DEPARTMENTROLES s /* inner join [dbo].[V_TheCompany_VDepartment_ParsedDpt_InternalPartner] p
 			on s.ROLE_DEPARTMENTID = p.departmentid */
 		WHERE s.CONTRACTID =d.CONTRACTID 
 			AND s.ROLEID IN(0,6/*ENTITY*/,100 /*INTERNAL PARTNER*/) 
@@ -10333,7 +10333,7 @@ as
 
 		,CAST(Replace(STUFF(
 		(SELECT ',' + s.ROLE_DEPARTMENT
-		FROM V_Takeda_VCONTRACT_DEPARTMENTROLES s
+		FROM V_TheCompany_VCONTRACT_DEPARTMENTROLES s
 		WHERE s.CONTRACTID =d.CONTRACTID 
 			AND s.ROLEID IN(0 /* ENTITY - CREATOR */, 6/*ENTITY*/, 100 /*INTERNAL PARTNER*/) 
 			AND s.PARENTID <> 10004 /* Internal Partner Root */
@@ -10377,7 +10377,7 @@ as
 	AS InternalPartners_COUNT
 
 		,isnull((SELECT COUNT(s.ROLEID)
-		FROM V_Takeda_VCONTRACT_DEPARTMENTROLES s
+		FROM V_TheCompany_VCONTRACT_DEPARTMENTROLES s
 		WHERE s.CONTRACTID =d.CONTRACTID 
 			AND s.ROLEID IN(0 /* ENTITY - CREATOR */, 6/*ENTITY*/, 100 /*INTERNAL PARTNER*/) 
 			AND s.PARENTID = 10004 /* Internal Partner Root = ACTIVE */
@@ -10386,7 +10386,7 @@ as
 	AS InternalPartners_COUNT_ACTIVE
 
 		,isnull((SELECT COUNT(s.ROLEID)
-		FROM V_Takeda_VCONTRACT_DEPARTMENTROLES s
+		FROM V_TheCompany_VCONTRACT_DEPARTMENTROLES s
 		WHERE s.CONTRACTID =d.CONTRACTID 
 			AND s.ROLEID IN(0,6/*ENTITY*/,100 /*INTERNAL PARTNER*/)
 			AND s.PARENTID <> 10004 /* Internal Partner NOT Root = INACTIVE */
@@ -10429,13 +10429,13 @@ as
 		 AS HardcopyArchiving
  
 	FROM VCONTRACT_DEPARTMENTROLES d
-	/*left join dbo.T_Takeda_Hierarchy h on d.Dpt_ContractOwnerDpt_ID = h.departmentid_link */
+	/*left join dbo.T_TheCompany_Hierarchy h on d.Dpt_ContractOwnerDpt_ID = h.departmentid_link */
 	GROUP BY 
 		CONTRACTID
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VCONTRACT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VCONTRACT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -10443,7 +10443,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_VCONTRACT]
+CREATE view [dbo].[V_TheCompany_VCONTRACT]
 
 as
 
@@ -10536,11 +10536,11 @@ SELECT
 , TAGREEMENT_TYPE.FIXED as AGREEMENT_FIXED
 /* , TAGREEMENT_TYPE.MIK_VALID AGREEMENT_MIK_VALID */
 
-/* , ISNULL(V_Takeda_TENDERER_FLAT.CompanyList,'') AS CompanyList
- , ISNULL(V_Takeda_TENDERER_FLAT.CompanyIDList,'') AS CompanyIDList
-, ISNULL(V_Takeda_TENDERER_FLAT.CompanyIDAwardedCount,0) AS CompanyIDAwardedCount
-      ,ISNULL(V_Takeda_TENDERER_FLAT.CompanyIDUnawardedCount,0) AS CompanyIDUnawardedCount
-      ,ISNULL(V_Takeda_TENDERER_FLAT.CompanyIDCount,0) AS CompanyIDCount*/
+/* , ISNULL(V_TheCompany_TENDERER_FLAT.CompanyList,'') AS CompanyList
+ , ISNULL(V_TheCompany_TENDERER_FLAT.CompanyIDList,'') AS CompanyIDList
+, ISNULL(V_TheCompany_TENDERER_FLAT.CompanyIDAwardedCount,0) AS CompanyIDAwardedCount
+      ,ISNULL(V_TheCompany_TENDERER_FLAT.CompanyIDUnawardedCount,0) AS CompanyIDUnawardedCount
+      ,ISNULL(V_TheCompany_TENDERER_FLAT.CompanyIDCount,0) AS CompanyIDCount*/
 /* Contract Summary */      
 	, tcontract.LumpSumAmountID
 	, cast(left(tcontract.COMMENTS,255) as varchar(255)) as Comments_255
@@ -10561,7 +10561,7 @@ FROM
 
 
 	LEFT JOIN TAGREEMENT_TYPE  on TAGREEMENT_TYPE.AGREEMENT_TYPEID = TCONTRACT.AGREEMENT_TYPEID
-	/* LEFT JOIN V_Takeda_TTENDERER_FLAT t ON TCONTRACT.CONTRACTID = t.CONTRACTID */
+	/* LEFT JOIN V_TheCompany_TTENDERER_FLAT t ON TCONTRACT.CONTRACTID = t.CONTRACTID */
 	/* LEFT JOIN  TCONTRACTSUMMARY ON TCONTRACT.CONTRACTID 
 		= TCONTRACTSUMMARY.CONTRACTID /* not present for all contracts, only if filled in */*/
 	LEFT JOIN TSTRATEGYTYPE s on tcontract.STRATEGYTYPEID = s.STRATEGYTYPEID 
@@ -10576,12 +10576,12 @@ WHERE
 									)
 
 GO
-/****** Object:  View [dbo].[V_Takeda_AgreementTypeRanked]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_AgreementTypeRanked]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE View [dbo].[V_Takeda_AgreementTypeRanked]
+CREATE View [dbo].[V_TheCompany_AgreementTypeRanked]
 as
 
 select agreement_typeid,
@@ -10597,14 +10597,14 @@ from (
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_AgreementType]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_AgreementType]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_AgreementType]
+CREATE view [dbo].[V_TheCompany_AgreementType]
 
 as 
 
@@ -10689,7 +10689,7 @@ as
 			ELSE 'N/A' END)
 		AS AgrType_LgArbSplitDptMtrTMIP_FLAG
 /* ARIBA/CONTIKI FLAG */
-/* V_TAKEDA_ALL: CASE WHEN CompanyIDList = '1' /* intercompany */ THEN 4 /* Intercompany agreements always attributed to Legal no matter which other properties */
+/* V_TheCompany_ALL: CASE WHEN CompanyIDList = '1' /* intercompany */ THEN 4 /* Intercompany agreements always attributed to Legal no matter which other properties */
 				WHEN title like '%GxP%' THEN 6 /* Gxp is also LEGAL, manually review */ */
 		, (CASE 
 			WHEN FIXED like '%$LGMM%' then 7 /* matter management */
@@ -10705,9 +10705,9 @@ as
 			WHEN FIXED like '%$DPT%' then 3 /* was 3 */ /* Agreement Fixed Field in Agreement Type table is $DPT,
 																			 meaning that it depends on the contract owner department if the contract is attributed to Ariba or Legal */
 			
-			/* 4 = Intercompany = V_TAKEDA_ALL *			
-			/* 6 = GxP = V_TAKEDA_ALL */
-			/* 9 already in Ariba, = V_TAKEDA_ALL */*/*/
+			/* 4 = Intercompany = V_TheCompany_ALL *			
+			/* 6 = GxP = V_TheCompany_ALL */
+			/* 9 already in Ariba, = V_TheCompany_ALL */*/*/
 			
 			ELSE 2 /* Split - NO HCX flag yet 5 = other */
 			END)
@@ -10746,9 +10746,9 @@ as
 			, m.Agr_LINC_SubType
 			, m.[Agr_LNC_Comments]
 	from [dbo].[TAGREEMENT_TYPE] a 
-		left join [dbo].[T_Takeda_AgreementType] m 
+		left join [dbo].[T_TheCompany_AgreementType] m 
 			on a.agreement_typeid = m.agr_typeid
-		INNER join [V_Takeda_AgreementTypeRanked] r /* made inner join - no WHERE filter */
+		INNER join [V_TheCompany_AgreementTypeRanked] r /* made inner join - no WHERE filter */
 			on a.AGREEMENT_TYPEID = r.agreement_typeid
 
 GO
@@ -10776,14 +10776,14 @@ FROM         dbo.TPERSON INNER JOIN
                       dbo.TWARNINGTYPE ON dbo.TWARNING.WARNINGTYPEID = dbo.TWARNINGTYPE.WARNINGTYPEID
 
 GO
-/****** Object:  View [dbo].[V_Takeda_TPERSON_IN_WARNING_GroupByWARNINGID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_TPERSON_IN_WARNING_GroupByWARNINGID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE View [dbo].[V_Takeda_TPERSON_IN_WARNING_GroupByWARNINGID]
+CREATE View [dbo].[V_TheCompany_TPERSON_IN_WARNING_GroupByWARNINGID]
 
 as
 
@@ -10792,7 +10792,7 @@ as
 
 		, 	 convert(varchar(255), Replace(STUFF(
 		(SELECT ',' + s.EMAIL
-		FROM V_Takeda_VUSER s inner join [TPERSON_IN_WARNING] sd on s.PERSONID = sd.PERSONID
+		FROM V_TheCompany_VUSER s inner join [TPERSON_IN_WARNING] sd on s.PERSONID = sd.PERSONID
 		WHERE sd.warningid =d.WARNINGID
 		FOR XML PATH('')),1,1,''),'&amp;','&'))
 		 AS PersonEmail_List
@@ -10807,13 +10807,13 @@ as
 	GROUP BY d.WARNINGID
 
 GO
-/****** Object:  View [dbo].[V_Takeda_REVIEWDATE_ACTIVE]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_REVIEWDATE_ACTIVE]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE view [dbo].[V_Takeda_REVIEWDATE_ACTIVE]
+CREATE view [dbo].[V_TheCompany_REVIEWDATE_ACTIVE]
 
 as
 
@@ -10823,14 +10823,14 @@ as
 		, MAX(WARNINGID) as ReviewDate_WARNINGID_MAX
 		, COUNT(DISTINCT WARNINGID) as ReviewDate_ActiveWarningID_Count
 		, Max(P.personEmail_List) as ReviewDate_Reminder_RecipientList
-	FROM VWARNING w inner join V_Takeda_TPERSON_IN_WARNING_GroupByWARNINGID p on w.WARNINGID = P.WARNINGID_PIW
+	FROM VWARNING w inner join V_TheCompany_TPERSON_IN_WARNING_GroupByWARNINGID p on w.WARNINGID = P.WARNINGID_PIW
 	WHERE 
 		WARNINGFIELDNAME = 'REVIEWDATE' 
 		AND TURNEDOFFDATE is null
 	GROUP BY OBJECTID
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VEmployee]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VEmployee]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -10839,7 +10839,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_VEmployee]
+CREATE view [dbo].[V_TheCompany_VEmployee]
 
 AS
 
@@ -10852,7 +10852,7 @@ SELECT	U.USERID,
 		P.PERSONID,
 		P.PERSONAL_CODE,
 		P.TITLE,
-		P.FIRSTNAME, /* is nvarchar(40) and stays that way in T_Takeda_ALL */
+		P.FIRSTNAME, /* is nvarchar(40) and stays that way in T_TheCompany_ALL */
 		P.MIDDLENAME,
 		P.LASTNAME, 
 		P.INITIALS,
@@ -10872,7 +10872,7 @@ SELECT	U.USERID,
 		U.UserProfileID,
 		PF.UserProfile
 		, (CASE WHEN pf.userprofile LIKE '%basic%' THEN 'Basic User' 
-			WHEN pf.userprofile LIKE '%left%' THEN 'Has Left Takeda'
+			WHEN pf.userprofile LIKE '%left%' THEN 'Has Left TheCompany'
 			WHEN pf.USERPROFILE IS null then '' 
 			ELSE 'Super User' END) as UserProfileGroup
 		, (CASE WHEN pf.userprofile LIKE '%administrator%' THEN 'Administrator' 
@@ -10954,14 +10954,14 @@ SELECT [DBO].[TCOMPANYADDRESS].[COMPANYADDRESSID],
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_TTENDERER_FLAT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_TTENDERER_FLAT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_TTENDERER_FLAT]
+CREATE view [dbo].[V_TheCompany_TTENDERER_FLAT]
 
 as
 
@@ -11043,13 +11043,13 @@ as
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VPRODUCTS_FLAT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VPRODUCTS_FLAT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE view [dbo].[V_Takeda_VPRODUCTS_FLAT]
+CREATE view [dbo].[V_TheCompany_VPRODUCTS_FLAT]
 
 as
 
@@ -11114,7 +11114,7 @@ FROM  VPRODUCTGROUPS_IN_CONTRACT d
 GROUP BY CONTRACTID
 
 GO
-/****** Object:  View [dbo].[V_Takeda_Docs_FLAT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Docs_FLAT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -11123,7 +11123,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_Docs_FLAT]
+CREATE view [dbo].[V_TheCompany_Docs_FLAT]
 
 as
 /* Unique Contract IDs.... */
@@ -11198,19 +11198,19 @@ as
 		/* Doc Names Concat AND file type */
 			,  convert(varchar(255), LTRIM((case when LEN(STUFF(
 				(SELECT '; ' + f.[DocumentTitle_TS_Redacted] + isnull(f.FileType,'')
-				FROM V_Takeda_VDocument f
+				FROM V_TheCompany_VDocument f
 				WHERE f.CONTRACTID = d.OBJECTID
 				FOR XML PATH('')),1,1,''))<= 255
 				THEN 
 						STUFF(
 					(SELECT '; ' + f.[DocumentTitle_TS_Redacted] + isnull(f.FileType,'')
-					FROM V_Takeda_VDocument f
+					FROM V_TheCompany_VDocument f
 					WHERE f.CONTRACTID = d.OBJECTID
 					FOR XML PATH('')),1,1,'')
 				ELSE 
 				SUBSTRING(STUFF(
 					(SELECT '; ' + f.[DocumentTitle_TS_Redacted]  + isnull(f.FileType,'')
-					FROM V_Takeda_VDocument f
+					FROM V_TheCompany_VDocument f
 					WHERE f.CONTRACTID = d.OBJECTID
 					FOR XML PATH('')),1,1,''),1,251) + ' ...'
 				END
@@ -11240,7 +11240,7 @@ FROM         dbo.TAMOUNT INNER JOIN
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_ALL_BAK]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_ALL_BAK]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -11252,7 +11252,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_ALL_BAK]
+CREATE view [dbo].[V_TheCompany_ALL_BAK]
 
 as
 
@@ -11347,7 +11347,7 @@ SELECT
       /* ,ISNULL(d.[InternalPartners],'') AS 'InternalPartners' */
       ,ISNULL(d.[InternalPartners_IDs],'') AS 'InternalPartners_IDs'
       ,ISNULL(d.[InternalPartners_COUNT],0) AS 'InternalPartners_COUNT'
-      ,CAST(ISNULL(d.[Territories],'') AS VARCHAR(255)) AS 'Territories' /* LEN capped at 255 in concat statement but turns into varchar(4000) in T_Takeda_ALL */
+      ,CAST(ISNULL(d.[Territories],'') AS VARCHAR(255)) AS 'Territories' /* LEN capped at 255 in concat statement but turns into varchar(4000) in T_TheCompany_ALL */
       ,CAST(ISNULL(d.[Territories_IDs],'') AS VARCHAR(255)) AS 'Territories_IDs' /* becomes varchar(max), max len is around 400 odd char */
       ,ISNULL(d.[Territories_COUNT],0) AS 'Territories_COUNT'
 
@@ -11393,7 +11393,7 @@ SELECT
       , GETDATE() as DateTableRefreshed
       , 'http://des80040.nycomed.local/ccs/builtin_modules/Contract.aspx?id=' + CONVERT(VARCHAR(10),c.contractid) as LinkToContractURL
 
-	  /* Procurement Base Flag 1 for Agreement type, is needed as a basis for V_Takeda_Mig_0ProcNetFlag (based on T_Takeda_ALL) */
+	  /* Procurement Base Flag 1 for Agreement type, is needed as a basis for V_TheCompany_Mig_0ProcNetFlag (based on T_TheCompany_ALL) */
 	, (CASE 
 				WHEN COUNTERPARTYNUMBER like '%!ARIBA_W01%' 
 					 OR COUNTERPARTYNUMBER like '%!ARIBA_W02%' THEN 9 /* already migrated to Ariba */
@@ -11410,7 +11410,7 @@ SELECT
 				*/
 				ELSE cr.[TargetSystem_AgTypeFLAG]	/*(0,1,2,7,8)	*/
 				END) as Procurement_AgTypeFlag
-	  /* Procurement Base Flag 2 for Role, is needed as a basis for V_Takeda_Mig_0ProcNetFlag (based on T_Takeda_ALL) */
+	  /* Procurement Base Flag 2 for Role, is needed as a basis for V_TheCompany_Mig_0ProcNetFlag (based on T_TheCompany_ALL) */
 			/* User role department is Global Procurement or IT -> Procurement Role Flag is populated with GP or IT */
 	, (CASE WHEN (substring(UO.UO_DPT_CODE,0,4) ='-GP' /* contract owner is in Global Procurement */
 				OR substring(ur.UR_DPT_CODE,0,4) = '-GP' /* contract responsible */
@@ -11424,7 +11424,7 @@ SELECT
 
 	,CAST(STUFF(
 	(SELECT DISTINCT ',' + tg.TAG /*+ ' ('+tg.TagCategory+')'*/
-		FROM ttag /*V_Takeda_TTag_Detail*/ tg
+		FROM ttag /*V_TheCompany_TTag_Detail*/ tg
 		inner join TTAG_IN_OBJECT tj on tg.tagid = tj.tagid
 		 inner join tdocument d on tj.OBJECTID = d.documentid 
 		WHERE c.CONTRACTID =d.OBJECTID
@@ -11449,10 +11449,10 @@ SELECT
 	, cr.Agr_IsMaterial_Flag
 	, cr.AgrIsMaterial
 FROM 
-/* V_Takeda_VCONTRACT */
+/* V_TheCompany_VCONTRACT */
 /* this view turns TCONTRACT nulls into empty strings etc., custom version of VCONTRACT */
 /* fields like agreement_type etc  */
-	V_Takeda_VCONTRACT c 
+	V_TheCompany_VCONTRACT c 
 	left join (SELECT userid as US_Userid
 	, displayname as US_DisplayName
 	, EMAIL as US_Email, FIRSTNAME as US_Firstname
@@ -11460,7 +11460,7 @@ FROM
 	, USER_MIK_VALID US_USER_MIK_VALID 
 	, DEPARTMENT_CODE as US_DPT_CODE
 	, DEPARTMENT as US_DPT_NAME
-	 from [V_Takeda_VUSER]) us on c.executorid = us.us_userid
+	 from [V_TheCompany_VUSER]) us on c.executorid = us.us_userid
 
 	left join (SELECT EMPLOYEEID as UO_employeeid
 	, displayname as UO_DisplayName
@@ -11470,7 +11470,7 @@ FROM
 	, USER_MIK_VALID as UO_USER_MIK_VALID 
 	, DEPARTMENT_CODE as UO_DPT_CODE
 	, DEPARTMENT as UO_DPT_NAME
-	  FROM V_Takeda_VEmployee) uo on c.ownerid = uo.UO_employeeid
+	  FROM V_TheCompany_VEmployee) uo on c.ownerid = uo.UO_employeeid
 
 	left join (SELECT employeeid as UR_employeeid
 	, displayname as UR_DisplayName
@@ -11480,21 +11480,21 @@ FROM
 	, USER_MIK_VALID as UR_USER_MIK_VALID 
 	, DEPARTMENT_CODE as UR_DPT_CODE 
 	, DEPARTMENT as UR_DPT_NAME
-	  FROM V_Takeda_VEmployee) ur on c.techcoordinatorid = ur.UR_employeeid
+	  FROM V_TheCompany_VEmployee) ur on c.techcoordinatorid = ur.UR_employeeid
 
-	left join [dbo].[V_Takeda_VCONTRACT_DPTROLES_FLAT] d on c.contractid = d.Dpt_contractid
-	left join [dbo].[V_Takeda_VPRODUCTS_FLAT] p on c.contractid = p.vp_contractid
+	left join [dbo].[V_TheCompany_VCONTRACT_DPTROLES_FLAT] d on c.contractid = d.Dpt_contractid
+	left join [dbo].[V_TheCompany_VPRODUCTS_FLAT] p on c.contractid = p.vp_contractid
 	/* left join dbo.VCOMMERCIAL vc on c.CONTRACTID = vc.ContractId */
 	left join dbo.VCONTRACT_LUMPSUM vc on c.LUMPSUMAMOUNTID = vc.LUMPSUMAMOUNTID
-	left join dbo.T_Takeda_Hierarchy h /* 07-feb-19 instead of dbo.v_Takeda_Hierarchy_maketable to improve performance */
+	left join dbo.T_TheCompany_Hierarchy h /* 07-feb-19 instead of dbo.v_TheCompany_Hierarchy_maketable to improve performance */
 		/* in the daily data load, the hierarchy is refreshed first, so this table is up to date */
 		on d.Dpt_ContractOwnerDpt_ID = h.departmentid_link
-	left join [dbo].[V_Takeda_REVIEWDATE_ACTIVE] rd on c.contractid = rd.RD_Contractid
-	left join V_Takeda_AgreementType cr 
+	left join [dbo].[V_TheCompany_REVIEWDATE_ACTIVE] rd on c.contractid = rd.RD_Contractid
+	left join V_TheCompany_AgreementType cr 
 		on c.AGREEMENT_TYPEID = cr.[AgrTypeID]
-	left join V_Takeda_TTENDERER_FLAT t on c.contractid = t.CONTRACTID
-	/* NOT working because t_takeda_all is used in view left join V_Takeda_Mig_0ProcNetFlag m on c.contractid = m.Contractid_Proc /* for procurement flag */*/
-	left join [dbo].[V_Takeda_Docs_FLAT] doc on c.contractid = doc.CONTRACTID /* added 09-Dec-2020 */
+	left join V_TheCompany_TTENDERER_FLAT t on c.contractid = t.CONTRACTID
+	/* NOT working because t_TheCompany_all is used in view left join V_TheCompany_Mig_0ProcNetFlag m on c.contractid = m.Contractid_Proc /* for procurement flag */*/
+	left join [dbo].[V_TheCompany_Docs_FLAT] doc on c.contractid = doc.CONTRACTID /* added 09-Dec-2020 */
 	WHERE c.contracttypeid NOT IN (	  5 /* Test Old */
 									, 6 /* Access SAKSNR number Series*/		
 									/*,  11	Case */					
@@ -11506,13 +11506,13 @@ FROM
   /* and c.CONTRACTID = 148186 /* contractnumber = 'TEST-00000080' */*/
   
 GO
-/****** Object:  View [dbo].[V_Takeda_TPRODUCT_ACTIVEINGREDIENT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_TPRODUCT_ACTIVEINGREDIENT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE view [dbo].[V_Takeda_TPRODUCT_ACTIVEINGREDIENT]
+CREATE view [dbo].[V_TheCompany_TPRODUCT_ACTIVEINGREDIENT]
 
 as
 
@@ -11523,7 +11523,7 @@ as
 		, gp.PARENTID as PARENTID_TN
 		, gpp.PRODUCTGROUP as PARENT_PRODUCTGROUP
 	FROM
-		T_Takeda_TPRODUCT_ACTIVEINGREDIENT p 
+		T_TheCompany_TPRODUCT_ACTIVEINGREDIENT p 
 		inner join TPRODUCTGROUP ga on p.PRODUCTGROUPID_AI = ga.PRODUCTGROUPID and ga.PRODUCTGROUPNOMENCLATUREID = 2 /* AI */
 		inner join TPRODUCTGROUP gp on p.PRODUCTGROUPID_TN = gp.PRODUCTGROUPID and gp.PRODUCTGROUPNOMENCLATUREID = 3 /* TN */
 		left join TPRODUCTGROUP gpp 
@@ -11531,7 +11531,7 @@ as
 				and gp.PRODUCTGROUPNOMENCLATUREID in (2,3) /* TN */
 				and gpp.PRODUCTGROUP not like gp.PRODUCTGROUP + '%' /* Pantoprazol / Pantoprazole */
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_00_Input_WithSubProducts]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_00_Input_WithSubProducts]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -11541,12 +11541,12 @@ GO
 
 
 
-CREATE View [dbo].[V_Takeda_KWS_00_Input_WithSubProducts]
+CREATE View [dbo].[V_TheCompany_KWS_00_Input_WithSubProducts]
 
 as
 
 		select * 
-		from T_Takeda_KeyWordSearch_INPUT
+		from T_TheCompany_KeyWordSearch_INPUT
 
 	union all
 
@@ -11559,7 +11559,7 @@ as
 			,''											/* Custom 2 */
 			,'' /* precision */
 			,'' /* FILTER OR SHOW */
-		from TPRODUCTGROUP p inner join T_Takeda_KeyWordSearch_INPUT i 
+		from TPRODUCTGROUP p inner join T_TheCompany_KeyWordSearch_INPUT i 
 			on upper(p.PRODUCTGROUP) = upper(i.KeyWordVarchar255)
 			inner join TPRODUCTGROUP pp on pp.PARENTID = p.PRODUCTGROUPID
 		where i.KeyWordType = 'Product'
@@ -11576,7 +11576,7 @@ as
 			,'' /* Custom 2 */
 			,'' /* precision */
 			,'' /* FILTER OR SHOW */
-		from V_Takeda_TPRODUCT_ACTIVEINGREDIENT p inner join T_Takeda_KeyWordSearch_INPUT i 
+		from V_TheCompany_TPRODUCT_ACTIVEINGREDIENT p inner join T_TheCompany_KeyWordSearch_INPUT i 
 			on upper(p.TN) = upper(i.KeyWordVarchar255)
 			/* inner join TPRODUCTGROUP pp on pp.PARENTID = p.PRODUCTGROUPID_TN */
 		where i.KeyWordType = 'Product'
@@ -11591,14 +11591,14 @@ as
 			,'' /* Custom 2 */
 			,'' /* precision */
 			,'' /* FILTER OR SHOW */
-		from V_Takeda_TPRODUCT_ACTIVEINGREDIENT p inner join T_Takeda_KeyWordSearch_INPUT i 
+		from V_TheCompany_TPRODUCT_ACTIVEINGREDIENT p inner join T_TheCompany_KeyWordSearch_INPUT i 
 			on upper(p.AI) = upper(i.KeyWordVarchar255)
 			/* inner join TPRODUCTGROUP pp on pp.PARENTID = p.PRODUCTGROUPID_TN */
 		where i.KeyWordType = 'Product' and p.IsUniqueAI = 1 /* Unique AI */
-		and upper(p.tn) not in (select upper(keywordvarchar255) from  T_Takeda_KeyWordSearch_INPUT ) /* not already listed */
+		and upper(p.tn) not in (select upper(keywordvarchar255) from  T_TheCompany_KeyWordSearch_INPUT ) /* not already listed */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_01_Input_Raw]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_01_Input_Raw]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -11608,11 +11608,11 @@ GO
 
 
 
-/****** Object:  View [dbo].[V_Takeda_KeyWordSearch_0Input]    Script Date: 03.07.2019 14:04:51 ******/
-CREATE view [dbo].[V_Takeda_KWS_01_Input_Raw]
+/****** Object:  View [dbo].[V_TheCompany_KeyWordSearch_0Input]    Script Date: 03.07.2019 14:04:51 ******/
+CREATE view [dbo].[V_TheCompany_KWS_01_Input_Raw]
 
 /* 
-[dbo].[Takeda_KeyWordSearch]
+[dbo].[TheCompany_KeyWordSearch]
 - elminiate double spaces
 - ltrim, rtrim
 */
@@ -11630,33 +11630,33 @@ as
 
 		,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ', ' + gg.[KeyWordCustom1]
-			FROM [dbo].[T_Takeda_KeyWordSearch_Input] gg
+			FROM [dbo].[T_TheCompany_KeyWordSearch_Input] gg
 			where gg.KeyWordVarchar255 = i.KeyWordVarchar255
 			and gg.[KeyWordCustom1] is not null
-			FOR XML PATH('')),1,1,''),'&amp;','&')) AS KeyWordCustom1 /* make sure to refresh T_Takeda_KeyWordSearch_Results_Description_ContractID */
+			FOR XML PATH('')),1,1,''),'&amp;','&')) AS KeyWordCustom1 /* make sure to refresh T_TheCompany_KeyWordSearch_Results_Description_ContractID */
 
 		,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ', ' + gg.[KeyWordCustom2]
-			FROM [dbo].[T_Takeda_KeyWordSearch_Input] gg
+			FROM [dbo].[T_TheCompany_KeyWordSearch_Input] gg
 			where gg.KeyWordVarchar255 = i.KeyWordVarchar255
 			and gg.[KeyWordCustom2] is not null
-			FOR XML PATH('')),1,1,''),'&amp;','&')) AS KeyWordCustom2 /* make sure to refresh T_Takeda_KeyWordSearch_Results_Description_ContractID */
+			FOR XML PATH('')),1,1,''),'&amp;','&')) AS KeyWordCustom2 /* make sure to refresh T_TheCompany_KeyWordSearch_Results_Description_ContractID */
 
-		, UPPER(dbo.Takeda_RemoveNonAlphaNonNumericCharacters([KeyWordVarchar255]))
+		, UPPER(dbo.TheCompany_RemoveNonAlphaNonNumericCharacters([KeyWordVarchar255]))
 		as KeyWordLettersNumbersOnly_UPPER
 
-		, UPPER(replace(dbo.Takeda_RemoveNonAlphaNonNumNonSpace([KeyWordVarchar255]),'  ',' '))
+		, UPPER(replace(dbo.TheCompany_RemoveNonAlphaNonNumNonSpace([KeyWordVarchar255]),'  ',' '))
 		as KeyWordLettersNumbersSpacesOnly_UPPER /* e.g. Hansen & Rosenthal */
 
-		, LEN(replace(dbo.Takeda_RemoveNonAlphaNonNumNonSpace([KeyWordVarchar255]),'  ',' '))
-			-LEN(dbo.Takeda_RemoveNonAlphaNonNumericCharacters([KeyWordVarchar255])) 
+		, LEN(replace(dbo.TheCompany_RemoveNonAlphaNonNumNonSpace([KeyWordVarchar255]),'  ',' '))
+			-LEN(dbo.TheCompany_RemoveNonAlphaNonNumericCharacters([KeyWordVarchar255])) 
 			as KeyWord_LettersNumbersOnly_NumSpacesWords
 
-	from V_Takeda_KWS_00_Input_WithSubProducts /*T_Takeda_KeyWordSearch_Input */ i
+	from V_TheCompany_KWS_00_Input_WithSubProducts /*T_TheCompany_KeyWordSearch_Input */ i
 	group by [KeyWordVarchar255], [KeyWordType],[KeyWordPrecision], [KeyWordOperator]
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_02_Input_AllFields]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_02_Input_AllFields]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -11666,7 +11666,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_KWS_02_Input_AllFields]
+CREATE view [dbo].[V_TheCompany_KWS_02_Input_AllFields]
 
 as
 
@@ -11678,24 +11678,24 @@ as
 		, len([KeyWordVarchar255]) as KeyWordLength /* maybe better use [KeyWordLettersNumbersSpacesOnly_UPPER]?*/
 		
 			, (CASE WHEN 
-			 (SELECT count(Kwe_Name) FROM [dbo].[T_Takeda_KW_ExclusionList] 
-			 WHERE Kwe_Name = [dbo].[Takeda_GetFirstWordInString]([KeyWordVarchar255])) = 0
-				THEN UPPER([dbo].[Takeda_GetFirstWordInString]([KeyWordVarchar255]))  
+			 (SELECT count(Kwe_Name) FROM [dbo].[T_TheCompany_KW_ExclusionList] 
+			 WHERE Kwe_Name = [dbo].[TheCompany_GetFirstWordInString]([KeyWordVarchar255])) = 0
+				THEN UPPER([dbo].[TheCompany_GetFirstWordInString]([KeyWordVarchar255]))  
 				ELSE '(E)' END) /* (E) = short, less processing time */
 		as KeyWordFirstWord_UPPER
 
 			, (CASE WHEN 
-			 (SELECT count(Kwe_Name) FROM [dbo].[T_Takeda_KW_ExclusionList] 
-			 WHERE Kwe_Name = [dbo].[Takeda_GetFirstWordInString]([KeyWordLettersNumbersSpacesOnly_UPPER]) ) = 0
-				THEN UPPER([dbo].[Takeda_GetFirstWordInString]([KeyWordLettersNumbersSpacesOnly_UPPER])) 
+			 (SELECT count(Kwe_Name) FROM [dbo].[T_TheCompany_KW_ExclusionList] 
+			 WHERE Kwe_Name = [dbo].[TheCompany_GetFirstWordInString]([KeyWordLettersNumbersSpacesOnly_UPPER]) ) = 0
+				THEN UPPER([dbo].[TheCompany_GetFirstWordInString]([KeyWordLettersNumbersSpacesOnly_UPPER])) 
 				ELSE '(E)' END)
 		as KeyWordFirstWord_LettersOnly_UPPER
 
 			, (CASE WHEN 
-			 (SELECT count(Kwe_Name) FROM [dbo].[T_Takeda_KW_ExclusionList] 
-			 WHERE Kwe_Name = [dbo].[Takeda_GetFirstWordInString]([KeyWordLettersNumbersOnly_UPPER]) ) = 0
-				THEN (CASE WHEN LEN([dbo].[Takeda_GetFirstWordInString]([KeyWordVarchar255])) > 2
-						THEN LEN([dbo].[Takeda_GetFirstWordInString]([KeyWordVarchar255])) ELSE 0 END)
+			 (SELECT count(Kwe_Name) FROM [dbo].[T_TheCompany_KW_ExclusionList] 
+			 WHERE Kwe_Name = [dbo].[TheCompany_GetFirstWordInString]([KeyWordLettersNumbersOnly_UPPER]) ) = 0
+				THEN (CASE WHEN LEN([dbo].[TheCompany_GetFirstWordInString]([KeyWordVarchar255])) > 2
+						THEN LEN([dbo].[TheCompany_GetFirstWordInString]([KeyWordVarchar255])) ELSE 0 END)
 				ELSE -1 END)
 		as KeyWordFirstWord_LEN /* no len if in exclusion list or when less than 3 char */
 
@@ -11731,7 +11731,7 @@ as
 		, UPPER((CASE WHEN [KeyWord_LettersNumbersOnly_NumSpacesWords] = 1 /* two words, one space */
 					THEN [KeyWordLettersNumbersOnly_UPPER]
 				WHEN KeyWord_LettersNumbersOnly_NumSpacesWords > 1 /* two spaces or more, make sure there is at least one space, otherwise '' */
-					THEN dbo.Takeda_RemoveNonAlphaNonNumericCharacters(SUBSTRING([KeyWordLettersNumbersSpacesOnly_UPPER],0,CHARINDEX(' ', [KeyWordLettersNumbersSpacesOnly_UPPER],
+					THEN dbo.TheCompany_RemoveNonAlphaNonNumericCharacters(SUBSTRING([KeyWordLettersNumbersSpacesOnly_UPPER],0,CHARINDEX(' ', [KeyWordLettersNumbersSpacesOnly_UPPER],
 						CHARINDEX(' ', [KeyWordLettersNumbersSpacesOnly_UPPER],
 									   CHARINDEX(' ', [KeyWordLettersNumbersSpacesOnly_UPPER],+1)+1)) ))	/* e.g. SI Group */	
 				ELSE NULL /* no space */ END))		
@@ -11740,16 +11740,16 @@ as
 			,  LEN((CASE WHEN [KeyWord_LettersNumbersOnly_NumSpacesWords] = 1 /* two words, one space */
 					THEN [KeyWordLettersNumbersOnly_UPPER]
 				WHEN KeyWord_LettersNumbersOnly_NumSpacesWords > 1 /* two spaces or more, make sure there is at least one space, otherwise '' */
-					THEN dbo.Takeda_RemoveNonAlphaNonNumericCharacters(SUBSTRING([KeyWordLettersNumbersSpacesOnly_UPPER],0,CHARINDEX(' ', [KeyWordLettersNumbersSpacesOnly_UPPER],
+					THEN dbo.TheCompany_RemoveNonAlphaNonNumericCharacters(SUBSTRING([KeyWordLettersNumbersSpacesOnly_UPPER],0,CHARINDEX(' ', [KeyWordLettersNumbersSpacesOnly_UPPER],
 						CHARINDEX(' ', [KeyWordLettersNumbersSpacesOnly_UPPER],
 									   CHARINDEX(' ', [KeyWordLettersNumbersSpacesOnly_UPPER],+1)+1)) ))	/* e.g. SI Group */	
 				ELSE NULL /* no space */ END)	)	
 		as KeyWordFirstTwoWords_LettersOnly_LEN
 
 		, KeyWord_LettersNumbersOnly_NumSpacesWords as KeyWord_NumSpacesWords /* remove */
-		, UPPER((CASE WHEN LEN(dbo.Takeda_GetFirstLetterOfEachWord([KeyWordLettersNumbersOnly_UPPER])) >=3 THEN 
-				dbo.Takeda_GetFirstLetterOfEachWord([KeyWordLettersNumbersOnly_UPPER])
-			WHEN LEN(dbo.Takeda_GetFirstLetterOfEachWord([KeyWordLettersNumbersOnly_UPPER]))<3 
+		, UPPER((CASE WHEN LEN(dbo.TheCompany_GetFirstLetterOfEachWord([KeyWordLettersNumbersOnly_UPPER])) >=3 THEN 
+				dbo.TheCompany_GetFirstLetterOfEachWord([KeyWordLettersNumbersOnly_UPPER])
+			WHEN LEN(dbo.TheCompany_GetFirstLetterOfEachWord([KeyWordLettersNumbersOnly_UPPER]))<3 
 				and len(left([KeyWordLettersNumbersOnly_UPPER],3)) >=3 THEN
 				left([KeyWordLettersNumbersOnly_UPPER],3)
 			ELSE NULL END
@@ -11758,18 +11758,18 @@ as
 
 		, (case when e.kwe_Flag is not null then e.kwe_Flag else 0 END) as KeyWord_ExclusionFlag
 
-	from V_Takeda_KWS_01_Input_Raw k 
-		left join T_Takeda_KW_ExclusionList e 
+	from V_TheCompany_KWS_01_Input_Raw k 
+		left join T_TheCompany_KW_ExclusionList e 
 			on k.KeyWordVarchar255 like e.kwe_Name + '%' /* Vitamin */
 
 
 GO
-/****** Object:  View [dbo].[V_T_Takeda_zALL]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_T_TheCompany_zALL]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[V_T_Takeda_zALL]
+create view [dbo].[V_T_TheCompany_zALL]
 
 as
 
@@ -11898,12 +11898,12 @@ select
 	, t.TargetSystem_AgType
 	AS TargetSystem_MigrateTo  */
 
-FROM T_Takeda_ALL a
-	INNER join [V_Takeda_AgreementType] t /* Takeda_2WEEKLY_Maintenance_AgreementTypes sets blank agreement types to type 'OTHER'*/
+FROM T_TheCompany_ALL a
+	INNER join [V_TheCompany_AgreementType] t /* TheCompany_2WEEKLY_Maintenance_AgreementTypes sets blank agreement types to type 'OTHER'*/
 		on a.AGREEMENT_TYPEID = t.AgrTypeID
 	
 
-	/* need not filter with WHERE, used in V_Takeda_ALL */
+	/* need not filter with WHERE, used in V_TheCompany_ALL */
 /* WHERE
 	CONTRACTTYPEID not in (11 /* Legal matter / Case */
 						, 13 /* Test old */
@@ -11912,7 +11912,7 @@ FROM T_Takeda_ALL a
 
 
 GO
-/****** Object:  View [dbo].[V_T_Takeda_ALL]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_T_TheCompany_ALL]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -11922,17 +11922,17 @@ GO
 
 
 
-CREATE view [dbo].[V_T_Takeda_ALL]
+CREATE view [dbo].[V_T_TheCompany_ALL]
 
 as
 
 select 
 	*
 	
-FROM T_Takeda_ALL_xt
+FROM T_TheCompany_ALL_xt
 	
 
-	/* need not filter with WHERE, used in V_Takeda_ALL */
+	/* need not filter with WHERE, used in V_TheCompany_ALL */
 /* WHERE
 	CONTRACTTYPEID not in (11 /* Legal matter / Case */
 						, 13 /* Test old */
@@ -11941,12 +11941,12 @@ FROM T_Takeda_ALL_xt
 
 
 GO
-/****** Object:  View [dbo].[V_T_Takeda_ALL_TS_CFN]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_T_TheCompany_ALL_TS_CFN]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[V_T_Takeda_ALL_TS_CFN]
+create view [dbo].[V_T_TheCompany_ALL_TS_CFN]
 
 as
 
@@ -11959,19 +11959,19 @@ SELECT
 		/* , AGREEMENT_TYPEID */
 /* ,DptCode2Digit_Link */
 FROM
-	V_T_Takeda_ALL a
-		inner join [dbo].[V_T_Takeda_ALL_NoTS_CommonFN] b 
+	V_T_TheCompany_ALL a
+		inner join [dbo].[V_T_TheCompany_ALL_NoTS_CommonFN] b 
 		on A.contractid = B.contractid
 
 GO
-/****** Object:  View [dbo].[V_Takeda_Duplicates]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Duplicates]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE View [dbo].[V_Takeda_Duplicates]
+CREATE View [dbo].[V_TheCompany_Duplicates]
 as
 
 	/* criteria for suspected dupe:
@@ -12003,26 +12003,26 @@ SELECT
 	, MAX(LumpSum) as LumpSum_Max
 	, MAX(COUNTERPARTYNUMBER) as COUNTERPARTYNUMBER_Max
 	, MAX(REFERENCENUMBER) as REFERENCENUMBER_Max
-	, MIN(dbo.Takeda_RemoveNonAlphaCharacters(Title)) as TITLE_ALPHANUM_MIN
-	, MAX(dbo.Takeda_RemoveNonAlphaCharacters(Title)) as TITLE_ALPHANUM_MAX
+	, MIN(dbo.TheCompany_RemoveNonAlphaCharacters(Title)) as TITLE_ALPHANUM_MIN
+	, MAX(dbo.TheCompany_RemoveNonAlphaCharacters(Title)) as TITLE_ALPHANUM_MAX
 	, MAX(AGREEMENT_TYPEID) as AGREEMENT_TYPEID_MAX
 	, (SELECT MIN([DESCRIPTION]) FROM TDOCUMENT WHERE MIK_VALID = 1 AND DOCUMENTTYPEID = 1 /* Signed Contracts */ AND OBJECTID = MIN(CONTRACTID)) AS MIN_DOC
 	, (SELECT MIN([DESCRIPTION]) FROM TDOCUMENT WHERE MIK_VALID = 1 AND DOCUMENTTYPEID = 1 /* Signed Contracts */ AND OBJECTID = MAX(CONTRACTID)) AS MAX_DOC
-	, (SELECT MIN(dbo.Takeda_RemoveNonAlphaCharacters([DESCRIPTION])) FROM TDOCUMENT WHERE OBJECTID = MIN(CONTRACTID)) AS MIN_DOC_ALPHANUM
-	, (SELECT MIN(dbo.Takeda_RemoveNonAlphaCharacters([DESCRIPTION])) FROM TDOCUMENT WHERE OBJECTID = MAX(CONTRACTID)) AS MAX_DOC_ALPHANUM
+	, (SELECT MIN(dbo.TheCompany_RemoveNonAlphaCharacters([DESCRIPTION])) FROM TDOCUMENT WHERE OBJECTID = MIN(CONTRACTID)) AS MIN_DOC_ALPHANUM
+	, (SELECT MIN(dbo.TheCompany_RemoveNonAlphaCharacters([DESCRIPTION])) FROM TDOCUMENT WHERE OBJECTID = MAX(CONTRACTID)) AS MAX_DOC_ALPHANUM
 	, MIN([TITLE]) AS MIN_TITLE
 	, MAX([TITLE]) AS MAX_TITLE
 	/* Same Doc title */
-	, (CASE WHEN (SELECT MIN(DescriptionFull) FROM T_Takeda_Docx 
+	, (CASE WHEN (SELECT MIN(DescriptionFull) FROM T_TheCompany_Docx 
 		WHERE OBJECTID = MIN(CONTRACTID))= 
 		(SELECT MIN(DescriptionFull) 
-		FROM T_Takeda_Docx WHERE OBJECTID = MAX(CONTRACTID)) THEN 1 ELSE 0 END) AS SAME_DOC
+		FROM T_TheCompany_Docx WHERE OBJECTID = MAX(CONTRACTID)) THEN 1 ELSE 0 END) AS SAME_DOC
 	/* Same contract description */
-	, (CASE WHEN MIN(dbo.Takeda_RemoveNonAlphaCharacters(Title)) = MAX(dbo.Takeda_RemoveNonAlphaCharacters(Title)) THEN 1 ELSE 0 END) AS SAME_TITLE
+	, (CASE WHEN MIN(dbo.TheCompany_RemoveNonAlphaCharacters(Title)) = MAX(dbo.TheCompany_RemoveNonAlphaCharacters(Title)) THEN 1 ELSE 0 END) AS SAME_TITLE
 	, MIN(OWNERID) AS MIN_OWNERID
 	, MAX(OWNERID) AS MAX_OWNERID
 FROM 
-	dbo.T_Takeda_ALL
+	dbo.T_TheCompany_ALL
 WHERE 
 	CONTRACTTYPEID NOT IN (
 		 6 /* Access SAKSNR number Series*/
@@ -12051,21 +12051,21 @@ HAVING
 			)
 		OR
 		/* same contract title */
-			((MIN(dbo.Takeda_RemoveNonAlphaCharacters(Title)) = MAX(dbo.Takeda_RemoveNonAlphaCharacters(Title)) AND (MIN(REFERENCENUMBER) = MAX(REFERENCENUMBER) ))
+			((MIN(dbo.TheCompany_RemoveNonAlphaCharacters(Title)) = MAX(dbo.TheCompany_RemoveNonAlphaCharacters(Title)) AND (MIN(REFERENCENUMBER) = MAX(REFERENCENUMBER) ))
 		OR 
 		/* same document name */
-			(SELECT MIN(dbo.Takeda_RemoveNonAlphaCharacters([DescriptionFull])) 
-			FROM T_Takeda_Docx
+			(SELECT MIN(dbo.TheCompany_RemoveNonAlphaCharacters([DescriptionFull])) 
+			FROM T_TheCompany_Docx
 			WHERE OBJECTID = MIN(CONTRACTID)
 			) = 
-		(SELECT MIN(dbo.Takeda_RemoveNonAlphaCharacters([DescriptionFull])) 
-			FROM T_Takeda_Docx WHERE 
+		(SELECT MIN(dbo.TheCompany_RemoveNonAlphaCharacters([DescriptionFull])) 
+			FROM T_TheCompany_Docx WHERE 
 			OBJECTID = MAX(CONTRACTID)) AND (MIN(REFERENCENUMBER) = MAX(REFERENCENUMBER))
 			)
 		)
 
 GO
-/****** Object:  View [dbo].[V_Takeda_Duplicates_Final]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Duplicates_Final]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -12074,7 +12074,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_Duplicates_Final]
+CREATE view [dbo].[V_TheCompany_Duplicates_Final]
 
 as
 
@@ -12088,7 +12088,7 @@ SELECT
 , SAME_TITLE
 /* , a.* */
 FROM
-[V_Takeda_Duplicates] d /* inner join T_Takeda_ALL a on d.contractid_Min = a.contractid */
+[V_TheCompany_Duplicates] d /* inner join T_TheCompany_ALL a on d.contractid_Min = a.contractid */
   
   
 UNION ALL
@@ -12102,14 +12102,14 @@ SELECT
 , SAME_TITLE
 /* , a.* */
 FROM
-[V_Takeda_Duplicates] d /* inner join T_Takeda_ALL a on d.contractid_max = a.contractid */
+[V_TheCompany_Duplicates] d /* inner join T_TheCompany_ALL a on d.contractid_max = a.contractid */
 
 
 
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_LNC_GoldStandard]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_LNC_GoldStandard]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -12121,7 +12121,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_LNC_GoldStandard]
+CREATE view [dbo].[V_TheCompany_LNC_GoldStandard]
 
 as
 
@@ -12148,19 +12148,19 @@ as
 	,  'CTK-' + ltrim(str(InternalPartners_ACTIVE_MAX_DPTID))  as  'INTERNALPARTNERID_FirstParty_MAX'
 	, (select DEPARTMENT from TDEPARTMENT 
 			where DEPARTMENTID = InternalPartners_ACTIVE_MAX_DPTID) 
-			as TakedaEntity_FirstPartyMAX
-	/*  , [InternalPartners_ACTIVE_MAX_NAME] as 'TakedaEntity_FirstPartyMAX' /* V_Takeda_VCONTRACT_DPTROLES_FLAT */ */
+			as TheCompanyEntity_FirstPartyMAX
+	/*  , [InternalPartners_ACTIVE_MAX_NAME] as 'TheCompanyEntity_FirstPartyMAX' /* V_TheCompany_VCONTRACT_DPTROLES_FLAT */ */
 	 /* , [InternalPartners_ACTIVE]
       , [InternalPartners_INACTIVE] 
 	  , [Territories] */
 
-	     ,Comments_255 		 as 'Description_COMMENTS' /* max len is 1577 char , t_takeda_all truncated*/
+	     ,Comments_255 		 as 'Description_COMMENTS' /* max len is 1577 char , t_TheCompany_all truncated*/
 	  ,[LumpSum] as 'TotalMaxValue_LUMP_SUM_AMOUNT'
       ,[LumpSumCurrency] as 'Currency_LUMP_SUM_CURRENCY'	
 
       /*,[Tags] /* include since concat is used */*/
 	  /* ,[REFERENCECONTRACTNUMBER] use REFERENCECONTRACTID */
-	  , REFERENCECONTRACTID /* LINKED TO NUMBER, Nycomed Pharma AS (Norway)-Perkin Elmer Instruments Purchase Agreement Aanalyst 800 020200, just added to T_Takeda_ALL */
+	  , REFERENCECONTRACTID /* LINKED TO NUMBER, Nycomed Pharma AS (Norway)-Perkin Elmer Instruments Purchase Agreement Aanalyst 800 020200, just added to T_TheCompany_ALL */
      /* ,[REFERENCENUMBER] as 'REFERENCENUMBER' /* contract numbers */
       ,[COUNTERPARTYNUMBER] */
 	  , (case when [REFERENCENUMBER] >'' THEN [REFERENCENUMBER] ELSE '' END)
@@ -12176,14 +12176,14 @@ as
 				when [ConfidentialityFLAG_0123] IN(2,3) /* Strictly Confidential or Confidential */
 						OR contracttypeid = 11 /* case rictly Confidential or Confidential */ 
 						OR AGREEMENT_TYPE like '%Administration%' /* administration */
-						 THEN 'Takeda – Global General Counsel' /* GGC, Tax etc. allowed to see */
+						 THEN 'TheCompany – Global General Counsel' /* GGC, Tax etc. allowed to see */
 							/*AND user list to be provided for non GGC persons allowed to view*/ 
 				when AgreementType_Isprivate_FLAG = 0 /* public, 1 private 2 unclassified - no confidential BU needed */ 
 								then '' /* default to Workday BU IF legal ops takes responsibility */
 				when AgreementType_Isprivate_FLAG = 1 /* PRIVATE*/ 
-								then 'Takeda – Global General Counsel' 
+								then 'TheCompany – Global General Counsel' 
 				when CompanyList like '%intercompany%'/* INTERCOMPANY */ 
-								then 'Takeda – Global General Counsel' 
+								then 'TheCompany – Global General Counsel' 
 				when InternalPartners_DptCodeList like ',AU%' THEN 'Australia Confidential Contracts' 
 				when InternalPartners_DptCodeList like ',UK%' THEN 'UK Confidential Contracts' 
 				when InternalPartners_DptCodeList like ',IE%' THEN 'Ireland Confidential Contracts' 
@@ -12195,7 +12195,7 @@ as
 		 /* , [UO_DisplayName] as 'BusinessOwnerName_CONTRACT_OWNER' */
 		  , [UO_Email] as 'BusinessOwnerEmail_CONTRACT_OWNER'
 
-		  , Prs_ContractSignatoryEMAIL as ContractSignatoryEmail /* V_Takeda_VCONTRACT_DPTROLES_FLAT */
+		  , Prs_ContractSignatoryEMAIL as ContractSignatoryEmail /* V_TheCompany_VCONTRACT_DPTROLES_FLAT */
 
 		  ,[AgrIsMaterial] as 'MaterialContractYN'
 		 /* , Agr_IsMaterial_Flag as 'MaterialContractFlag' */
@@ -12223,32 +12223,32 @@ as
 			, MigrateYN_Flag
 		, [InternalPartners] as InternalPartnerList
 		, CompanyList
-		, (select InternalPartner_Name from V_Takeda_VDepartment_ParsedDpt_InternalPartner
+		, (select InternalPartner_Name from V_TheCompany_VDepartment_ParsedDpt_InternalPartner
 			where DEPARTMENTID = InternalPartners_ACTIVE_MAX_DPTID) 
-			as TakedaEntity_FirstPartyMAX_CompanyName
+			as TheCompanyEntity_FirstPartyMAX_CompanyName
 
-		, (select InternalPartner_Name_NonSpaceFwSlash from V_Takeda_VDepartment_ParsedDpt_InternalPartner
+		, (select InternalPartner_Name_NonSpaceFwSlash from V_TheCompany_VDepartment_ParsedDpt_InternalPartner
 			where DEPARTMENTID = InternalPartners_ACTIVE_MAX_DPTID) 
-			as TakedaEntity_FirstPartyMAX_CompanyName_NonSpaceFwSlash
-		, UPPER((select InternalPartner_Name_NonSpaceFwSlash from V_Takeda_VDepartment_ParsedDpt_InternalPartner
+			as TheCompanyEntity_FirstPartyMAX_CompanyName_NonSpaceFwSlash
+		, UPPER((select InternalPartner_Name_NonSpaceFwSlash from V_TheCompany_VDepartment_ParsedDpt_InternalPartner
 			where DEPARTMENTID = InternalPartners_ACTIVE_MAX_DPTID) )
-			as TakedaEntity_FirstPartyMAX_CompanyName_NonSpaceFwSlash_UPPER
+			as TheCompanyEntity_FirstPartyMAX_CompanyName_NonSpaceFwSlash_UPPER
 
-		,(select InternalPartner_CountryPrefix from V_Takeda_VDepartment_ParsedDpt_InternalPartner
+		,(select InternalPartner_CountryPrefix from V_TheCompany_VDepartment_ParsedDpt_InternalPartner
 			where DEPARTMENTID = InternalPartners_ACTIVE_MAX_DPTID) 
-			as TakedaEntity_FirstPartyMAX_CompanyCountry
+			as TheCompanyEntity_FirstPartyMAX_CompanyCountry
 
-	FROM t_Takeda_ALL_Xt a
+	FROM t_TheCompany_ALL_Xt a
 	/* WHERE MigrateYN_Flag = 1 */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_LNC_Mig_V_T_Takeda_ALL_STD_NoTS]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_LNC_Mig_V_T_TheCompany_ALL_STD_NoTS]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE view [dbo].[V_Takeda_LNC_Mig_V_T_Takeda_ALL_STD_NoTS]
+CREATE view [dbo].[V_TheCompany_LNC_Mig_V_T_TheCompany_ALL_STD_NoTS]
 
 as
 
@@ -12262,8 +12262,8 @@ as
 		   , [DateTableRefreshed]      
 		/* , [LinkToContractURL] */
 	FROM 
-		T_Takeda_ALL_Xt a 
-			inner join  [dbo].[V_Takeda_LNC_GoldStandard] s 
+		T_TheCompany_ALL_Xt a 
+			inner join  [dbo].[V_TheCompany_LNC_GoldStandard] s 
 			on a.CONTRACTID = s.CONTRACTID
 	WHERE 
 		/* [CONTRACTTYPEID] <> 11 /* Case */ */
@@ -12274,12 +12274,12 @@ as
 		, MigrateYN_Flag */
 		
 GO
-/****** Object:  View [dbo].[V_Takeda_LNC_Mig_DATA_COMPANY_TTENDERER_CONTRACTID_ProblemRecords]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_LNC_Mig_DATA_COMPANY_TTENDERER_CONTRACTID_ProblemRecords]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE view [dbo].[V_Takeda_LNC_Mig_DATA_COMPANY_TTENDERER_CONTRACTID_ProblemRecords]
+CREATE view [dbo].[V_TheCompany_LNC_Mig_DATA_COMPANY_TTENDERER_CONTRACTID_ProblemRecords]
 
 as
 
@@ -12294,8 +12294,8 @@ SELECT TOp 100 percent
 	  , a.[MigrateToSystem_LNCCategory]
 	  , a.[MigrateToSystem]
 	  , a.[MigrateToSystem_Detail]
-  FROM [Contiki_app].[dbo].[v_Takeda_TTENDERER_CompanyAddress_Primary] p 
-	inner join V_Takeda_LNC_Mig_V_T_Takeda_ALL_STD_NoTS a on p.Contractid_TT = a.contractid
+  FROM [Contiki_app].[dbo].[v_TheCompany_TTENDERER_CompanyAddress_Primary] p 
+	inner join V_TheCompany_LNC_Mig_V_T_TheCompany_ALL_STD_NoTS a on p.Contractid_TT = a.contractid
   where RowNoPartitionByCONTRACTID_OrderByTENDERERID >2
 	and (Strategytype_IsHcpHCO_1_0_NULL = 0 
 		or Strategytype_IsHcpHCO_1_0_NULL is null)
@@ -12303,12 +12303,12 @@ SELECT TOp 100 percent
 	order by RowNoPartitionByCONTRACTID_OrderByTENDERERID desc
 
 GO
-/****** Object:  View [dbo].[V_Takeda_LNC_GoldStandard_GrantDonationSponsNotMigrated]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_LNC_GoldStandard_GrantDonationSponsNotMigrated]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE view [dbo].[V_Takeda_LNC_GoldStandard_GrantDonationSponsNotMigrated]
+CREATE view [dbo].[V_TheCompany_LNC_GoldStandard_GrantDonationSponsNotMigrated]
 
 as 
 
@@ -12322,17 +12322,17 @@ SELECT [CONTRACTID]
 , (case when expirydate is null then 'Evergreen' 
 		when expirydate < getdate() then 'Expired' 
 		else 'not expired' end) as ExpiredFlag
-  FROM [DAQ-1445_Contiki_App_DESQL016_Divestment].[dbo].[V_Takeda_LNC_GoldStandard]
+  FROM [DAQ-1445_Contiki_App_DESQL016_Divestment].[dbo].[V_TheCompany_LNC_GoldStandard]
   where 
 [IsMigratedToLINC_Flag] = 0 and [MigrateYN_Flag] = 1
 GO
-/****** Object:  View [dbo].[V_Takeda_NoActivityDomainNotTakeda]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_NoActivityDomainNotTheCompany]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE view [dbo].[V_Takeda_NoActivityDomainNotTakeda]
+CREATE view [dbo].[V_TheCompany_NoActivityDomainNotTheCompany]
 
 as
 
@@ -12343,13 +12343,13 @@ select
 	, u.DOMAINUSERNAME
 	, u.DOMAINUSERSID
 	, l.*
-from V_Takeda_VUSER u left join [dbo].[V_Takeda_VLogon] l on u.userid = l.userid
+from V_TheCompany_VUSER u left join [dbo].[V_TheCompany_VLogon] l on u.userid = l.userid
 where u.USER_MIK_VALID = 1
 	and [MaxDt_AllActivity] is null
-	and domainusername not like '%takeda%'
+	and domainusername not like '%TheCompany%'
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VCOMPANYADDRESS_PrimaryAddress]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VCOMPANYADDRESS_PrimaryAddress]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -12366,7 +12366,7 @@ GO
 
 
 /****** Script for SelectTopNRows command from SSMS  ******/
-CREATE view [dbo].[V_Takeda_VCOMPANYADDRESS_PrimaryAddress]
+CREATE view [dbo].[V_TheCompany_VCOMPANYADDRESS_PrimaryAddress]
 
 as 
 
@@ -12410,7 +12410,7 @@ SELECT [COMPANYADDRESSID]
 			as CompanyAddressConcat
 			, ct.[CtyCode2Letter]
   FROM [Contiki_app].[dbo].[VCOMPANYADDRESS] a  		
-		left join T_Takeda_TCountries ct 
+		left join T_TheCompany_TCountries ct 
 			on UPPER(a.COUNTRY) = UPPER(ct.ctyname)
   WHERE ADDRESSTYPEID = 1 /* Primary Address */
 
@@ -12472,7 +12472,7 @@ SELECT	CC.CompanyContactID,
 	ON	U.PersonID				= CC.PersonID
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VCOMPANY_Contact_GroupByCompanyID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VCOMPANY_Contact_GroupByCompanyID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -12480,7 +12480,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_VCOMPANY_Contact_GroupByCompanyID]
+CREATE view [dbo].[V_TheCompany_VCOMPANY_Contact_GroupByCompanyID]
 
 as 
 
@@ -12502,7 +12502,7 @@ as
 	group by CompanyID
 
 GO
-/****** Object:  View [dbo].[v_Takeda_TTENDERER_CompanyAddress_Primary]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[v_TheCompany_TTENDERER_CompanyAddress_Primary]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -12510,7 +12510,7 @@ GO
 
 
 CREATE view
-[dbo].[v_Takeda_TTENDERER_CompanyAddress_Primary] as
+[dbo].[v_TheCompany_TTENDERER_CompanyAddress_Primary] as
 
 select 
 	t.TENDERERID
@@ -12540,27 +12540,27 @@ select
 		AS RowNoPartitionByCONTRACTID_OrderByTENDERERID
 		, h.[contract] as ContractTitle
 from TTENDERER t 
-	/*inner join T_Takeda_VCOMPANY /* was tcompany */ c /* [dbo].[V_Takeda_VCOMPANY_Contact_GroupByCompanyID] is slow */
+	/*inner join T_TheCompany_VCOMPANY /* was tcompany */ c /* [dbo].[V_TheCompany_VCOMPANY_Contact_GroupByCompanyID] is slow */
 		on t.COMPANYID = c.COMPANYID */
-	inner join [dbo].[T_Takeda_VCompany] /* TCOMPANY 12.May */ c
+	inner join [dbo].[T_TheCompany_VCompany] /* TCOMPANY 12.May */ c
 		 on t.COMPANYID = c.companyid_LN
 	inner join TCONTRACT h /* for strategy type HCP/HCO */
 		on t.CONTRACTID = h.CONTRACTID
 	/* left join */
-	left join [dbo].[V_Takeda_VCOMPANYADDRESS_PrimaryAddress] a 
+	left join [dbo].[V_TheCompany_VCOMPANYADDRESS_PrimaryAddress] a 
 		on a.CompanyID_Add = t.COMPANYID 
-	left join [dbo].[V_Takeda_VCOMPANY_Contact_GroupByCompanyID] cc
+	left join [dbo].[V_TheCompany_VCOMPANY_Contact_GroupByCompanyID] cc
 		on t.COMPANYID = cc.companyid_cc
 		/* SLOW */
-	/*left join [dbo].[T_Takeda_Ariba_Suppliers_SAPID_ValidMatchedCompanies] s
+	/*left join [dbo].[T_TheCompany_Ariba_Suppliers_SAPID_ValidMatchedCompanies] s
 		on c.COMPANYID_LN = s.[Sup_COMPANYID] /* added 19-feb-21 */ */
 
-/*	left join T_Takeda_TCountries ct on UPPER(a.COUNTRY) = UPPER(ct.ctyname) */
+/*	left join T_TheCompany_TCountries ct on UPPER(a.COUNTRY) = UPPER(ct.ctyname) */
 
 
 
 GO
-/****** Object:  View [dbo].[v_Takeda_TTENDERER_CompanyAddress_Primary_GroupByContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[v_TheCompany_TTENDERER_CompanyAddress_Primary_GroupByContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -12569,7 +12569,7 @@ GO
 
 CREATE view
 
-[dbo].[v_Takeda_TTENDERER_CompanyAddress_Primary_GroupByContractID] as
+[dbo].[v_TheCompany_TTENDERER_CompanyAddress_Primary_GroupByContractID] as
 
 select 
 	  Contractid_TT
@@ -12577,7 +12577,7 @@ select
 		/* ALL IDs */
 	, convert(varchar(255), SUBSTRING(STUFF(
 	(SELECT ',' + s.[CompanyAddressConcat]
-	FROM [v_Takeda_TTENDERER_CompanyAddress_Primary] s
+	FROM [v_TheCompany_TTENDERER_CompanyAddress_Primary] s
 	WHERE s.CONTRACTID_TT =d.CONTRACTID_TT
 			and s.[CompanyAddressConcat] > '' /* otherwise ,,, */
 	FOR XML PATH('')),1,1,''),1,255))
@@ -12585,26 +12585,26 @@ select
 
 	, convert(varchar(255),  SUBSTRING(STUFF(
 	(SELECT ',' + s.[EMAIL]
-	FROM [v_Takeda_TTENDERER_CompanyAddress_Primary] s
+	FROM [v_TheCompany_TTENDERER_CompanyAddress_Primary] s
 	WHERE s.CONTRACTID_TT =d.CONTRACTID_TT 
 		and s.email > '' /* otherwise ,,, */
 	FOR XML PATH('')),1,1,''),1,255))
 	AS Company_EmailAddressList
 
 	, 	(SELECT count(s.[EMAIL])
-	FROM [v_Takeda_TTENDERER_CompanyAddress_Primary] s
+	FROM [v_TheCompany_TTENDERER_CompanyAddress_Primary] s
 	WHERE s.CONTRACTID_TT =d.CONTRACTID_TT 
 		and s.email > '' ) AS EmailAddressCount
 
 	, 	(SELECT count(s.[CompanyAddressConcat])
-	FROM [v_Takeda_TTENDERER_CompanyAddress_Primary] s
+	FROM [v_TheCompany_TTENDERER_CompanyAddress_Primary] s
 	WHERE s.CONTRACTID_TT =d.CONTRACTID_TT 
 		and s.CompanyAddressConcat > '')
 		 AS CompanyAddressConcat_List
 
 	,  convert(varchar(50), SUBSTRING(STUFF(
 	(SELECT ',' + s.[Company_SAP_ID]
-	FROM [v_Takeda_TTENDERER_CompanyAddress_Primary] s
+	FROM [v_TheCompany_TTENDERER_CompanyAddress_Primary] s
 	WHERE s.CONTRACTID_TT =d.CONTRACTID_TT 
 		and s.[Company_SAP_ID] > '' /* otherwise ,,, */
 	FOR XML PATH('')),1,1,''),1,255))
@@ -12612,13 +12612,13 @@ select
 
 	,  convert(varchar(255), replace(SUBSTRING(STUFF(
 	(SELECT ',' + s.[Company_SAP_NAME]
-	FROM [v_Takeda_TTENDERER_CompanyAddress_Primary] s
+	FROM [v_TheCompany_TTENDERER_CompanyAddress_Primary] s
 	WHERE s.CONTRACTID_TT =d.CONTRACTID_TT 
 		and s.[Company_SAP_NAME] > '' /* otherwise ,,, */
 	FOR XML PATH('')),1,1,''),1,255),'&amp;','&'))
 	 AS Company_SAP_NAME_List /* ERNST & YOUNG FRANCE */
 
-from [dbo].[v_Takeda_TTENDERER_CompanyAddress_Primary] d
+from [dbo].[v_TheCompany_TTENDERER_CompanyAddress_Primary] d
 /* where contractid_tt = 109133 */
 group by 
 	Contractid_TT
@@ -12627,7 +12627,7 @@ group by
 
 
 GO
-/****** Object:  View [dbo].[V_T_Takeda_ALL_Xt]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_T_TheCompany_ALL_Xt]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -12635,7 +12635,7 @@ GO
 
 
 
-CREATE view [dbo].[V_T_Takeda_ALL_Xt]
+CREATE view [dbo].[V_T_TheCompany_ALL_Xt]
 
 as
 
@@ -12645,8 +12645,8 @@ SELECT
 		, d.[InternalPartners_ACTIVE]
 		, d.[InternalPartners_INACTIVE]
 
-		, d.[InternalPartners_ACTIVE_MAX_DPTID] /* V_Takeda_VCONTRACT_DPTROLES_FLAT */
-		, d.[InternalPartners_ACTIVE_MAX_NAME] /* V_Takeda_VCONTRACT_DPTROLES_FLAT */
+		, d.[InternalPartners_ACTIVE_MAX_DPTID] /* V_TheCompany_VCONTRACT_DPTROLES_FLAT */
+		, d.[InternalPartners_ACTIVE_MAX_NAME] /* V_TheCompany_VCONTRACT_DPTROLES_FLAT */
 
 		/* Company - LEFT JOIN, not 1:1 */
 		, ca.Company_SAP_ID_List
@@ -12689,24 +12689,24 @@ SELECT
 			, Agr_LINC_SubType
 		, year(c.STARTDATE) as STARTDATE_YYYY
 
-FROM T_Takeda_ALL c
-	INNER JOIN [dbo].[V_T_Takeda_ALL_0_MigFlags] m 
+FROM T_TheCompany_ALL c
+	INNER JOIN [dbo].[V_T_TheCompany_ALL_0_MigFlags] m 
 		on c.CONTRACTID = m.contractid_proc
-	INNER JOIN [dbo].[V_Takeda_AgreementType] a /* INNER JOIN OK */
+	INNER JOIN [dbo].[V_TheCompany_AgreementType] a /* INNER JOIN OK */
 		on c.AGREEMENT_TYPEID = a.AgrTypeID 
-	LEFT JOIN T_Takeda_VCONTRACT_DPTROLES_FLAT d  /* INNER JOIN OK */
+	LEFT JOIN T_TheCompany_VCONTRACT_DPTROLES_FLAT d  /* INNER JOIN OK */
 		on c.CONTRACTID = d.Dpt_contractid
-	LEFT JOIN [T_Takeda_VCONTRACT_PERSONROLES_FLAT] p   /* INNER JOIN OK */
+	LEFT JOIN [T_TheCompany_VCONTRACT_PERSONROLES_FLAT] p   /* INNER JOIN OK */
 		on c.CONTRACTID = p.prs_CONTRACTID
 	LEFT /*!*/ JOIN /* TTENDERER: inner JOIN LOSES ROWS because some contracts do NOT have a company / tenderer (cases etc.) */
-	v_Takeda_TTENDERER_CompanyAddress_Primary_GroupByContractID ca 	
+	v_TheCompany_TTENDERER_CompanyAddress_Primary_GroupByContractID ca 	
 		on c.contractid = ca.Contractid_TT 
-/*	inner join V_Takeda_VACL_FLAT r 
+/*	inner join V_TheCompany_VACL_FLAT r 
 		on c.contractid = r.objectid */
 	/* was left */
 
 GO
-/****** Object:  View [dbo].[V_T_Takeda_ALL_NoTS_CFN]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_T_TheCompany_ALL_NoTS_CFN]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -12715,7 +12715,7 @@ GO
 
 
 
-CREATE view [dbo].[V_T_Takeda_ALL_NoTS_CFN]
+CREATE view [dbo].[V_T_TheCompany_ALL_NoTS_CFN]
 
 as
 
@@ -12840,15 +12840,15 @@ SELECT
 		/* , AGREEMENT_TYPEID */
 /* ,DptCode2Digit_Link */
 FROM
-V_T_Takeda_ALL_Xt a
+V_T_TheCompany_ALL_Xt a
 
 GO
-/****** Object:  View [dbo].[V_T_Takeda_ALL_TS_CFN_CommonFN]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_T_TheCompany_ALL_TS_CFN_CommonFN]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[V_T_Takeda_ALL_TS_CFN_CommonFN]
+create view [dbo].[V_T_TheCompany_ALL_TS_CFN_CommonFN]
 
 as
 
@@ -12861,19 +12861,19 @@ SELECT
 		/* , AGREEMENT_TYPEID */
 /* ,DptCode2Digit_Link */
 FROM
-	V_T_Takeda_ALL a
-		inner join [dbo].[V_T_Takeda_ALL_NoTS_CFN] b 
+	V_T_TheCompany_ALL a
+		inner join [dbo].[V_T_TheCompany_ALL_NoTS_CFN] b 
 		on A.contractid = B.contractid
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_1_ARB_MiscMetadataFields]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_1_ARB_MiscMetadataFields]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE view 
-[dbo].[V_Takeda_KWS_1_ARB_MiscMetadataFields]
+[dbo].[V_TheCompany_KWS_1_ARB_MiscMetadataFields]
 
 as 
 
@@ -12885,15 +12885,15 @@ as
 		, p.[Contract Type] as 'FieldContent'
 		, p.contractinternalid as CONTRACTID
 
-	FROM [V_Takeda_KeyWordSearch] s 
-		inner join T_Takeda_AribaDump p 
+	FROM [V_TheCompany_KeyWordSearch] s 
+		inner join T_TheCompany_AribaDump p 
 			on p.[Contract Type] like '%'+s.KeyWordVarchar255+'%' 
 			OR p.[Contract Description] like '%'+s.KeyWordVarchar255+'%' /* e.g. supply agreement does not exist as agreement type */
 	where /* p.statusid = 5  active */
 		s.KeyWordtype = 'AgreementType'
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_7_ARB_ContractID_SummaryByContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_7_ARB_ContractID_SummaryByContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -12903,10 +12903,10 @@ GO
 
 CREATE view
 
-[dbo].[V_Takeda_KWS_7_ARB_ContractID_SummaryByContractID]
+[dbo].[V_TheCompany_KWS_7_ARB_ContractID_SummaryByContractID]
 
 as 
-/* EXEC [dbo].[Takeda_KeyWordSearch] */
+/* EXEC [dbo].[TheCompany_KeyWordSearch] */
 	SELECT  
 		u.contractid /* as ContractID_KWS */
 
@@ -12916,13 +12916,13 @@ as
 
 		,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ',' + c.[KeyWordVarchar255] 
-			FROM [T_Takeda_KWS_3_ARB_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_ARB_TCompany_ContractID_Extended] c
 			WHERE  c.contractid = u.contractid 
 				AND c.companyMatch_Exact_Flag > 0
 			FOR XML PATH('')),1,1,''),'&amp;','&')) AS [CompanyMatch_Exact]
 		,
 			(SELECT max(CompanyMatch_Exact_Flag)
-			FROM [T_Takeda_KWS_3_ARB_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_ARB_TCompany_ContractID_Extended] c
 			WHERE  c.contractid = u.contractid)
 			 AS [CompanyMatch_Exact_FLAG]
 
@@ -12931,7 +12931,7 @@ as
 			(SELECT DISTINCT ', ' + c.[KeyWordVarchar255] /*+': ' 
 			
 				+ ', Company: ' + rs.[Company_LettersNumbersSpacesOnly] +')' */
-			FROM [T_Takeda_KWS_3_ARB_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_ARB_TCompany_ContractID_Extended] c
 			where  c.contractid = u.contractid   
 				and [CompanyMatch_Like_FLAG] > 0
 				and [CompanyMatch_Exact_FLAG] = 0
@@ -12939,7 +12939,7 @@ as
 
 		,
 			(SELECT max(CompanyMatch_LIKE_Flag)
-			FROM [T_Takeda_KWS_3_ARB_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_ARB_TCompany_ContractID_Extended] c
 			WHERE  c.contractid = u.contractid)
 			 AS [CompanyMatch_LIKE_FLAG]
 
@@ -12947,7 +12947,7 @@ as
 						,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ', ' + c.[KeyWordVarchar255] /*+': ' 
 				+ ', Company: ' + rs.[Company_LettersNumbersSpacesOnly] +')' */
-			FROM [T_Takeda_KWS_3_ARB_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_ARB_TCompany_ContractID_Extended] c
 			where  c.contractid = u.contractid   
 				and [CompanyMatch_Like_FLAG] = 0
 				and [CompanyMatch_Exact_FLAG] = 0
@@ -12956,7 +12956,7 @@ as
 						,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ', ' + c.[Companytype] /*+': ' 
 				+ ', Company: ' + rs.[Company_LettersNumbersSpacesOnly] +')' */
-			FROM [T_Takeda_KWS_3_ARB_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_ARB_TCompany_ContractID_Extended] c
 			where  c.contractid = u.contractid   
 			FOR XML PATH('')),1,1,''),'&amp;','&')) AS CompanyType
 
@@ -12978,7 +12978,7 @@ as
 					WHEN [CompanyMatch_FirstWord2Way_REV_FLAG] > 0 THEN '4e - First Word 2-W REV'
 					ELSE '' END) 
 					)
-				FROM T_Takeda_KWS_3_ARB_TCompany_ContractID_Extended c
+				FROM T_TheCompany_KWS_3_ARB_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid)
 					AS [CompanyMatch_Level]
 
@@ -13003,7 +13003,7 @@ as
 						THEN 'Company(4-Any)'
 					ELSE '' END) 
 					)
-				FROM T_Takeda_KWS_3_ARB_TCompany_ContractID_Extended c
+				FROM T_TheCompany_KWS_3_ARB_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid)
 					AS [CompanyMatch_LevelCategory]
 
@@ -13025,7 +13025,7 @@ as
 				WHEN [CompanyMatch_FirstWord2Way_REV_FLAG] > 0 THEN CompanyMatch_FirstWord2Way_REV_FLAG
 				ELSE 0 END)
 					)
-				FROM T_Takeda_KWS_3_ARB_TCompany_ContractID_Extended c
+				FROM T_TheCompany_KWS_3_ARB_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid)
 					AS [CompanyMatch_Score]
 
@@ -13043,15 +13043,15 @@ as
 				WHEN [CompanyMatch_FirstWord2Way_REV_FLAG] > 0 THEN CompanyMatch_FirstWord2Way_REV
 				ELSE '' END)
 					)
-				FROM T_Takeda_KWS_3_ARB_TCompany_ContractID_Extended c
+				FROM T_TheCompany_KWS_3_ARB_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid),255))
 					AS [CompanyMatch_Name]
 
-			, (SELECT MAX([KeyWordVarchar255]) from T_Takeda_KWS_3_ARB_TCompany_ContractID_Extended c
+			, (SELECT MAX([KeyWordVarchar255]) from T_TheCompany_KWS_3_ARB_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid) 
 					as CompanyMatch_KeyWord
 
-			, (SELECT MAX([KeyWordVarchar255_UPPER]) from T_Takeda_KWS_3_ARB_TCompany_ContractID_Extended c
+			, (SELECT MAX([KeyWordVarchar255_UPPER]) from T_TheCompany_KWS_3_ARB_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid) 
 					as CompanyMatch_KeyWord_UPPER									   
 	/* COUNTRY - Company */
@@ -13060,7 +13060,7 @@ as
 			(SELECT DISTINCT ', ' + rs.[KeyWordVarchar255] /*+': ' 
 
 				+ ', Company: ' + rs.[Company_LettersNumbersSpacesOnly] +')' */
-			FROM T_Takeda_KWS_2_ARB_TCOMPANYCountry_ContractID rs
+			FROM T_TheCompany_KWS_2_ARB_TCOMPANYCountry_ContractID rs
 			where  rs.contractid = u.contractid   
 			FOR XML PATH('')),1,1,''),'&amp;','&')) */, '' AS [CompanyCountryMatch]	
 			
@@ -13070,9 +13070,9 @@ as
 		,Replace(STUFF(
 			(
 			SELECT DISTINCT ',' + rs.[KeyWordCustom1]
-			FROM (select [KeyWordCustom1], contractid from T_Takeda_KWS_2_ARB_TPRODUCT_ContractID
+			FROM (select [KeyWordCustom1], contractid from T_TheCompany_KWS_2_ARB_TPRODUCT_ContractID
 					UNION
-					select [KeyWordCustom1], contractid from T_Takeda_KWS_2_ARB_TCompany_ContractID
+					select [KeyWordCustom1], contractid from T_TheCompany_KWS_2_ARB_TCompany_ContractID
 					) rs
 			where  rs.contractid = u.contractid
 				AND rs.[KeyWordCustom1] IS NOT NULL
@@ -13082,7 +13082,7 @@ as
 
 		,Replace(STUFF(
 			(SELECT DISTINCT ',' + rs.[KeyWordCustom2]
-			FROM T_Takeda_KWS_2_ARB_TPRODUCT_ContractID rs
+			FROM T_TheCompany_KWS_2_ARB_TPRODUCT_ContractID rs
 			where  rs.contractid = u.contractid
 			AND rs.[KeyWordCustom2] IS NOT NULL
 			/* and rs.ProductExact_Flag = 1 */
@@ -13092,7 +13092,7 @@ as
 
 		,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ', ' + rs.[DescriptionKeyword]
-			FROM [T_Takeda_KWS_5c_ARB_DESCRIPTION_ContractID] rs
+			FROM [T_TheCompany_KWS_5c_ARB_DESCRIPTION_ContractID] rs
 			where  rs.contractid = u.contractid
 			/* only include records that are not a company match */
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS Description_Match
@@ -13101,7 +13101,7 @@ as
 
 		,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ', ' + rs.[KeyWordVarchar255]
-			FROM [T_Takeda_KWS_2_ARB_InternalPartner_ContractID] rs
+			FROM [T_TheCompany_KWS_2_ARB_InternalPartner_ContractID] rs
 			where  rs.contractid = u.contractid
 			/* only include records that are not a company match */
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS InternalPartner_Match
@@ -13110,7 +13110,7 @@ as
 
 		,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ', ' + rs.[KeyWordVarchar255]
-			FROM [T_Takeda_KWS_2_ARB_Territories_ContractID] rs
+			FROM [T_TheCompany_KWS_2_ARB_Territories_ContractID] rs
 			where  rs.contractid = u.contractid
 			/* only include records that are not a company match */
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS Territory_Match
@@ -13119,38 +13119,38 @@ as
 
 		,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup + ' ('+ p.keywordvarchar255 + ')' 
-		FROM [dbo].[T_Takeda_KWS_3_ARB_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_ARB_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid and p.[ProductMatch_TN] = 1
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS KeyWordMatch_TradeName
 
 						 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup + ' ('+ p.keywordvarchar255 + ')' 
-		FROM [dbo].[T_Takeda_KWS_3_ARB_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_ARB_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid and p.[ProductMatch_AI] = 1
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS KeyWordMatch_ActiveIngredients
 
 		 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup
-		FROM [dbo].[T_Takeda_KWS_3_ARB_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_ARB_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid and p.[ProductMatch_Exact] = 1
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS KeyWordMatch_Product_EXACT
 
 		 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup + ' ('+ p.keywordvarchar255 + ')' 
-		FROM [dbo].[T_Takeda_KWS_3_ARB_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_ARB_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid and p.[ProductMatch_NotExact] = 1
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS KeyWordMatch_Product_NotExact
 
 			 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup + ' ('+ p.keywordvarchar255 + ')' 
-		FROM [dbo].[T_Takeda_KWS_3_ARB_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_ARB_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid and (p.[ProductMatch_AI] = 1 OR p.[ProductMatch_TN] = 1)
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS KeyWordMatch_Product_AIorTN
 
 				 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup 
 			+ (CASE WHEN PrdGrpMatch_EXACT_FLAG = 1 THEN '' ELSE ' ('+ p.keywordvarchar255 + ')' END)
-		FROM [dbo].[T_Takeda_KWS_3_ARB_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_ARB_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid 
 		/* and (p.[ProductMatch_AI] = 1 OR p.[ProductMatch_TN] = 1) */
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS ProductKeyword_Any
@@ -13158,7 +13158,7 @@ as
 	/* TAG */
 				 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.tagcategory
-		FROM [dbo].[T_Takeda_KWS_2_ARB_Tag_ContractID] p 
+		FROM [dbo].[T_TheCompany_KWS_2_ARB_Tag_ContractID] p 
 		where  p.CONTRACTID = u.contractid 
 		and P.keywordtype = 'TagCategory'
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS TagCategory_Match
@@ -13166,44 +13166,44 @@ as
 		/*
 				 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.tag
-		FROM [dbo].[T_Takeda_KWS_2_ARB_Tag_ContractID] p 
+		FROM [dbo].[T_TheCompany_KWS_2_ARB_Tag_ContractID] p 
 		where  p.CONTRACTID = u.contractid 
 		and P.keywordtype = 'Tag'
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS Tag_Match */
 				 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.FieldContent
-		FROM [dbo].[V_Takeda_KWS_1_ARB_MiscMetadataFields] p 
+		FROM [dbo].[V_TheCompany_KWS_1_ARB_MiscMetadataFields] p 
 		where  p.CONTRACTID = u.contractid 
 		and P.keywordtype = 'AgreementType'
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS AgreementType_Match
 
 	FROM 
-		T_Takeda_KWS_6_ARB_ContractID_UNION  u /* product, company, description */
+		T_TheCompany_KWS_6_ARB_ContractID_UNION  u /* product, company, description */
 	group by 
 		u.contractid
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_DptID_DptRoleCount]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_DptID_DptRoleCount]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE view [dbo].[V_Takeda_DptID_DptRoleCount]
+CREATE view [dbo].[V_TheCompany_DptID_DptRoleCount]
 
 as 
 
 SELECT top 999 d.usergroup, d.DEPARTMENTID, d.Department
 , COUNT(r.DEPARTMENTROLE_IN_OBJECTID) as DptRoleInObjectIdCount
-  FROM V_Takeda_VDEPARTMENT_VUSERGROUP d left join TDEPARTMENTROLE_IN_OBJECT r 
-  on d.DEPARTMENTID = r.DEPARTMENTID /* left join V_Takeda_ALL a on r.OBJECTID = a.contractid */
+  FROM V_TheCompany_VDEPARTMENT_VUSERGROUP d left join TDEPARTMENTROLE_IN_OBJECT r 
+  on d.DEPARTMENTID = r.DEPARTMENTID /* left join V_TheCompany_ALL a on r.OBJECTID = a.contractid */
   WHERE d.usergroup like 'Departments%' and d.MIK_VALID = 1
   /* and DEPARTMENT_CODE not like ':%' /* no area level nodes */ */
   GROUP BY d.usergroup, d.DEPARTMENTID, d.Department
   order by d.USERGROUP
 
 GO
-/****** Object:  View [dbo].[V_Takeda_Mig_VDOCUMENT_Proc]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Mig_VDOCUMENT_Proc]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13215,7 +13215,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_Mig_VDOCUMENT_Proc]
+CREATE view [dbo].[V_TheCompany_Mig_VDOCUMENT_Proc]
 
 as
 
@@ -13253,13 +13253,13 @@ d.Title as DocTitle
       ,d.[ApprovalStatusFixed] */
 
 , c.*
-from VDOCUMENT d inner join dbo.T_Takeda_Mig_1T_Takeda_All_ProcNetFlag c
+from VDOCUMENT d inner join dbo.T_TheCompany_Mig_1T_TheCompany_All_ProcNetFlag c
 on d.OBJECTID = c.contractid
  /*, f.FileType, f.LastChangedDate, f.MajorVersion 
 left join TFILEinfo f on d.fileid = f.FileID */
 where
 OBJECTID in (select contractid_Proc 
-from dbo.V_Takeda_Mig_0ProcNetFlag
+from dbo.V_TheCompany_Mig_0ProcNetFlag
 where Proc_NetFlag = 1)
 and d.MIK_VALID = 1
 
@@ -13267,7 +13267,7 @@ and d.MIK_VALID = 1
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_TROLE]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_TROLE]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13275,7 +13275,7 @@ GO
 
 
 
-CREATE View [dbo].[V_Takeda_TROLE]
+CREATE View [dbo].[V_TheCompany_TROLE]
 
 as
 
@@ -13312,7 +13312,7 @@ as
 	TROLE r
 
 GO
-/****** Object:  View [dbo].[V_Takeda_Edit_Wrong_DPTROLE_IN_OBJECT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Edit_Wrong_DPTROLE_IN_OBJECT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13320,7 +13320,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_Edit_Wrong_DPTROLE_IN_OBJECT]
+CREATE view [dbo].[V_TheCompany_Edit_Wrong_DPTROLE_IN_OBJECT]
 
 as
 
@@ -13356,13 +13356,13 @@ c.number as Dpt_ContractNumber
 		WHEN d.ROLEID = 3 /* Territories */ THEN 
 			STUFF(
 			(SELECT ',' + d.USERGROUP
-			FROM   V_Takeda_Departmentrole_In_Object d /* use usergroup for full path? */
+			FROM   V_TheCompany_Departmentrole_In_Object d /* use usergroup for full path? */
 			WHERE d.objectid = c.contractid
 			FOR XML PATH('')),1,1,'')
 		WHEN d.ROLEID = 100 /* Internal Partner */ THEN 
 			STUFF(
 			(SELECT ',' + d.USERGROUP
-			FROM   V_Takeda_Departmentrole_In_Object d /* use usergroup for full path? */
+			FROM   V_TheCompany_Departmentrole_In_Object d /* use usergroup for full path? */
 			WHERE d.OBJECTID = c.contractid
 			FOR XML PATH('')),1,1,'')
 		END) 
@@ -13403,7 +13403,7 @@ c.number as Dpt_ContractNumber
 		WHEN d.ROLEID = 3 /* Territories */ THEN 
 			STUFF(
 			(SELECT ',' + d.USERGROUP
-			FROM   dbo.V_Takeda_VDEPARTMENT_VUSERGROUP d /* use usergroup for full path? */
+			FROM   dbo.V_TheCompany_VDEPARTMENT_VUSERGROUP d /* use usergroup for full path? */
 			WHERE SUBSTRING(d.department_code,2,2) =SUBSTRING(h.department_code,2,2)
 			AND SUBSTRING(d.department_code,1,1)=';' /* Territory */
 			AND SUBSTRING(d.department_code,4,1)=';' /* only 1 Territory */
@@ -13411,7 +13411,7 @@ c.number as Dpt_ContractNumber
 		WHEN d.ROLEID = 100 /* Internal Partner */ THEN 
 			STUFF(
 			(SELECT ',' + d.USERGROUP
-			FROM   dbo.V_Takeda_VDEPARTMENT_VUSERGROUP d /* use usergroup for full path? */
+			FROM   dbo.V_TheCompany_VDEPARTMENT_VUSERGROUP d /* use usergroup for full path? */
 			WHERE SUBSTRING(d.department_code,2,2) =SUBSTRING(h.department_code,2,2)
 			AND SUBSTRING(d.department_code,1,1)=',' /* Internal Partner */
 			/* AND SUBSTRING(d.department_code,4,1)=',' */
@@ -13435,14 +13435,14 @@ c.number as Dpt_ContractNumber
 		END) 
 		TARGET_UserDisplayName	
 FROM
-	V_Takeda_Departmentrole_In_Object d 
-	inner join V_Takeda_TROLE r on d.roleid = r.roleid
-	inner join t_Takeda_Hierarchy h on d.DEPARTMENTID = h.DEPARTMENTID
+	V_TheCompany_Departmentrole_In_Object d 
+	inner join V_TheCompany_TROLE r on d.roleid = r.roleid
+	inner join t_TheCompany_Hierarchy h on d.DEPARTMENTID = h.DEPARTMENTID
 	inner join TUSERGROUP hu on h.DEPARTMENTID = hu.DEPARTMENTID
-	inner join T_Takeda_ALL c on d.objectid = c.contractid
-	left join /* dbo.V_Takeda_VUSER_WITH_DPT US */ VUSER US on c.EXECUTORID = US.USERID
-	left join /* dbo.V_Takeda_VUSER_WITH_DPT US */ VUSER UO on c.OWNERID = UO.EMPLOYEEID
-	left join /* dbo.V_Takeda_VUSER_WITH_DPT US */ VUSER UR on c.TECHCOORDINATORID = UR.EMPLOYEEID 
+	inner join T_TheCompany_ALL c on d.objectid = c.contractid
+	left join /* dbo.V_TheCompany_VUSER_WITH_DPT US */ VUSER US on c.EXECUTORID = US.USERID
+	left join /* dbo.V_TheCompany_VUSER_WITH_DPT US */ VUSER UO on c.OWNERID = UO.EMPLOYEEID
+	left join /* dbo.V_TheCompany_VUSER_WITH_DPT US */ VUSER UR on c.TECHCOORDINATORID = UR.EMPLOYEEID 
 WHERE 
 	h.noderole <> r.RoleCategory
 	and r.fixed <> 'ARCHIVING' /* exclude Archiving for now */
@@ -13458,7 +13458,7 @@ WHERE
 
 
 GO
-/****** Object:  View [dbo].[V_T_Takeda_ALL_ReviewDate_Analysis]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_T_TheCompany_ALL_ReviewDate_Analysis]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13470,7 +13470,7 @@ GO
 
 CREATE View
 
-[dbo].[V_T_Takeda_ALL_ReviewDate_Analysis]
+[dbo].[V_T_TheCompany_ALL_ReviewDate_Analysis]
 
 as
 
@@ -13498,18 +13498,18 @@ as
 		, number as ContractNumber
 		, Title as ContractTitle
 		, (case when a.reviewdate is not null then a.reviewdate-getdate() else 0 end) as NumDaysExpired
-	from t_takeda_all a inner join [dbo].[V_Takeda_LNC_GoldStandard] g on a.contractid = g.CONTRACTID
+	from t_TheCompany_all a inner join [dbo].[V_TheCompany_LNC_GoldStandard] g on a.contractid = g.CONTRACTID
 	where [FINAL_EXPIRYDATE] is null
 	and CONTRACTTYPE <>'Case'
 
 GO
-/****** Object:  View [dbo].[V_Takeda_RegForm_UserGrpUsers]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_RegForm_UserGrpUsers]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE view [dbo].[V_Takeda_RegForm_UserGrpUsers]
+CREATE view [dbo].[V_TheCompany_RegForm_UserGrpUsers]
 
 as
 
@@ -13522,7 +13522,7 @@ select TOP 9999
 	, PRIMARYUSERGROUP as 'PrimaryUserGroup'
 	, UserProfileGroup as 'UserProfileGroup' /* Only Basic or super user, read all etc. not stated */
 	, GETDATE() as Last_Updated 
-FROM  V_Takeda_VUSER u inner join [dbo].[TUSER_IN_USERGROUP] g on u.userid = g.userid
+FROM  V_TheCompany_VUSER u inner join [dbo].[TUSER_IN_USERGROUP] g on u.userid = g.userid
 	inner join tusergroup gu on g.USERGROUPID = gu.usergroupid
 where 
 	 USER_MIK_VALID = 1
@@ -13539,7 +13539,7 @@ order by
 	gu.Usergroup, DISPLAYNAME
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VDepartment_ParsedDpt_InternalPartner_ACTIVE]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDepartment_ParsedDpt_InternalPartner_ACTIVE]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13547,14 +13547,14 @@ GO
 
 
 
- CREATE view [dbo].[V_Takeda_VDepartment_ParsedDpt_InternalPartner_ACTIVE]
+ CREATE view [dbo].[V_TheCompany_VDepartment_ParsedDpt_InternalPartner_ACTIVE]
 
   as
 
-  select * from V_Takeda_VDepartment_ParsedDpt_InternalPartner
+  select * from V_TheCompany_VDepartment_ParsedDpt_InternalPartner
   WHERE MIK_VALID = 1
 GO
-/****** Object:  View [dbo].[V_T_Takeda_ALL_ReviewDate_Analysis_Report]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_T_TheCompany_ALL_ReviewDate_Analysis_Report]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13562,7 +13562,7 @@ GO
 
 CREATE View
 
-[dbo].[V_T_Takeda_ALL_ReviewDate_Analysis_Report]
+[dbo].[V_T_TheCompany_ALL_ReviewDate_Analysis_Report]
 
 as
 
@@ -13576,9 +13576,9 @@ as
 			as RD_Required_CurrentRD
 		, * 
 	from 
-		V_T_Takeda_ALL_ReviewDate_Analysis
+		V_T_TheCompany_ALL_ReviewDate_Analysis
 GO
-/****** Object:  View [dbo].[V_Takeda_ALL]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_ALL]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13589,7 +13589,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_ALL]
+CREATE view [dbo].[V_TheCompany_ALL]
 
 as
 
@@ -13678,7 +13678,7 @@ SELECT
  
       ,ISNULL(d.[InternalPartners_IDs],'') AS 'InternalPartners_IDs'
       ,ISNULL(d.[InternalPartners_COUNT],0) AS 'InternalPartners_COUNT'
-      , ISNULL(d.[Territories],'')  AS 'Territories' /* LEN capped at 255 in concat statement but turns into varchar(4000) in T_Takeda_ALL */
+      , ISNULL(d.[Territories],'')  AS 'Territories' /* LEN capped at 255 in concat statement but turns into varchar(4000) in T_TheCompany_ALL */
       ,ISNULL(d.[Territories_IDs],'') AS 'Territories_IDs' /* becomes varchar(max), max len is around 400 odd char */
       ,ISNULL(d.[Territories_COUNT],0) AS 'Territories_COUNT'
 
@@ -13725,7 +13725,7 @@ SELECT
       , GETDATE() as DateTableRefreshed
       , 'http://des80040.nycomed.local/ccs/builtin_modules/Contract.aspx?id=' + CAST(c.contractid as varchar(255)) as LinkToContractURL
 
-	  /* Procurement Base Flag 1 for Agreement type, is needed as a basis for V_Takeda_Mig_0ProcNetFlag (based on T_Takeda_ALL) */
+	  /* Procurement Base Flag 1 for Agreement type, is needed as a basis for V_TheCompany_Mig_0ProcNetFlag (based on T_TheCompany_ALL) */
 	, (CASE 
 				WHEN COUNTERPARTYNUMBER like '%!ARIBA_W01%' 
 					 OR COUNTERPARTYNUMBER like '%!ARIBA_W02%' THEN 9 /* already migrated to Ariba */
@@ -13734,7 +13734,7 @@ SELECT
 
 				ELSE [TargetSystem_AgTypeFLAG]	/*(0,1,2,7,8)	*/
 				END) as Procurement_AgTypeFlag
-	  /* Procurement Base Flag 2 for Role, is needed as a basis for V_Takeda_Mig_0ProcNetFlag (based on T_Takeda_ALL) */
+	  /* Procurement Base Flag 2 for Role, is needed as a basis for V_TheCompany_Mig_0ProcNetFlag (based on T_TheCompany_ALL) */
 			/* User role department is Global Procurement or IT -> Procurement Role Flag is populated with GP or IT */
 	, (CASE WHEN (substring(UO.UO_DPT_CODE,0,4) ='-GP' /* contract owner is in Global Procurement */
 				OR substring(ur.UR_DPT_CODE,0,4) = '-GP' /* contract responsible */
@@ -13748,7 +13748,7 @@ SELECT
 
  ,CAST(STUFF(
 	(SELECT DISTINCT ',' + tg.TAG /*+ ' ('+tg.TagCategory+')'*/
-		FROM ttag /*V_Takeda_TTag_Detail*/ tg
+		FROM ttag /*V_TheCompany_TTag_Detail*/ tg
 		inner join TTAG_IN_OBJECT tj on tg.tagid = tj.tagid
 		 inner join tdocument d on tj.OBJECTID = d.documentid 
 		WHERE c.CONTRACTID =d.OBJECTID
@@ -13795,7 +13795,7 @@ SELECT
 		/* (CASE WHEN REV_EXPIRYDATE is not null then REV_EXPIRYDATE else EXPIRYDATE end) */
 		, [AgrType_IsHCX_Flag]
 FROM 
- V_Takeda_VCONTRACT c
+ V_TheCompany_VCONTRACT c
 /* this view turns TCONTRACT nulls into empty strings etc., custom version of VCONTRACT */
 /* fields like agreement_type etc  */
 
@@ -13809,7 +13809,7 @@ FROM
 	, MIK_VALID US_USER_MIK_VALID 
 	, DEPARTMENT_CODE as US_DPT_CODE
 	, DEPARTMENT as US_DPT_NAME
-	 from dbo.T_Takeda_VPERSONROLE_IN_OBJECT where [Roleid_Cat2Letter]='US' ) us 
+	 from dbo.T_TheCompany_VPERSONROLE_IN_OBJECT where [Roleid_Cat2Letter]='US' ) us 
 		on c.contractid = us.US_Contractid
 
 	LEFT /*!!!*/ JOIN (SELECT 
@@ -13822,7 +13822,7 @@ FROM
 	, MIK_VALID as UO_USER_MIK_VALID 
 	, DEPARTMENT_CODE as UO_DPT_CODE
 	, DEPARTMENT as UO_DPT_NAME
-	  FROM dbo.T_Takeda_VPERSONROLE_IN_OBJECT   where [Roleid_Cat2Letter]='UO') uo 
+	  FROM dbo.T_TheCompany_VPERSONROLE_IN_OBJECT   where [Roleid_Cat2Letter]='UO') uo 
 		on c.contractid = uo.UO_Contractid
 
 	LEFT /*!!!*/ JOIN (SELECT 
@@ -13835,35 +13835,35 @@ FROM
 	, MIK_VALID as UR_USER_MIK_VALID 
 	, DEPARTMENT_CODE as UR_DPT_CODE 
 	, DEPARTMENT as UR_DPT_NAME
-	  FROM dbo.T_Takeda_VPERSONROLE_IN_OBJECT  where [Roleid_Cat2Letter]='UR') ur 
+	  FROM dbo.T_TheCompany_VPERSONROLE_IN_OBJECT  where [Roleid_Cat2Letter]='UR') ur 
 		on c.contractid = ur.UR_Contractid
 
-	LEFT /*!!!*/ JOIN T_Takeda_VCONTRACT_DPTROLES_FLAT d /* view too slow [dbo].[V_Takeda_VCONTRACT_DPTROLES_FLAT] */ /* 5 SECONDS - made inner join 22-feb */
+	LEFT /*!!!*/ JOIN T_TheCompany_VCONTRACT_DPTROLES_FLAT d /* view too slow [dbo].[V_TheCompany_VCONTRACT_DPTROLES_FLAT] */ /* 5 SECONDS - made inner join 22-feb */
 		on c.contractid = d.Dpt_contractid
-				/* NOT NEEDED left join dbo.V_Takeda_VCONTRACT_PERSONROLES_FLAT pf on c.CONTRACTID = pf.Prs_contractid */
-				LEFT join dbo.T_Takeda_Hierarchy h /* 16 seconds together with d table ; delete from then insert into in mktbl query */
+				/* NOT NEEDED left join dbo.V_TheCompany_VCONTRACT_PERSONROLES_FLAT pf on c.CONTRACTID = pf.Prs_contractid */
+				LEFT join dbo.T_TheCompany_Hierarchy h /* 16 seconds together with d table ; delete from then insert into in mktbl query */
 			/* in the daily data load, the hierarchy is refreshed first, so this table is up to date */
 				on d.Dpt_ContractOwnerDpt_ID = h.departmentid_link /* owner id can be BLANK so it is defaulted to ggc in data load */
 
-	left join [dbo].[V_Takeda_VPRODUCTS_FLAT] p /* 1 SECOND - optimized to use CAST and LEFT */
+	left join [dbo].[V_TheCompany_VPRODUCTS_FLAT] p /* 1 SECOND - optimized to use CAST and LEFT */
 		on c.contractid = p.vp_contractid
 				/* NOT NEEDED left join dbo.VCOMMERCIAL vc on c.CONTRACTID = vc.ContractId */
 
 	left join dbo.VCONTRACT_LUMPSUM vc on c.LUMPSUMAMOUNTID = vc.LUMPSUMAMOUNTID /* 1 SECOND */
 
-	left join [dbo].[V_Takeda_REVIEWDATE_ACTIVE] rd /* 1 SECOND, optimized */
+	left join [dbo].[V_TheCompany_REVIEWDATE_ACTIVE] rd /* 1 SECOND, optimized */
 		on c.contractid = rd.RD_Contractid
 
-	inner join V_Takeda_AgreementType cr  /* 1 SECOND - made inner join 22-feb */
+	inner join V_TheCompany_AgreementType cr  /* 1 SECOND - made inner join 22-feb */
 		on c.AGREEMENT_TYPEID = [AgrTypeID]
 
-	left join T_Takeda_TTENDERER_FLAT /* V_Takeda_TTENDERER_FLAT */ t /* 1 second */
+	left join T_TheCompany_TTENDERER_FLAT /* V_TheCompany_TTENDERER_FLAT */ t /* 1 second */
 		on c.contractid = t.CONTRACTID
 
-	/* NOT working because t_takeda_all is used in view left join V_Takeda_Mig_0ProcNetFlag m on c.contractid = m.Contractid_Proc /* for procurement flag */*/
-	left join [dbo].[V_Takeda_Docs_FLAT] doc /* 1 sec, added 09-Dec-2020 */
+	/* NOT working because t_TheCompany_all is used in view left join V_TheCompany_Mig_0ProcNetFlag m on c.contractid = m.Contractid_Proc /* for procurement flag */*/
+	left join [dbo].[V_TheCompany_Docs_FLAT] doc /* 1 sec, added 09-Dec-2020 */
 		on c.contractid = doc.CONTRACTID 
-/* done via v_takeda_vcontract */
+/* done via v_TheCompany_vcontract */
 	/* WHERE c.contracttypeid NOT IN (	/*  5 /* Test Old */
 									, 6 /* Access SAKSNR number Series*/		
 									/*,  11	Case */					
@@ -13875,22 +13875,22 @@ FROM
 									*/
 /* and c.CONTRACTID = 148186 /* contractnumber = 'TEST-00000080' */  */
 GO
-/****** Object:  View [dbo].[V_Takeda_Edit_DupeCompanyContractIDs]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Edit_DupeCompanyContractIDs]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create VIEW [dbo].[V_Takeda_Edit_DupeCompanyContractIDs]
+create VIEW [dbo].[V_TheCompany_Edit_DupeCompanyContractIDs]
 
 as
 
 SELECT DISTINCT c.CONTRACTID
 FROM
-V_Takeda_ALL c inner join TTENDERER t on c.CONTRACTID = t.contractid
+V_TheCompany_ALL c inner join TTENDERER t on c.CONTRACTID = t.contractid
 WHERE t.COMPANYID in (SELECT COMPANYIDMax 
-						from V_Takeda_Edit_DuplicateCompanies)
+						from V_TheCompany_Edit_DuplicateCompanies)
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_4_ARB_TCOMPANY_summary_KeyWord]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_4_ARB_TCOMPANY_summary_KeyWord]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13900,7 +13900,7 @@ GO
 
 
 CREATE view 
-[dbo].[V_Takeda_KWS_4_ARB_TCOMPANY_summary_KeyWord]
+[dbo].[V_TheCompany_KWS_4_ARB_TCOMPANY_summary_KeyWord]
 
 as 
 
@@ -13944,8 +13944,8 @@ as
 		, MAX(s.[End Date]) as StartDate_MAX
 		, MAX(s.[End Date]) as EndDate_MAX
 
-	 FROM   [Contiki_app].[dbo].[V_Takeda_KWS_0_ContikiView_ARB] s
-				inner join T_Takeda_KWS_7_ARB_ContractID_SummaryByContractID u
+	 FROM   [Contiki_app].[dbo].[V_TheCompany_KWS_0_ContikiView_ARB] s
+				inner join T_TheCompany_KWS_7_ARB_ContractID_SummaryByContractID u
 				on s.contractid = u.[ContractID]
 	WHERE 
 		CompanyMatch_Score >0
@@ -13953,7 +13953,7 @@ as
 		[CompanyMatch_KeyWord_UPPER] /*, companyid */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_4_LNC_TCOMPANY_summary_KeyWord]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_4_LNC_TCOMPANY_summary_KeyWord]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13963,7 +13963,7 @@ GO
 
 
 CREATE view 
-[dbo].[V_Takeda_KWS_4_LNC_TCOMPANY_summary_KeyWord]
+[dbo].[V_TheCompany_KWS_4_LNC_TCOMPANY_summary_KeyWord]
 
 as 
 
@@ -14007,8 +14007,8 @@ as
 		, MAX(s.[End Date]) as StartDate_MAX
 		, MAX(s.[End Date]) as EndDate_MAX
 
-	 FROM   [Contiki_app].[dbo].[V_Takeda_KWS_0_ContikiView_LNC] s
-				inner join T_Takeda_KWS_7_LNC_ContractID_SummaryByContractID u
+	 FROM   [Contiki_app].[dbo].[V_TheCompany_KWS_0_ContikiView_LNC] s
+				inner join T_TheCompany_KWS_7_LNC_ContractID_SummaryByContractID u
 				on s.contractid = u.[ContractID]
 	WHERE 
 		CompanyMatch_Score >0
@@ -14016,7 +14016,7 @@ as
 		[CompanyMatch_KeyWord_UPPER] /*, companyid */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_4_JPS_TCOMPANY_summary_KeyWord]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_4_JPS_TCOMPANY_summary_KeyWord]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -14026,7 +14026,7 @@ GO
 
 
 CREATE view 
-[dbo].[V_Takeda_KWS_4_JPS_TCOMPANY_summary_KeyWord]
+[dbo].[V_TheCompany_KWS_4_JPS_TCOMPANY_summary_KeyWord]
 
 as 
 
@@ -14070,8 +14070,8 @@ as
 		, MAX(s.[End Date]) as StartDate_MAX
 		, MAX(s.[End Date]) as EndDate_MAX
 
-	 FROM   [Contiki_app].[dbo].[V_Takeda_KWS_0_ContikiView_JPS] s
-				inner join T_Takeda_KWS_7_JPS_ContractID_SummaryByContractID u
+	 FROM   [Contiki_app].[dbo].[V_TheCompany_KWS_0_ContikiView_JPS] s
+				inner join T_TheCompany_KWS_7_JPS_ContractID_SummaryByContractID u
 				on s.contractid = u.[ContractID]
 	WHERE 
 		CompanyMatch_Score >0
@@ -14079,7 +14079,7 @@ as
 		[CompanyMatch_KeyWord_UPPER] /*, companyid */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_5_AllSystems_CompanyKWSummary]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_5_AllSystems_CompanyKWSummary]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -14088,29 +14088,29 @@ GO
 
 
 
-CREATE View [dbo].[V_Takeda_KWS_5_AllSystems_CompanyKWSummary]
+CREATE View [dbo].[V_TheCompany_KWS_5_AllSystems_CompanyKWSummary]
 
 as
 
 	select 'Contiki' as DatabaseSource, * from 
-	[dbo].[V_Takeda_KWS_4_CNT_TCOMPANY_summary_KeyWord]
+	[dbo].[V_TheCompany_KWS_4_CNT_TCOMPANY_summary_KeyWord]
 
 	union all
 
 	select 'Ariba' as DatabaseSource, * from 
-	[dbo].[V_Takeda_KWS_4_ARB_TCOMPANY_summary_KeyWord] 
+	[dbo].[V_TheCompany_KWS_4_ARB_TCOMPANY_summary_KeyWord] 
 
 	union all
 	
 	select 'JP_Sunrise' as DatabaseSource, * from 
-	[dbo].[V_Takeda_KWS_4_JPS_TCOMPANY_summary_KeyWord] 
+	[dbo].[V_TheCompany_KWS_4_JPS_TCOMPANY_summary_KeyWord] 
 
 	union all
 	
 	select 'LINC(Axxerion)' as DatabaseSource, * from 
-	[dbo].[V_Takeda_KWS_4_LNC_TCOMPANY_summary_KeyWord] 
+	[dbo].[V_TheCompany_KWS_4_LNC_TCOMPANY_summary_KeyWord] 
 GO
-/****** Object:  View [dbo].[V_Takeda_DocxValidSignedNotRegForm]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_DocxValidSignedNotRegForm]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -14119,14 +14119,14 @@ GO
 
 
 CREATE view
-[dbo].[V_Takeda_DocxValidSignedNotRegForm]
+[dbo].[V_TheCompany_DocxValidSignedNotRegForm]
 as
 
 SELECT 
 	d.DOCUMENTID
 	,d.OBJECTID
 	,d.[Title] as DescriptionFull
-	,hashbytes('SHA1', dbo.Takeda_RemoveNonAlphaCharacters(d.[Title])) as DescRemNonAlphaHashbSHA1
+	,hashbytes('SHA1', dbo.TheCompany_RemoveNonAlphaCharacters(d.[Title])) as DescRemNonAlphaHashbSHA1
 	,hashbytes('SHA1', d.[Title]) as DescriptionFullHashbSHA1
 	, d.Datecreated
 	, d.FileType
@@ -14136,13 +14136,13 @@ SELECT
 	/* , t.DOCUMENTTYPE as documenttype */
 FROM VDOCUMENT d 
 	INNER JOIN TCONTRACT c on d.OBJECTID = c.contractid
-	left join dbo.V_Takeda_TENDERER_FLAT v on c.contractid = v.contractid
+	left join dbo.V_TheCompany_TENDERER_FLAT v on c.contractid = v.contractid
 	/* left join dbo.VDocumentTypes t on d.DOCUMENTTYPEID = t.DOCUMENTTYPEID */
 WHERE 
 	d.MIK_VALID = 1 
 	AND d.DOCUMENTTYPEID = 1 /* Signed Contracts */ 
 	AND  d.[Title] not like '%REGISTRATION%FORM%'
-	/* AND LEN(dbo.Takeda_RemoveNonAlphaCharacters(d.[DESCRIPTION]))>3 */
+	/* AND LEN(dbo.TheCompany_RemoveNonAlphaCharacters(d.[DESCRIPTION]))>3 */
 	AND c.CONTRACTTYPEID NOT IN (
 		   '6' /* Access SAKSNR number Series*/
 		,  '5' /* Test Old */
@@ -14155,7 +14155,7 @@ WHERE
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_LNC_Mig_MASTER_IP]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_LNC_Mig_MASTER_IP]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -14163,13 +14163,13 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_LNC_Mig_MASTER_IP]
+CREATE view [dbo].[V_TheCompany_LNC_Mig_MASTER_IP]
 
 as
 /*
 select * from 
-V_Takeda_LNC_Mig_DATA_IP
-where internalpartnerid not in (select internalpartnerid from [dbo].[V_Takeda_LNC_Mig_MASTER_IP])
+V_TheCompany_LNC_Mig_DATA_IP
+where internalpartnerid not in (select internalpartnerid from [dbo].[V_TheCompany_LNC_Mig_MASTER_IP])
 */
 
 Select 
@@ -14219,14 +14219,14 @@ Select
 		 , DEPARTMENTID
  , GETDATE() as DateRefreshed
 	FROM
-		V_Takeda_VDepartment_ParsedDpt_InternalPartner
+		V_TheCompany_VDepartment_ParsedDpt_InternalPartner
 	WHERE
 		[IP_Count_Contracts]>0 
 		/* OR InternalPartnerStatusflag = -1 /* active added 27-feb */ */
 		/* missing: departmentid = 201797 */
 
 GO
-/****** Object:  View [dbo].[V_T_Takeda_ALL_ReviewDate_Analysis_Report_Final]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_T_TheCompany_ALL_ReviewDate_Analysis_Report_Final]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -14235,7 +14235,7 @@ GO
 
 CREATE View
 
-[dbo].[V_T_Takeda_ALL_ReviewDate_Analysis_Report_Final]
+[dbo].[V_T_TheCompany_ALL_ReviewDate_Analysis_Report_Final]
 
 as
 
@@ -14247,14 +14247,14 @@ as
 		else '' END) as Category
 	,*
 	from 
-		V_T_Takeda_ALL_ReviewDate_Analysis_report
+		V_T_TheCompany_ALL_ReviewDate_Analysis_report
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_Keywords_Title_Top5_Concat]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_Keywords_Title_Top5_Concat]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[V_Takeda_KWS_Keywords_Title_Top5_Concat]
+create view [dbo].[V_TheCompany_KWS_Keywords_Title_Top5_Concat]
 
 as
 
@@ -14262,40 +14262,40 @@ as
 
 	Replace(STUFF(
 	(SELECT top 5 ' ' + s.[KeyWordVarchar255]
-	FROM  V_Takeda_KeyWordSearch s
+	FROM  V_TheCompany_KeyWordSearch s
 		
 	FOR XML PATH('')),1,1,''),'&amp;','&') AS KeyWordVarchar255_Concat
 
 	
-	from V_Takeda_KeyWordSearch d
+	from V_TheCompany_KeyWordSearch d
 GO
-/****** Object:  View [dbo].[V_Takeda_VUSER_MIK_VALID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VUSER_MIK_VALID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[V_Takeda_VUSER_MIK_VALID]
+create view [dbo].[V_TheCompany_VUSER_MIK_VALID]
 as
 
-Select * from V_Takeda_VUSER 
+Select * from V_TheCompany_VUSER 
 WHERE user_MIK_VALID = 1
 GO
-/****** Object:  View [dbo].[V_Takeda_VDepartment_ParsedDpt_IP_DE_LN_IP]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDepartment_ParsedDpt_IP_DE_LN_IP]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-	CREATE view [dbo].[V_Takeda_VDepartment_ParsedDpt_IP_DE_LN_IP]
+	CREATE view [dbo].[V_TheCompany_VDepartment_ParsedDpt_IP_DE_LN_IP]
 
 	as
 
 		select *
-	from   [dbo].[V_Takeda_VDepartment_ParsedDpt_InternalPartner] d 	
-	left join [dbo].[V_Takeda_VDEPARTMENT_Entities_DiligentAndLINC] l
+	from   [dbo].[V_TheCompany_VDepartment_ParsedDpt_InternalPartner] d 	
+	left join [dbo].[V_TheCompany_VDEPARTMENT_Entities_DiligentAndLINC] l
 		on upper(d.[InternalPartner_Name_NonSpaceFwSlash]) = upper(l.[EntName_NonFwSlash])
 	/*d.InternalPartner_Name = l.EntityName */
 GO
-/****** Object:  View [dbo].[V_T_Takeda_ALL_ReviewDate_Analysis_Report_Final_2]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_T_TheCompany_ALL_ReviewDate_Analysis_Report_Final_2]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -14303,7 +14303,7 @@ GO
 
 CREATE View
 
-[dbo].[V_T_Takeda_ALL_ReviewDate_Analysis_Report_Final_2]
+[dbo].[V_T_TheCompany_ALL_ReviewDate_Analysis_Report_Final_2]
 
 as
 
@@ -14329,17 +14329,17 @@ as
       ,[ContractTitle]
 	  , NumDaysExpired
 	from 
-	[dbo].[V_T_Takeda_ALL_ReviewDate_Analysis_Report_Final]
+	[dbo].[V_T_TheCompany_ALL_ReviewDate_Analysis_Report_Final]
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_6_AllSystems_CompanyKeywordSummary]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_6_AllSystems_CompanyKeywordSummary]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE View [dbo].[V_Takeda_KWS_6_AllSystems_CompanyKeywordSummary]
+CREATE View [dbo].[V_TheCompany_KWS_6_AllSystems_CompanyKeywordSummary]
 
 as
 	select 'CNT' AS SRC, *
@@ -14354,7 +14354,7 @@ as
 		, NULL AS 'JPS_EndDate_MIN'
 
 	from 
-	[dbo].[V_Takeda_KWS_4_CNT_TCOMPANY_summary_KeyWord]
+	[dbo].[V_TheCompany_KWS_4_CNT_TCOMPANY_summary_KeyWord]
 
 	union all
 
@@ -14370,7 +14370,7 @@ as
 		, NULL AS 'JPS_EndDate_MIN'
 
 	from 
-	[dbo].[V_Takeda_KWS_4_ARB_TCOMPANY_summary_KeyWord] 
+	[dbo].[V_TheCompany_KWS_4_ARB_TCOMPANY_summary_KeyWord] 
 
 	union all
 	
@@ -14386,7 +14386,7 @@ as
 		, NULL AS 'JPS_EndDate_MIN'
 
 	from 
-	[dbo].[V_Takeda_KWS_4_LNC_TCOMPANY_summary_KeyWord] 
+	[dbo].[V_TheCompany_KWS_4_LNC_TCOMPANY_summary_KeyWord] 
 
 	union all
 	
@@ -14401,21 +14401,21 @@ as
 		, NULL AS 'LNC_EndDate_MIN'
 		, [EndDate_MIN] AS 'JPS_EndDate_MIN'
 	from 
-	[dbo].[V_Takeda_KWS_4_JPS_TCOMPANY_summary_KeyWord] 
+	[dbo].[V_TheCompany_KWS_4_JPS_TCOMPANY_summary_KeyWord] 
 GO
-/****** Object:  View [dbo].[V_Takeda_VDOCUMENT_XT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDOCUMENT_XT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[V_Takeda_VDOCUMENT_XT]
+create view [dbo].[V_TheCompany_VDOCUMENT_XT]
 
 as 
 
 select * 
 , (case when d.title in (
 	select title
-	from V_Takeda_VDOCUMENT a
+	from V_TheCompany_VDOCUMENT a
 	where mik_valid = 1 and a.contractid = d.contractid
 	group by contractid, [title],filetype
 	having count(*)>1)
@@ -14423,7 +14423,7 @@ select *
 		title + '_V'+ CONVERT(VARCHAR, versiondate ,23)+'_Doc'+cast(documentid as varchar(10)) 
 		else title
 		end) as Title_NoDupe
-from v_Takeda_VDOCUMENT d
+from v_TheCompany_VDOCUMENT d
 /*
 select contractid, documentid, title
 
@@ -14432,11 +14432,11 @@ select contractid, documentid, title
 	 */
 	 , 'UPDATE tdocument set description = ''' 
 		+ title + '_V'+ CONVERT(VARCHAR, versiondate ,23)+'_Doc'+cast(documentid as varchar(25)) + ''' WHERE DOCUMENTID = ' + cast(documentid as varchar(25))
-from v_takeda_vdocument d
+from v_TheCompany_vdocument d
 where filetype = '.txt' and title in 
 	order by contractid, title*/
 GO
-/****** Object:  View [dbo].[V_Takeda_VDEPARTMENTROLE_IN_OBJECT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDEPARTMENTROLE_IN_OBJECT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -14444,7 +14444,7 @@ GO
 
 CREATE view
 
-[dbo].[V_Takeda_VDEPARTMENTROLE_IN_OBJECT]
+[dbo].[V_TheCompany_VDEPARTMENTROLE_IN_OBJECT]
 
 AS
 
@@ -14476,7 +14476,7 @@ FROM TDEPARTMENTROLE_IN_OBJECT d
 /* where OBJECTTYPEID = 1 /* contract */ */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VDEPARTMENTROLE_IN_OBJECT_Xt]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDEPARTMENTROLE_IN_OBJECT_Xt]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -14487,7 +14487,7 @@ GO
 
 CREATE view
 
-[dbo].[V_Takeda_VDEPARTMENTROLE_IN_OBJECT_Xt]
+[dbo].[V_TheCompany_VDEPARTMENTROLE_IN_OBJECT_Xt]
 
 AS
 
@@ -14500,13 +14500,13 @@ SELECT
 	, d.Roleid_TT_IP_or_US_UO_UR
 	, r.* 
 
-FROM V_Takeda_VDEPARTMENTROLE_IN_OBJECT d
-	inner join V_Takeda_VDepartment_Parsed r
+FROM V_TheCompany_VDEPARTMENTROLE_IN_OBJECT d
+	inner join V_TheCompany_VDepartment_Parsed r
 		on d.DEPARTMENTID = r.DEPARTMENTID
 		and d.OBJECTTYPEID = 1 /* contract */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VDEPARTMENTROLE_IN_OBJECT_Xt_IP]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDEPARTMENTROLE_IN_OBJECT_Xt_IP]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -14514,21 +14514,21 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_VDEPARTMENTROLE_IN_OBJECT_Xt_IP]
+CREATE view [dbo].[V_TheCompany_VDEPARTMENTROLE_IN_OBJECT_Xt_IP]
 /* used in BO PROD Universe */
 as 
 
 	select 
 	r.* 
 	, p.Code_BasicIPWithCommaPrefix
-	from V_Takeda_VDepartmentrole_In_Object_Xt r 
-		inner join V_Takeda_VDepartment_ParsedDpt_InternalPartner p on r.departmentid = p.departmentid 
+	from V_TheCompany_VDepartmentrole_In_Object_Xt r 
+		inner join V_TheCompany_VDepartment_ParsedDpt_InternalPartner p on r.departmentid = p.departmentid 
 	where 
 		[Roleid_TT_IP_or_US_UO_UR] = 'D' /* department */
 		and [Roleid_Cat2Letter] = 'IP' /* internal partner */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_7_AllSystems_CompanyKWSummary_Final]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_7_AllSystems_CompanyKWSummary_Final]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -14540,7 +14540,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_KWS_7_AllSystems_CompanyKWSummary_Final]
+CREATE view [dbo].[V_TheCompany_KWS_7_AllSystems_CompanyKWSummary_Final]
 
 AS
 
@@ -14548,7 +14548,7 @@ SELECT [CompanyMatch_KeyWord_UPPER]
 	/*, MAX([CompanyMatch_NameList]) as [CompanyMatch_NameList_Max] */
 	,ltrim(Replace(STUFF(
 		(SELECT ',' + s.CompanyMatch_NameList + ' (' + s.src + ') '
-		FROM V_Takeda_KWS_6_AllSystems_CompanyKeywordSummary s
+		FROM V_TheCompany_KWS_6_AllSystems_CompanyKeywordSummary s
 		WHERE s.CompanyMatch_KeyWord_UPPER =k.CompanyMatch_KeyWord_UPPER
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS CompanyMatch_NameList
 
@@ -14587,7 +14587,7 @@ SELECT [CompanyMatch_KeyWord_UPPER]
       , MIN([JPS_EndDate_MIN]) as [JPS_EndDate_MIN]
 
 
-  FROM [Contiki_app].[dbo].[V_Takeda_KWS_6_AllSystems_CompanyKeywordSummary] k
+  FROM [Contiki_app].[dbo].[V_TheCompany_KWS_6_AllSystems_CompanyKeywordSummary] k
   where CompanyMatch_KeyWord_UPPER is not null
   GROUP BY [CompanyMatch_KeyWord_UPPER]
 
@@ -14674,13 +14674,13 @@ WHERE     OT.FIXED = 'RPROCESS'
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VACL_Contract_ReadPrivilege]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VACL_Contract_ReadPrivilege]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE VIEW [dbo].[V_Takeda_VACL_Contract_ReadPrivilege]
+CREATE VIEW [dbo].[V_TheCompany_VACL_Contract_ReadPrivilege]
 
 AS
 
@@ -14714,11 +14714,11 @@ FROM
                       dbo.TACL a
 						/* INNER JOIN dbo.TPRIVILEGE p ON a.PRIVILEGEID = p.PRIVILEGEID */
 						INNER JOIN dbo.VOBJECTNAME o ON a.OBJECTID = o.OBJECTID 
-						/* dbo.V_Takeda_TCONTRACT_ACL_Auto_Excl_TstDelMig takes too long */
-						INNER JOIN t_takeda_all c on a.objectid = c.contractid /* (tcontract changed to t_takeda_all excl Test etc. )*/
+						/* dbo.V_TheCompany_TCONTRACT_ACL_Auto_Excl_TstDelMig takes too long */
+						INNER JOIN t_TheCompany_all c on a.objectid = c.contractid /* (tcontract changed to t_TheCompany_all excl Test etc. )*/
 
 						LEFT JOIN dbo.VUSER u ON a.USERID = u.USERID
-						LEFT JOIN V_Takeda_VDEPARTMENT_VUSERGROUP /* 23-feb */
+						LEFT JOIN V_TheCompany_VDEPARTMENT_VUSERGROUP /* 23-feb */
 							g ON a.GROUPID = g.USERGROUPID /* for GrpDptGroupIsGGC_Tax_Finance_FLAG */
 					WHERE 
 						a.OBJECTID IS NOT NULL /* do not remove OBJECTID = null items, system permissions */						
@@ -14742,9 +14742,9 @@ FROM
 														))
 						AND ([COUNTERPARTYNUMBER] IS NULL 
 							OR ([COUNTERPARTYNUMBER] not like '!ARIBA%' 
-							AND [COUNTERPARTYNUMBER] not like '!AUTODELETE%')) not needed if t_takeda_all*/
+							AND [COUNTERPARTYNUMBER] not like '!AUTODELETE%')) not needed if t_TheCompany_all*/
 GO
-/****** Object:  View [dbo].[V_Takeda_LNC_Mig_DATA_ACL]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_LNC_Mig_DATA_ACL]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -14754,7 +14754,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_LNC_Mig_DATA_ACL]
+CREATE view [dbo].[V_TheCompany_LNC_Mig_DATA_ACL]
 
 as 
 
@@ -14783,8 +14783,8 @@ SELECT
 
 	, [ConfidentialityFLAG_0123] 
 	 , GETDATE() as DateRefreshed
-  FROM V_Takeda_VACL_Contract_ReadPrivilege p 
-		inner join V_Takeda_VUSER u 
+  FROM V_TheCompany_VACL_Contract_ReadPrivilege p 
+		inner join V_TheCompany_VUSER u 
 			on p.USERID = u.USERID 
 				and u.USER_MIK_VALID = 1
   WHERE 
@@ -14826,12 +14826,12 @@ ORDER BY dbo.TPRODUCTGROUPNOMENCLATURE.PRODUCTGROUPNOMENCLATURE, dbo.TPRODUCTGRO
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_RegForm_ProdGrp]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_RegForm_ProdGrp]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE view [dbo].[V_Takeda_RegForm_ProdGrp]
+CREATE view [dbo].[V_TheCompany_RegForm_ProdGrp]
 
 as
 
@@ -14854,12 +14854,12 @@ order by PRODUCTGROUPNOMENCLATURE, PRODUCTGROUP
 
 
 GO
-/****** Object:  View [dbo].[v_Takeda_WarningsFutureWithInactiveUsers]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[v_TheCompany_WarningsFutureWithInactiveUsers]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[v_Takeda_WarningsFutureWithInactiveUsers]
+create view [dbo].[v_TheCompany_WarningsFutureWithInactiveUsers]
 
 as
 
@@ -14874,12 +14874,12 @@ select w.WARNING
 , u.USER_MIK_VALID
 , u.DISPLAYNAME
 ,c.NUMBER, c.Title
-from TWARNING w inner join T_Takeda_ALL c on w.OBJECTID = c.CONTRACTID
+from TWARNING w inner join T_TheCompany_ALL c on w.OBJECTID = c.CONTRACTID
 left join VUSER u on u.USERID = w.USERID
 where WARNINGDATE > GETDATE()
 and w.USERID not in (select USERID from VUSER where USER_MIK_VALID =1)
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_0_ContikiView_ARB]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_0_ContikiView_ARB]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -14894,7 +14894,7 @@ GO
 
 
 
-CREATE view  [dbo].[V_Takeda_KWS_0_ContikiView_ARB]
+CREATE view  [dbo].[V_TheCompany_KWS_0_ContikiView_ARB]
 
 as 
 
@@ -14904,7 +14904,7 @@ select
       ,[Contract Description] as [Contract Description]
 	  , [Hierarchy Type] as [Contract Relation]
       , [Contract Type] as [Agreement Type]
-	  , (CASE WHEN [Contract Type] in (select AGREEMENT_TYPE from [dbo].[T_Takeda_AgreementType_ARIBA]
+	  , (CASE WHEN [Contract Type] in (select AGREEMENT_TYPE from [dbo].[T_TheCompany_AgreementType_ARIBA]
 			 where AgrIsMaterial =1) THEN 'Yes' ELSE 'No' END) as 'Agreement Type Divestment'	 
       ,[State] as [Status] /* State = 'Active', 'Completed' 
 	  means [Contract Status] of Published, Draft, Draft Amendment, Pending, On Hold, or Expired */
@@ -14913,7 +14913,7 @@ select
       ,[Effective Date - Date] as [Start Date] /*[EndDateDate]*/
 
 	  /* Expiration date - can be 2099 etc. 
-		ETL Ariba data load 2: 	update T_Takeda_Ariba_Dump_Raw_FLAT  set [Expiration Date - Date] = null WHERE 
+		ETL Ariba data load 2: 	update T_TheCompany_Ariba_Dump_Raw_FLAT  set [Expiration Date - Date] = null WHERE 
 			[state] = 'Active' /* 'term type' perpetual overrides expiration date */
 			and ([Expiration Date - Date] < [datetablerefreshed])*/
       , [Expiration Date - Date] as [End Date] /*[ExpirationDateDate]*/
@@ -14926,10 +14926,10 @@ select
       ,0 AS [Number of Attachments]
 
       , ISNULL([Affected Parties - Common Supplier Concat],'') as [Company Names] /* do not use all suppliers concat, since project name is also there */
-      /* intercompany: not possible to pull out, attempts: select * from V_Takeda_KWS_0_ContikiView_ARB where 
+      /* intercompany: not possible to pull out, attempts: select * from V_TheCompany_KWS_0_ContikiView_ARB where 
 [Company Names] like '%intercompany%'
 OR [Contract Description] like '%intercompany%'
-/* NOT OR [Company Names] like '%Takeda%' since internal and external mixed */ */
+/* NOT OR [Company Names] like '%TheCompany%' since internal and external mixed */ */
 	  ,0 AS [Company Count] , '' as [Company Countries] 
       ,'' as [Confidentiality Flag]
        ,'' AS [Super User Email]
@@ -14964,10 +14964,10 @@ OR [Contract Description] like '%intercompany%'
       ,[LinkToContractURL]
       ,[DateTableRefreshed] as [DateTableRefreshed] 
 
-  FROM [dbo].[T_Takeda_AribaDump] d
+  FROM [dbo].[T_TheCompany_AribaDump] d
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_DWH_AllSystems_Union]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_DWH_AllSystems_Union]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -14977,7 +14977,7 @@ GO
 
 
 /****** Script for SelectTopNRows command from SSMS  ******/
-CREATE view [dbo].[V_Takeda_KWS_DWH_AllSystems_Union]
+CREATE view [dbo].[V_TheCompany_KWS_DWH_AllSystems_Union]
 /* purpose: Business Objects?? */
 as
 
@@ -14986,7 +14986,7 @@ as
 	SELECT 
 	1 as SourceSystem,
 	* 
-	FROM T_Takeda_ALL
+	FROM T_TheCompany_ALL
 
 	UNION ALL
 
@@ -15116,10 +15116,10 @@ as
 		  , '' as CompanyCountry_IsUS
 		, '' as CompanyActivityDateMax
 	  FROM 
-	  V_Takeda_KWS_0_ContikiView_ARB
+	  V_TheCompany_KWS_0_ContikiView_ARB
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_1_LNC_MiscMetadataFields]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_1_LNC_MiscMetadataFields]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -15128,7 +15128,7 @@ GO
 
 
 CREATE view 
-[dbo].[V_Takeda_KWS_1_LNC_MiscMetadataFields]
+[dbo].[V_TheCompany_KWS_1_LNC_MiscMetadataFields]
 
 as 
 
@@ -15143,8 +15143,8 @@ as
 				as 'FieldContent'
 		, p.[Reference] as CONTRACTID
 
-	FROM [V_Takeda_KeyWordSearch] s 
-		inner join T_Takeda_KWS_0_Data_LINC p 
+	FROM [V_TheCompany_KeyWordSearch] s 
+		inner join T_TheCompany_KWS_0_Data_LINC p 
 			on p.[Contract type] /* is agreement type */
 				like '%'+s.KeyWordVarchar255+'%' /* NO type for e.g. supply */
 			OR p.Description like '%'+s.KeyWordVarchar255+'%' /* e.g. supply agreement does not exist as agreement type */
@@ -15152,7 +15152,7 @@ as
 		s.KeyWordtype = 'AgreementType'
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_7_LNC_ContractID_SummaryByContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_7_LNC_ContractID_SummaryByContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -15160,10 +15160,10 @@ GO
 
 CREATE view
 
-[dbo].[V_Takeda_KWS_7_LNC_ContractID_SummaryByContractID]
+[dbo].[V_TheCompany_KWS_7_LNC_ContractID_SummaryByContractID]
 
 as 
-/* EXEC [dbo].[Takeda_KeyWordSearch] */
+/* EXEC [dbo].[TheCompany_KeyWordSearch] */
 	SELECT  
 		u.contractid /* as ContractID_KWS */
 
@@ -15173,13 +15173,13 @@ as
 
 		,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ',' + c.[CompanyMatch_Exact] 
-			FROM [T_Takeda_KWS_3_LNC_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_LNC_TCompany_ContractID_Extended] c
 			WHERE  c.contractid = u.contractid 
 				AND c.companyMatch_Exact_Flag > 0
 			FOR XML PATH('')),1,1,''),'&amp;','&')) AS [CompanyMatch_Exact]
 		,
 			(SELECT max(CompanyMatch_Exact_Flag)
-			FROM [T_Takeda_KWS_3_LNC_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_LNC_TCompany_ContractID_Extended] c
 			WHERE  c.contractid = u.contractid)
 			 AS [CompanyMatch_Exact_FLAG]
 	/* LIKE */
@@ -15187,14 +15187,14 @@ as
 			(SELECT DISTINCT ', ' + c.[CompanyMatch_Like] /*+': ' 
 
 				+ ', Company: ' + rs.[Company_LettersNumbersSpacesOnly] +')' */
-			FROM [T_Takeda_KWS_3_LNC_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_LNC_TCompany_ContractID_Extended] c
 			where  c.contractid = u.contractid   
 				and [CompanyMatch_Like_FLAG] > 0
 				and [CompanyMatch_Exact_FLAG] = 0
 			FOR XML PATH('')),1,1,''),'&amp;','&')) AS [CompanyMatch_Like]	
 
 	,		(SELECT max(CompanyMatch_LIKE_Flag)
-			FROM [T_Takeda_KWS_3_LNC_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_LNC_TCompany_ContractID_Extended] c
 			WHERE  c.contractid = u.contractid)
 			 AS [CompanyMatch_LIKE_FLAG]
 
@@ -15203,7 +15203,7 @@ as
 			(SELECT DISTINCT ', ' + c.[KeyWordVarchar255] /*+': ' 
 	
 				+ ', Company: ' + rs.[Company_LettersNumbersSpacesOnly] +')' */
-			FROM [T_Takeda_KWS_3_LNC_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_LNC_TCompany_ContractID_Extended] c
 			where  c.contractid = u.contractid   
 				and [CompanyMatch_Like_FLAG] = 0
 				and [CompanyMatch_Exact_FLAG] = 0
@@ -15213,7 +15213,7 @@ as
 			(SELECT DISTINCT ', ' + c.[Companytype] /*+': ' 
 
 				+ ', Company: ' + rs.[Company_LettersNumbersSpacesOnly] +')' */
-			FROM [T_Takeda_KWS_3_LNC_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_LNC_TCompany_ContractID_Extended] c
 			where  c.contractid = u.contractid   
 			FOR XML PATH('')),1,1,''),'&amp;','&')) AS CompanyType
 
@@ -15233,7 +15233,7 @@ as
 					WHEN [CompanyMatch_FirstWord2Way_REV_FLAG] > 0 THEN '4e - First Word 2-W REV'
 					ELSE '' END) 
 					)
-				FROM T_Takeda_KWS_3_LNC_TCompany_ContractID_Extended c
+				FROM T_TheCompany_KWS_3_LNC_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid)
 					AS [CompanyMatch_Level]
 
@@ -15258,7 +15258,7 @@ as
 						THEN 'Company(4-Any)'
 					ELSE '' END) 
 					)
-				FROM T_Takeda_KWS_3_LNC_TCompany_ContractID_Extended c
+				FROM T_TheCompany_KWS_3_LNC_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid)
 					AS [CompanyMatch_LevelCategory]
 
@@ -15280,7 +15280,7 @@ as
 				WHEN [CompanyMatch_FirstWord2Way_REV_FLAG] > 0 THEN CompanyMatch_FirstWord2Way_REV_FLAG
 				ELSE 0 END)
 					)
-				FROM T_Takeda_KWS_3_LNC_TCompany_ContractID_Extended c
+				FROM T_TheCompany_KWS_3_LNC_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid)
 					AS [CompanyMatch_Score]
 
@@ -15298,14 +15298,14 @@ as
 				WHEN [CompanyMatch_FirstWord2Way_REV_FLAG] > 0 THEN CompanyMatch_FirstWord2Way_REV
 				ELSE '' END)
 					)
-				FROM T_Takeda_KWS_3_LNC_TCompany_ContractID_Extended c
+				FROM T_TheCompany_KWS_3_LNC_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid),255))
 					AS [CompanyMatch_Name]
 
-			, (SELECT MAX([KeyWordVarchar255]) from T_Takeda_KWS_3_LNC_TCompany_ContractID_Extended c
+			, (SELECT MAX([KeyWordVarchar255]) from T_TheCompany_KWS_3_LNC_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid) 
 					as CompanyMatch_KeyWord
-			, (SELECT MAX([KeyWordVarchar255_UPPER]) from T_Takeda_KWS_3_LNC_TCompany_ContractID_Extended c
+			, (SELECT MAX([KeyWordVarchar255_UPPER]) from T_TheCompany_KWS_3_LNC_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid) 
 					as CompanyMatch_KeyWord_UPPER									   
 	/* COUNTRY - Company */
@@ -15314,7 +15314,7 @@ as
 			(SELECT DISTINCT ', ' + rs.[KeyWordVarchar255] /*+': ' 
 
 				+ ', Company: ' + rs.[Company_LettersNumbersSpacesOnly] +')' */
-			FROM T_Takeda_KWS_2_LNC_TCOMPANYCountry_ContractID rs
+			FROM T_TheCompany_KWS_2_LNC_TCOMPANYCountry_ContractID rs
 			where  rs.contractid = u.contractid   
 			FOR XML PATH('')),1,1,''),'&amp;','&')) */, '' AS [CompanyCountryMatch]	
 			
@@ -15324,9 +15324,9 @@ as
 		,Replace(STUFF(
 			(
 			SELECT DISTINCT ',' + rs.[KeyWordCustom1]
-			FROM /*(select [KeyWordCustom1], contractid from T_Takeda_KWS_2_LNC_TPRODUCT_ContractID
+			FROM /*(select [KeyWordCustom1], contractid from T_TheCompany_KWS_2_LNC_TPRODUCT_ContractID
 					UNION
-					select [KeyWordCustom1], contractid from*/ T_Takeda_KWS_2_LNC_TCompany_ContractID /*
+					select [KeyWordCustom1], contractid from*/ T_TheCompany_KWS_2_LNC_TCompany_ContractID /*
 					) */ rs
 			where  rs.contractid = u.contractid
 				AND rs.[KeyWordCustom1] IS NOT NULL
@@ -15336,7 +15336,7 @@ as
 
 		,Replace(STUFF(
 			(SELECT DISTINCT ',' + rs.[KeyWordCustom2]
-			FROM T_Takeda_KWS_2_LNC_tcompany_ContractID rs
+			FROM T_TheCompany_KWS_2_LNC_tcompany_ContractID rs
 			where  rs.contractid = u.contractid
 			AND rs.[KeyWordCustom2] IS NOT NULL
 			/* and rs.ProductExact_Flag = 1 */
@@ -15346,7 +15346,7 @@ as
 
 		,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ', ' + rs.[DescriptionKeyword]
-			FROM [T_Takeda_KWS_5c_LNC_DESCRIPTION_ContractID] rs
+			FROM [T_TheCompany_KWS_5c_LNC_DESCRIPTION_ContractID] rs
 			where  rs.contractid = u.contractid
 			/* only include records that are not a company match */
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS Description_Match
@@ -15355,7 +15355,7 @@ as
 
 		,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ', ' + rs.[KeyWordVarchar255]
-			FROM [T_Takeda_KWS_2_LNC_InternalPartner_ContractID] rs
+			FROM [T_TheCompany_KWS_2_LNC_InternalPartner_ContractID] rs
 			where  rs.contractid = u.contractid
 			/* only include records that are not a company match */
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS InternalPartner_Match
@@ -15364,7 +15364,7 @@ as
 
 	/*	,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ', ' + rs.[KeyWordVarchar255]
-			FROM [T_Takeda_KWS_2_LNC_Territories_ContractID] rs
+			FROM [T_TheCompany_KWS_2_LNC_Territories_ContractID] rs
 			where  rs.contractid = u.contractid
 			/* only include records that are not a company match */
 		FOR XML PATH('')),1,1,''),'&amp;','&')) */,'' AS Territory_Match
@@ -15373,38 +15373,38 @@ as
 
 	/*	,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup + ' ('+ p.keywordvarchar255 + ')' 
-		FROM [dbo].[T_Takeda_KWS_3_LNC_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_LNC_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid and p.[ProductMatch_TN] = 1
 		FOR XML PATH('')),1,1,''),'&amp;','&'))*/,'' AS KeyWordMatch_TradeName
 
 		/*				 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup + ' ('+ p.keywordvarchar255 + ')' 
-		FROM [dbo].[T_Takeda_KWS_3_LNC_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_LNC_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid and p.[ProductMatch_AI] = 1
 		FOR XML PATH('')),1,1,''),'&amp;','&'))*/,'' AS KeyWordMatch_ActiveIngredients
 
 		/* ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup
-		FROM [dbo].[T_Takeda_KWS_3_LNC_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_LNC_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid and p.[ProductMatch_Exact] = 1
 		FOR XML PATH('')),1,1,''),'&amp;','&'))*/,''  AS KeyWordMatch_Product_EXACT
 
 		/* ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup + ' ('+ p.keywordvarchar255 + ')' 
-		FROM [dbo].[T_Takeda_KWS_3_LNC_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_LNC_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid and p.[ProductMatch_NotExact] = 1
 		FOR XML PATH('')),1,1,''),'&amp;','&'))*/,''  AS KeyWordMatch_Product_NotExact
 
 		/*	 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup + ' ('+ p.keywordvarchar255 + ')' 
-		FROM [dbo].[T_Takeda_KWS_3_LNC_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_LNC_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid and (p.[ProductMatch_AI] = 1 OR p.[ProductMatch_TN] = 1)
 		FOR XML PATH('')),1,1,''),'&amp;','&'))*/,''  AS KeyWordMatch_Product_AIorTN
 
 		/*		 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup 
 			+ (CASE WHEN PrdGrpMatch_EXACT_FLAG = 1 THEN '' ELSE ' ('+ p.keywordvarchar255 + ')' END)
-		FROM [dbo].[T_Takeda_KWS_3_LNC_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_LNC_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid 
 		/* and (p.[ProductMatch_AI] = 1 OR p.[ProductMatch_TN] = 1) */
 		FOR XML PATH('')),1,1,''),'&amp;','&'))*/,''  AS ProductKeyword_Any
@@ -15412,7 +15412,7 @@ as
 	/* TAG */
 	/*			 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.tagcategory
-		FROM [dbo].[T_Takeda_KWS_2_LNC_Tag_ContractID] p 
+		FROM [dbo].[T_TheCompany_KWS_2_LNC_Tag_ContractID] p 
 		where  p.CONTRACTID = u.contractid 
 		and P.keywordtype = 'TagCategory'
 		FOR XML PATH('')),1,1,''),'&amp;','&')) */,'' AS TagCategory_Match
@@ -15420,25 +15420,25 @@ as
 		/*
 				 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.tag
-		FROM [dbo].[T_Takeda_KWS_2_LNC_Tag_ContractID] p 
+		FROM [dbo].[T_TheCompany_KWS_2_LNC_Tag_ContractID] p 
 		where  p.CONTRACTID = u.contractid 
 		and P.keywordtype = 'Tag'
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS Tag_Match */
 				 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.FieldContent
-		FROM [dbo].[V_Takeda_KWS_1_LNC_MiscMetadataFields] p 
+		FROM [dbo].[V_TheCompany_KWS_1_LNC_MiscMetadataFields] p 
 		where  p.CONTRACTID = u.contractid 
 		and P.keywordtype = 'AgreementType'
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS AgreementType_Match	
 
 	FROM 
-		T_Takeda_KWS_6_LNC_ContractID_UNION  u /* product, company, description */
+		T_TheCompany_KWS_6_LNC_ContractID_UNION  u /* product, company, description */
 	group by 
 		u.contractid
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_LNC_GoldStandard_Documents]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_LNC_GoldStandard_Documents]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -15451,7 +15451,7 @@ GO
 
 CREATE view 
 
-[dbo].[V_Takeda_LNC_GoldStandard_Documents]
+[dbo].[V_TheCompany_LNC_GoldStandard_Documents]
 
 as
 
@@ -15475,7 +15475,7 @@ as
 					else '' END)			
 					 as CommentsInclFolderAndTags /* for ancilliary info such as tags,  ? */
 			,[DOCUMENTID] /* turn into CTK_11111 */
-			/*  ,[OBJECTTYPEID] - not needed,  V_Takeda_VDOCUMENT filters for 1 Contract only but be sure to move amd docs */
+			/*  ,[OBJECTTYPEID] - not needed,  V_TheCompany_VDOCUMENT filters for 1 Contract only but be sure to move amd docs */
 	  	, GETDATE() as LastUpdated
 
 		, (case when A.statusid = 5 then '1_ACTIVE_' 
@@ -15515,7 +15515,7 @@ as
 			as MigFolder_Sub
 /*
 	, (CASE when (COUNTERPARTYNUMBER like '!ARIBA_W%' OR COUNTERPARTYNUMBER like 'Xt_%') then 0
-			when contractid not in (select contractid from [V_Takeda_VDOCUMENT]) then 0 /* no valid files - only Contikimail etc. */
+			when contractid not in (select contractid from [V_TheCompany_VDOCUMENT]) then 0 /* no valid files - only Contikimail etc. */
 			when a.[AgrType_IsHCX_Flag] = 1 then 0 /* 2 = undetermined */
 			WHEN a.statusid = 5 /* active */ then 1 /* all active agreements */	
 			When a.[ConfidentialityFLAG_0123] > 0 /*ConfidentialityFlagNAME <>'N/A'*/ then 1 /* if top secret or confidential */
@@ -15542,11 +15542,11 @@ as
 		, GETDATE() as DateRefreshed
 		, a.[DocumentFileTitlesConcat]
 		, a.Number
-	  from V_Takeda_VDOCUMENT d
-		inner join  [dbo].[V_Takeda_LNC_GoldStandard] g on d.contractid = g.contractid
-		inner join T_Takeda_ALL_Xt a on g.contractid = A.contractid
+	  from V_TheCompany_VDOCUMENT d
+		inner join  [dbo].[V_TheCompany_LNC_GoldStandard] g on d.contractid = g.contractid
+		inner join T_TheCompany_ALL_Xt a on g.contractid = A.contractid
 GO
-/****** Object:  View [dbo].[V_Takeda_LNC_V_ContractDocuments]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_LNC_V_ContractDocuments]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -15555,7 +15555,7 @@ GO
 
 CREATE view
 
-[dbo].[V_Takeda_LNC_V_ContractDocuments]
+[dbo].[V_TheCompany_LNC_V_ContractDocuments]
 
 as
 
@@ -15568,22 +15568,22 @@ select
 	, d.*
 
 
-FROM V_Takeda_LNC_GoldStandard_Documents d
-	inner join V_T_Takeda_ALL_0_MigFlags m /* inner join excludes case, test, delete */
+FROM V_TheCompany_LNC_GoldStandard_Documents d
+	inner join V_T_TheCompany_ALL_0_MigFlags m /* inner join excludes case, test, delete */
 		on d.CONTRACTID = m.contractid_proc
 /*
-		select * from V_Takeda_VDocumentContractSummary_TS_Redacted where OBJECTID not in (select contractid_proc from V_T_Takeda_ALL_0_MigFlags)
+		select * from V_TheCompany_VDocumentContractSummary_TS_Redacted where OBJECTID not in (select contractid_proc from V_T_TheCompany_ALL_0_MigFlags)
 
 	select * from TCONTRACT where CONTRACT like '% test %'
 	*/
 GO
-/****** Object:  View [dbo].[V_Takeda_VUSER_WithHierarchy]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VUSER_WithHierarchy]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE view [dbo].[V_Takeda_VUSER_WithHierarchy]
+CREATE view [dbo].[V_TheCompany_VUSER_WithHierarchy]
 AS
 
 	SELECT 
@@ -15613,30 +15613,30 @@ AS
       ,[NodeMajorFlag]
       ,[NodeRole]
       ,[PARENTID]
-	FROM	V_Takeda_VUSER u
-		LEFT OUTER join T_Takeda_Hierarchy h 
+	FROM	V_TheCompany_VUSER u
+		LEFT OUTER join T_TheCompany_Hierarchy h 
 		on u.departmentid = h.departmentid
 	WHERE u.USER_MIK_VALID = 1 /* user valid */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_CheckAuditTrailHistory]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_CheckAuditTrailHistory]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[V_Takeda_CheckAuditTrailHistory]
+create view [dbo].[V_TheCompany_CheckAuditTrailHistory]
 
 as 
 
 select u.DISPLAYNAME, h.* from TAUDITTRAIL_HISTORY h left join VUSER u on h.USERID = u.USERID
 where OBJECTID in (select contractid from TCONTRACT where CONTRACTNUMBER = 'Delete-11137421')
 GO
-/****** Object:  View [dbo].[V_Takeda_Mig_VWARNING_Proc]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Mig_VWARNING_Proc]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE view [dbo].[V_Takeda_Mig_VWARNING_Proc]
+CREATE view [dbo].[V_TheCompany_Mig_VWARNING_Proc]
 as
 select Objectid as ContractIDKey, *
 from VWARNING
@@ -15644,22 +15644,22 @@ from VWARNING
 left join TFILEinfo f on d.fileid = f.FileID */
 where
 OBJECTID in (select contractid_Proc 
-	from dbo.V_Takeda_Mig_0ProcNetFlag
+	from dbo.V_TheCompany_Mig_0ProcNetFlag
 	where Proc_NetFlag = 1)
 and ISTURNEDOFF = 0
 GO
-/****** Object:  View [dbo].[V_Takeda_Mig_ReferenceContracts_Proc]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Mig_ReferenceContracts_Proc]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE view [dbo].[V_Takeda_Mig_ReferenceContracts_Proc]
+CREATE view [dbo].[V_TheCompany_Mig_ReferenceContracts_Proc]
 as
 select contractid as ContractIDKey, REFERENCECONTRACTID, REFERENCECONTRACTNUMBER
 from Tcontract
 where
 contractid in (select contractid_Proc 
-from  dbo.V_Takeda_Mig_0ProcNetFlag
+from  dbo.V_TheCompany_Mig_0ProcNetFlag
 where Proc_NetFlag = 1)
 
 
@@ -15669,12 +15669,12 @@ where Proc_NetFlag = 1)
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_FullText_OcrProblem]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_FullText_OcrProblem]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE view [dbo].[V_Takeda_FullText_OcrProblem]
+CREATE view [dbo].[V_TheCompany_FullText_OcrProblem]
 
 as
 
@@ -15687,7 +15687,7 @@ select fileid,'write protected' as Issue from vdocument where title like '%WRITE
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_2_ARB_InternalPartner_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_2_ARB_InternalPartner_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -15695,7 +15695,7 @@ GO
 
 CREATE view
 
-[dbo].[V_Takeda_KWS_2_ARB_InternalPartner_ContractID]
+[dbo].[V_TheCompany_KWS_2_ARB_InternalPartner_ContractID]
 /* to do: include spaces with Productgroup name */
 as 
 
@@ -15712,9 +15712,9 @@ as
 		, t.[Internal Partners] as InternalPartners
 		, t.CONTRACTID
 
-	FROM T_Takeda_KeyWordSearch s 	
+	FROM T_TheCompany_KeyWordSearch s 	
 		/* left join must encompass all hits, narrow down with WHERE */
-		inner join V_Takeda_KWS_0_ContikiView_ARB t 
+		inner join V_TheCompany_KWS_0_ContikiView_ARB t 
 			on upper(t.[Internal Partners]) LIKE 
 				(CASE WHEN keywordprecision = 'EXACT' THEN
 					upper(s.KeyWordVarchar255)
@@ -15724,7 +15724,7 @@ as
 	WHERE 
 		s.KeyWordType = 'InternalPartner'
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_6_ARB_ContractID_UNION]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_6_ARB_ContractID_UNION]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -15733,42 +15733,42 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_KWS_6_ARB_ContractID_UNION]
+CREATE view [dbo].[V_TheCompany_KWS_6_ARB_ContractID_UNION]
 as
 
 	select [ContractID] 
-	from T_Takeda_KWS_2_ARB_TCompany_ContractID 
+	from T_TheCompany_KWS_2_ARB_TCompany_ContractID 
 /*
 		UNION ALL /* Union returns nothing if one item has no records */
 
 	select [ContractID] 
-	from V_Takeda_KWS_3_ARB_TProduct_ContractID_Extended /* no table available */
+	from V_TheCompany_KWS_3_ARB_TProduct_ContractID_Extended /* no table available */
 	*/
 		UNION ALL
 		
 	select DISTINCT ContractID
-	FROM V_Takeda_KWS_2_ARB_InternalPartner_ContractID
+	FROM V_TheCompany_KWS_2_ARB_InternalPartner_ContractID
 	/* NO WHERES this will falsify concat results use select distinct for union 
-	WHERE contractid not in (select contractid from T_Takeda_KWS_2_ARB_TCompany_ContractID)*/
+	WHERE contractid not in (select contractid from T_TheCompany_KWS_2_ARB_TCompany_ContractID)*/
 	/*	UNION ALL
 
 	select ContractID 
-	FROM V_Takeda_KWS_2_ARB_Territories_ContractID
+	FROM V_TheCompany_KWS_2_ARB_Territories_ContractID
 
 		UNION ALL
 
 	select ContractID 
-	FROM T_Takeda_KWS_2_ARB_Tag_ContractID
+	FROM T_TheCompany_KWS_2_ARB_Tag_ContractID
 	*/
 		UNION ALL 
-		/* V_Takeda_KWS_5c_ARB_DESCRIPTION_ContractID must be edited to match!! */
+		/* V_TheCompany_KWS_5c_ARB_DESCRIPTION_ContractID must be edited to match!! */
 	select ContractID 
-	from T_Takeda_KWS_5c_ARB_DESCRIPTION_ContractID
-	/*WHERE contractid not in (select contractid from T_Takeda_KWS_2_ARB_TCompany_ContractID)*/
+	from T_TheCompany_KWS_5c_ARB_DESCRIPTION_ContractID
+	/*WHERE contractid not in (select contractid from T_TheCompany_KWS_2_ARB_TCompany_ContractID)*/
 	/*
 		UNION
 	select ContractID 
-	from V_Takeda_KWS_1_ARB_MiscMetadataFields */
+	from V_TheCompany_KWS_1_ARB_MiscMetadataFields */
 /*	WHERE KeyWordOperator is null /* NOT 'FILTER' */ or KeyWordOperator = 'SHOW' */
 
 
@@ -15865,19 +15865,19 @@ WHERE     O.FIXED = 'ORDER' AND PGI.PRODUCTGROUPID = P.PRODUCTGROUPID AND P.PROD
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_Mig_VPRODUCTGROUP_Proc]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Mig_VPRODUCTGROUP_Proc]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_Mig_VPRODUCTGROUP_Proc]
+CREATE view [dbo].[V_TheCompany_Mig_VPRODUCTGROUP_Proc]
 as
 select o.OBJECTID as ContractID, p.*
 from dbo.VPRODUCTGROUP p inner join dbo.VPRODUCTGROUP_IN_OBJECT o on o.PRODUCTGROUPID = p.PRODUCTGROUPID
 where
-o.OBJECTID in (select contractid_Proc from dbo.V_Takeda_Mig_0ProcNetFlag
+o.OBJECTID in (select contractid_Proc from dbo.V_TheCompany_Mig_0ProcNetFlag
 where Proc_NetFlag = 1)
 
 
@@ -15885,12 +15885,12 @@ where Proc_NetFlag = 1)
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_UserID_CountractRoleCount_VUSER_UserSetup]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_UserID_CountractRoleCount_VUSER_UserSetup]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE view [dbo].[V_Takeda_UserID_CountractRoleCount_VUSER_UserSetup]
+CREATE view [dbo].[V_TheCompany_UserID_CountractRoleCount_VUSER_UserSetup]
 
 as 
 
@@ -15899,15 +15899,15 @@ SELECT
 	, *
 
 FROM 
-[dbo].[V_Takeda_UserID_CountractRoleCount_VUSER]
+[dbo].[V_TheCompany_UserID_CountractRoleCount_VUSER]
 GO
-/****** Object:  View [dbo].[V_Takeda_CL_VUSER_WithHierarchy]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_CL_VUSER_WithHierarchy]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE view [dbo].[V_Takeda_CL_VUSER_WithHierarchy]
+CREATE view [dbo].[V_TheCompany_CL_VUSER_WithHierarchy]
 
 as
 
@@ -15928,19 +15928,19 @@ select TOP 1000
       , [PRIMARYUSERGROUP]
       , [COUNTRY]
 
-      FROM [V_Takeda_VUSER_WithHierarchy]
+      FROM [V_TheCompany_VUSER_WithHierarchy]
       /* WHERE  L2 = 'EUROPE (CEE - CENTRAL & EASTERN)' */
       ORDER BY L1, L2, L3, L4
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_Ariba_Products_In_Contracts_UNION]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Ariba_Products_In_Contracts_UNION]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE view [dbo].[V_Takeda_Ariba_Products_In_Contracts_UNION]
+CREATE view [dbo].[V_TheCompany_Ariba_Products_In_Contracts_UNION]
 
 as
 	select c.[ContractNumber]
@@ -15951,7 +15951,7 @@ as
 		  ,c.[ContractInternalID]
 		,p.PRODUCTGROUP 
 	FROM
-		T_Takeda_Ariba_Products_In_Contracts  c inner join TPRODUCTGROUP p 
+		T_TheCompany_Ariba_Products_In_Contracts  c inner join TPRODUCTGROUP p 
 			on c.productgroupid = p.productgroupid
 	where c.matchlevel = 1 /* full match */ 
 		OR (c.matchlevel = 2 /* fuzzy like match */ 
@@ -15967,47 +15967,47 @@ as
 		  ,c.[ContractInternalID]
 		,p.PRODUCTGROUP 
 	FROM
-		T_Takeda_Ariba_Products_In_Contracts_FullText  c inner join TPRODUCTGROUP p on c.productgroupid = p.productgroupid
-			left join T_Takeda_Ariba_Products_In_Contracts d
+		T_TheCompany_Ariba_Products_In_Contracts_FullText  c inner join TPRODUCTGROUP p on c.productgroupid = p.productgroupid
+			left join T_TheCompany_Ariba_Products_In_Contracts d
 			on (c.[ContractInternalID]=d.[ContractInternalID] AND c.[ProductgroupID] = d.[ProductgroupID])
 	WHERE d.[ID] is null
 
 GO
-/****** Object:  View [dbo].[V_Takeda_Ariba_Dump_Raw_FLAT_AllProducts]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Ariba_Dump_Raw_FLAT_AllProducts]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_Ariba_Dump_Raw_FLAT_AllProducts]
+CREATE view [dbo].[V_TheCompany_Ariba_Dump_Raw_FLAT_AllProducts]
 
 as
 
 SELECT ContractInternalID
 	, CAST(Replace(SUBSTRING(STUFF(
 		(SELECT DISTINCT ', ' + p.[Productgroup]
-		FROM [dbo].[TPRODUCTGROUP] p inner join V_Takeda_Ariba_Products_In_Contracts_UNION u 
+		FROM [dbo].[TPRODUCTGROUP] p inner join V_TheCompany_Ariba_Products_In_Contracts_UNION u 
 			on p.PRODUCTGROUPID = u.ProductgroupID
 			and p.PRODUCTGROUPNOMENCLATUREID in (2,3) /* only active ingredients and trade names, not studies etc. */
 		WHERE u.ContractInternalID = d.ContractInternalID
 		FOR XML PATH('')),1,1,''),1,1000),'&amp;','&') AS VARCHAR(1000)) AS [All Products] 
 		
 		/*,(case when (d.[Affected Parties - Common Supplier Concat] like '%legacy supplier%' or d.[Affected Parties - Common Supplier Concat] like '%nclassifie%') /* e.g. Contiki contracts */ AND contractnumber like 'cntk%'
-			then (select CompanyList from T_Takeda_ALL where number = rtrim(substring(d.ContractNumber,6,25)))
+			then (select CompanyList from T_TheCompany_ALL where number = rtrim(substring(d.ContractNumber,6,25)))
 			else d.[Affected Parties - Common Supplier Concat] end)
 		 as 'AllSuppliers'*/
-  FROM [Contiki_app].[dbo].[V_Takeda_Ariba_Dump_Raw_FLAT] d
+  FROM [Contiki_app].[dbo].[V_TheCompany_Ariba_Dump_Raw_FLAT] d
 
 GO
-/****** Object:  View [dbo].[V_Takeda_UserID_CountractRoleCount_VUSER_EmailDistroAct]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_UserID_CountractRoleCount_VUSER_EmailDistroAct]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE view
 
-[dbo].[V_Takeda_UserID_CountractRoleCount_VUSER_EmailDistroAct]
+[dbo].[V_TheCompany_UserID_CountractRoleCount_VUSER_EmailDistroAct]
 
 AS
 
@@ -16017,33 +16017,33 @@ select TOP 1500 email
 , NumTotalRoles
 , NumTotalRolesactive 
 , Personid_Personrole_ContractIDCount
-from dbo.V_Takeda_UserID_CountractRoleCount_VUSER
+from dbo.V_TheCompany_UserID_CountractRoleCount_VUSER
 where MIK_VALID = 1 and NumTotalRoles >0
 order by email
 
 GO
-/****** Object:  View [dbo].[V_Takeda_LNC_MIG_Summary]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_LNC_MIG_Summary]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE view [dbo].[V_Takeda_LNC_MIG_Summary]
+CREATE view [dbo].[V_TheCompany_LNC_MIG_Summary]
 
 as
 
 select MigrateYN_Flag, migfolder
 , count(distinct a.contractid) as ContractCount
 , count(distinct d.documentid) as DocCount
-from t_takeda_all_xt a inner join [dbo].[V_Takeda_LNC_GoldStandard_Documents] d on a.contractid = d.contractid
+from t_TheCompany_all_xt a inner join [dbo].[V_TheCompany_LNC_GoldStandard_Documents] d on a.contractid = d.contractid
 group by MigrateYN_Flag, migfolder
 GO
-/****** Object:  View [dbo].[V_Takeda_RegForm_DptUsers]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_RegForm_DptUsers]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE  view [dbo].[V_Takeda_RegForm_DptUsers]
+CREATE  view [dbo].[V_TheCompany_RegForm_DptUsers]
 
 as
 
@@ -16060,10 +16060,10 @@ as
 		/* , u.DEPARTMENT + ' - ' + u.country as 'DepartmentCountryLookup' */
 		, g.[CustomUserGrp_List] as CustomUserGroupList
 		, GETDATE() as Last_Updated
-	FROM V_Takeda_VUSER u 
-		left join T_Takeda_Hierarchy h 
+	FROM V_TheCompany_VUSER u 
+		left join T_TheCompany_Hierarchy h 
 			on u.DEPARTMENTID = h.departmentid
-		left join [Contiki_app].[dbo].[V_Takeda_VUSER_IN_USERGROUP] g 
+		left join [Contiki_app].[dbo].[V_TheCompany_VUSER_IN_USERGROUP] g 
 			on u.userid = g.userid
 	where u.primaryUSERGROUP like 'Departments%' /* and USERGROUP <>'Territories' */
 		and u.DEPARTMENT_CODE<>'-SYS'
@@ -16071,17 +16071,17 @@ as
 	order by u.DISPLAYNAME
 
 GO
-/****** Object:  View [dbo].[V_Takeda_ContractData_ARB_0VCOMPANY_0RAW]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_ContractData_ARB_0VCOMPANY_0RAW]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_ContractData_ARB_0VCOMPANY_0RAW]
+CREATE view [dbo].[V_TheCompany_ContractData_ARB_0VCOMPANY_0RAW]
 
 /* 
-[dbo].[Takeda_KeyWordSearch]
+[dbo].[TheCompany_KeyWordSearch]
 - elminiate double spaces
 - ltrim, rtrim
  - use all supplier field to capture legacy vendors
@@ -16095,20 +16095,20 @@ as
 		, [Contract Id] as ContractNumber
 		, [AllSupplier]
 		/* supplier parsing */
-		, UPPER(dbo.Takeda_RemoveNonAlphaNonNumericCharacters([AllSupplier]))
+		, UPPER(dbo.TheCompany_RemoveNonAlphaNonNumericCharacters([AllSupplier]))
 			as Company_LettersNumbersOnly_UPPER
 
-		,  UPPER(replace(dbo.Takeda_RemoveNonAlphaNonNumNonSpace([AllSupplier]),'  ',' '))
+		,  UPPER(replace(dbo.TheCompany_RemoveNonAlphaNonNumNonSpace([AllSupplier]),'  ',' '))
 			as Company_LettersNumbersSpacesOnly_UPPER /* e.g. Hansen & Rosenthal */
 
-		, LEN(replace(dbo.Takeda_RemoveNonAlphaNonNumNonSpace([AllSupplier]),'  ',' '))
-			- LEN(dbo.Takeda_RemoveNonAlphaNonNumericCharacters([AllSupplier])) 
+		, LEN(replace(dbo.TheCompany_RemoveNonAlphaNonNumNonSpace([AllSupplier]),'  ',' '))
+			- LEN(dbo.TheCompany_RemoveNonAlphaNonNumericCharacters([AllSupplier])) 
 				as Company_LettersNumbersOnly_NumSpacesWords
 		
-		, [dbo].[Takeda_CompanyOrIndividual]([AllSupplier]) AS CompanyType
+		, [dbo].[TheCompany_CompanyOrIndividual]([AllSupplier]) AS CompanyType
 
 	FROM 
-		T_Takeda_Ariba_Dump_Raw
+		T_TheCompany_Ariba_Dump_Raw
 	WHERE 
 		[AllSupplier] is not null /* internal partner or company is populated */
 		AND LEN([AllSupplier])>2 /* at least 3 char */
@@ -16116,15 +16116,15 @@ as
 		AND [AllSupplier] NOT LIKE N'%[А-Я]%' /* not Cyrillic, erratic results like ???, taken out in Ariba data load but this is for other records */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_ContractData_ARB_1VCOMPANY]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_ContractData_ARB_1VCOMPANY]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_ContractData_ARB_1VCOMPANY]
-/* refreshed via Takeda_Company_Search */
+CREATE view [dbo].[V_TheCompany_ContractData_ARB_1VCOMPANY]
+/* refreshed via TheCompany_Company_Search */
 as
 
 	select 
@@ -16132,13 +16132,13 @@ as
 		, [AllSupplier] as Company
 		, UPPER([AllSupplier]) as Company_UPPER
 		, len([AllSupplier]) as Company_Length
-			, UPPER([dbo].[Takeda_GetFirstWordInString](Company_LettersNumbersSpacesOnly_UPPER))
+			, UPPER([dbo].[TheCompany_GetFirstWordInString](Company_LettersNumbersSpacesOnly_UPPER))
 		as Company_FirstWord_UPPER
 
-			, UPPER([dbo].[Takeda_GetFirstWordInString]([Company_LettersNumbersSpacesOnly_UPPER]))
+			, UPPER([dbo].[TheCompany_GetFirstWordInString]([Company_LettersNumbersSpacesOnly_UPPER]))
 		as Company_FirstWord_LettersOnly_UPPER
 
-			, LEN([dbo].[Takeda_GetFirstWordInString]([AllSupplier])) 
+			, LEN([dbo].[TheCompany_GetFirstWordInString]([AllSupplier])) 
 		as Company_FirstWord_LEN
 
 		/* two words or more */
@@ -16154,7 +16154,7 @@ as
 		, UPPER((CASE WHEN [Company_LettersNumbersOnly_NumSpacesWords] = 1 /* two words, one space */
 					THEN [Company_LettersNumbersOnly_UPPER]
 				WHEN Company_LettersNumbersOnly_NumSpacesWords > 1 /* two spaces or more, make sure there is at least one space, otherwise '' */
-					THEN dbo.Takeda_RemoveNonAlphaNonNumericCharacters(SUBSTRING([Company_LettersNumbersSpacesOnly_UPPER],0,CHARINDEX(' ', [Company_LettersNumbersSpacesOnly_UPPER],
+					THEN dbo.TheCompany_RemoveNonAlphaNonNumericCharacters(SUBSTRING([Company_LettersNumbersSpacesOnly_UPPER],0,CHARINDEX(' ', [Company_LettersNumbersSpacesOnly_UPPER],
 						CHARINDEX(' ', [Company_LettersNumbersSpacesOnly_UPPER],
 									   CHARINDEX(' ', [Company_LettersNumbersSpacesOnly_UPPER],+1)+1)) ))	/* e.g. SI Group */	
 				ELSE NULL /* no space */ END))			
@@ -16163,27 +16163,27 @@ as
 			,  LEN((CASE WHEN [Company_LettersNumbersOnly_NumSpacesWords] = 1 /* two words, one space */
 					THEN [Company_LettersNumbersOnly_UPPER]
 				WHEN Company_LettersNumbersOnly_NumSpacesWords > 1 /* two spaces or more, make sure there is at least one space, otherwise '' */
-					THEN dbo.Takeda_RemoveNonAlphaNonNumericCharacters(SUBSTRING([Company_LettersNumbersSpacesOnly_UPPER],0,CHARINDEX(' ', [Company_LettersNumbersSpacesOnly_UPPER],
+					THEN dbo.TheCompany_RemoveNonAlphaNonNumericCharacters(SUBSTRING([Company_LettersNumbersSpacesOnly_UPPER],0,CHARINDEX(' ', [Company_LettersNumbersSpacesOnly_UPPER],
 						CHARINDEX(' ', [Company_LettersNumbersSpacesOnly_UPPER],
 									   CHARINDEX(' ', [Company_LettersNumbersSpacesOnly_UPPER],+1)+1)) ))	/* e.g. SI Group */	
 				ELSE NULL /* no space */ END)	)	
 		as Company_FirstTwoWords_LettersOnly_LEN
 
-		,UPPER( (CASE WHEN LEN(dbo.Takeda_GetFirstLetterOfEachWord([Company_LettersNumbersSpacesOnly_UPPER])) >=3 
+		,UPPER( (CASE WHEN LEN(dbo.TheCompany_GetFirstLetterOfEachWord([Company_LettersNumbersSpacesOnly_UPPER])) >=3 
 			AND c.CompanyType = 'C' THEN 
-				/* dbo.Takeda_GetFirstLetterOfEachWord([Company_LettersNumbersOnly_UPPER])
-			WHEN LEN(dbo.Takeda_GetFirstLetterOfEachWord([Company_LettersNumbersOnly_UPPER]))<3 
+				/* dbo.TheCompany_GetFirstLetterOfEachWord([Company_LettersNumbersOnly_UPPER])
+			WHEN LEN(dbo.TheCompany_GetFirstLetterOfEachWord([Company_LettersNumbersOnly_UPPER]))<3 
 				and len(left([[Company_LettersNumbersOnly_UPPER],3)) >=3 THEN */
 				left([Company_LettersNumbersOnly_UPPER],3)
 			ELSE NULL END
 			) )
 			as Company_FirstLetterOfEachWord_UPPER
 
-	from [dbo].[V_Takeda_ContractData_ARB_0VCOMPANY_0RAW] c
+	from [dbo].[V_TheCompany_ContractData_ARB_0VCOMPANY_0RAW] c
 	/* WHERE c.MIK_VALID = 1 /* and company = 'Svedberg, Agneta' */*/
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_0_ContikiView_CNT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_0_ContikiView_CNT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -16193,10 +16193,10 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_KWS_0_ContikiView_CNT]
+CREATE view [dbo].[V_TheCompany_KWS_0_ContikiView_CNT]
 /* used for Contiki Keyword search result and merged Ariba table
-V_Takeda_Ariba_ContikiUnion must be updated if field changes 
-simply add new t_takeda_ all fields at the bottom of ariba table part */
+V_TheCompany_Ariba_ContikiUnion must be updated if field changes 
+simply add new t_TheCompany_ all fields at the bottom of ariba table part */
 as
 
 select
@@ -16260,17 +16260,17 @@ select
       ,[LinkToContractURL] as 'Link to Contract'
       ,[DateTableRefreshed] 'Date Refreshed'  	
 
-  FROM [dbo].[V_T_Takeda_ALL_NoTS_CFN] /* was [Contiki_app].[dbo].[V_T_Takeda_ALL_CommonFN] */ c
+  FROM [dbo].[V_T_TheCompany_ALL_NoTS_CFN] /* was [Contiki_app].[dbo].[V_T_TheCompany_ALL_CommonFN] */ c
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_2_JPS_InternalPartner_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_2_JPS_InternalPartner_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE view
 
-[dbo].[V_Takeda_KWS_2_JPS_InternalPartner_ContractID]
+[dbo].[V_TheCompany_KWS_2_JPS_InternalPartner_ContractID]
 /* to do: include spaces with Productgroup name */
 as 
 
@@ -16287,9 +16287,9 @@ as
 		, t.[Internal Partners] as InternalPartners
 		, t.CONTRACTID
 
-	FROM T_Takeda_KeyWordSearch s 	
+	FROM T_TheCompany_KeyWordSearch s 	
 		/* left join must encompass all hits, narrow down with WHERE */
-		inner join V_Takeda_KWS_0_ContikiView_JPS t 
+		inner join V_TheCompany_KWS_0_ContikiView_JPS t 
 			on upper(t.[Internal Partners]) LIKE 
 				(CASE WHEN keywordprecision = 'EXACT' THEN
 					upper(s.KeyWordVarchar255)
@@ -16299,7 +16299,7 @@ as
 	WHERE 
 		s.KeyWordType = 'InternalPartner'
 GO
-/****** Object:  View [dbo].[V_Takeda_Mig_VDPTROLE_IN_OBJECT_Proc]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Mig_VDPTROLE_IN_OBJECT_Proc]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -16307,7 +16307,7 @@ GO
 
 CREATE view
 
-[dbo].[V_Takeda_Mig_VDPTROLE_IN_OBJECT_Proc]
+[dbo].[V_TheCompany_Mig_VDPTROLE_IN_OBJECT_Proc]
 as
 
 Select o.objectid as ContractIDKey
@@ -16317,12 +16317,12 @@ from dbo.TDEPARTMENTROLE_IN_OBJECT o
 left join TDEPARTMENT d 
 on o.DEPARTMENTID = d.DEPARTMENTID 
 left join TROLE r on o.ROLEID = r.ROLEid
-WHERE OBJECTID in (select contractid_Proc from dbo.V_Takeda_Mig_0ProcNetFlag
+WHERE OBJECTID in (select contractid_Proc from dbo.V_TheCompany_Mig_0ProcNetFlag
 where Proc_NetFlag = 1)
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_1_CNT_MiscMetadataFields]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_1_CNT_MiscMetadataFields]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -16331,7 +16331,7 @@ GO
 
 
 CREATE view 
-[dbo].[V_Takeda_KWS_1_CNT_MiscMetadataFields]
+[dbo].[V_TheCompany_KWS_1_CNT_MiscMetadataFields]
 
 as 
 
@@ -16346,34 +16346,34 @@ as
 				as 'FieldContent'
 		, p.CONTRACTID
 
-	FROM [V_Takeda_KeyWordSearch] s 
-		inner join T_Takeda_ALL p 
+	FROM [V_TheCompany_KeyWordSearch] s 
+		inner join T_TheCompany_ALL p 
 			on p.AGREEMENT_TYPE like '%'+s.KeyWordVarchar255+'%' 
 			OR p.[Title] like '%'+s.KeyWordVarchar255+'%' /* e.g. supply agreement does not exist as agreement type */
 	where /* p.statusid = 5  active */
 		s.KeyWordtype = 'AgreementType'
 
 GO
-/****** Object:  View [dbo].[V_Takeda_Mig_VUSER_Proc]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Mig_VUSER_Proc]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE view [dbo].[V_Takeda_Mig_VUSER_Proc]
+CREATE view [dbo].[V_TheCompany_Mig_VUSER_Proc]
 as
 
-Select * from V_Takeda_VUSER
+Select * from V_TheCompany_VUSER
 	where Personid in (select PERSONID from dbo.TPERSONROLE_IN_OBJECT
 		where OBJECTID in (select contractid_Proc 
-			from dbo.V_Takeda_Mig_0ProcNetFlag
+			from dbo.V_TheCompany_Mig_0ProcNetFlag
 			where Proc_NetFlag = 1)
 			)
 
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_2_JPS_Territories_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_2_JPS_Territories_ContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -16382,7 +16382,7 @@ GO
 
 CREATE view
 
-[dbo].[V_Takeda_KWS_2_JPS_Territories_ContractID]
+[dbo].[V_TheCompany_KWS_2_JPS_Territories_ContractID]
 /* to do: include spaces with Productgroup name */
 as 
 
@@ -16390,17 +16390,17 @@ as
 		s.*
 		, i.ContractID
 
-	FROM T_Takeda_KeyWordSearch s 	
+	FROM T_TheCompany_KeyWordSearch s 	
 		/* left join must encompass all hits, narrow down with WHERE */
-		inner join V_Takeda_kws_0_ContikiView_JPS i 
+		inner join V_TheCompany_kws_0_ContikiView_JPS i 
 			on i.[Territories] like  '%'+ s.KeyWordVarchar255 +'%'
 	WHERE 
 	s.KeyWordType = 'Territory'
 	/* AND ContractInternalID not in (select ContractInternalID 
-			from  [V_Takeda_KWS_2_ARB_InternalPartner_ContractID])
+			from  [V_TheCompany_KWS_2_ARB_InternalPartner_ContractID])
 	*/
 GO
-/****** Object:  View [dbo].[V_Takeda_KWSR_0_ARB]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWSR_0_ARB]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -16412,8 +16412,8 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_KWSR_0_ARB]
-/* be sure to run [Takeda_KeyWordSearch] */
+CREATE view [dbo].[V_TheCompany_KWSR_0_ARB]
+/* be sure to run [TheCompany_KeyWordSearch] */
 as
 
 		SELECT
@@ -16523,12 +16523,12 @@ as
 					 
 		 /* ALL */
 		 , s.*
-	 FROM   [Contiki_app].[dbo].[V_Takeda_KWS_0_ContikiView_ARB] s
-				inner join T_Takeda_KWS_7_ARB_ContractID_SummaryByContractID u
+	 FROM   [Contiki_app].[dbo].[V_TheCompany_KWS_0_ContikiView_ARB] s
+				inner join T_TheCompany_KWS_7_ARB_ContractID_SummaryByContractID u
 				on s.contractid = u.[ContractID]
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWSR_0_LNC]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWSR_0_LNC]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -16540,8 +16540,8 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_KWSR_0_LNC]
-/* be sure to run [Takeda_KeyWordSearch] */
+CREATE view [dbo].[V_TheCompany_KWSR_0_LNC]
+/* be sure to run [TheCompany_KeyWordSearch] */
 as
 
 			SELECT
@@ -16651,20 +16651,20 @@ as
 					 
 		 /* ALL */
 		 , s.*
-	 FROM   [Contiki_app].[dbo].[V_Takeda_KWS_0_ContikiView_LNC] s
-				inner join T_Takeda_KWS_7_LNC_ContractID_SummaryByContractID u
+	 FROM   [Contiki_app].[dbo].[V_TheCompany_KWS_0_ContikiView_LNC] s
+				inner join T_TheCompany_KWS_7_LNC_ContractID_SummaryByContractID u
 				on s.contractid = u.[ContractID]
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWSR_0_CNT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWSR_0_CNT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_KWSR_0_CNT]
-/* be sure to run [Takeda_KeyWordSearch] */
+CREATE view [dbo].[V_TheCompany_KWSR_0_CNT]
+/* be sure to run [TheCompany_KeyWordSearch] */
 as
 
 		SELECT
@@ -16774,12 +16774,12 @@ as
 					 
 		 /* ALL */
 		 , s.*
-	 FROM   [Contiki_app].[dbo].[T_Takeda_KWS_0_ContikiView_CNT] s
-				inner join T_Takeda_KWS_7_CNT_ContractID_SummaryByContractID u
+	 FROM   [Contiki_app].[dbo].[T_TheCompany_KWS_0_ContikiView_CNT] s
+				inner join T_TheCompany_KWS_7_CNT_ContractID_SummaryByContractID u
 				on s.contractid = u.[ContractID]
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWSR_1_CNT_ARB]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWSR_1_CNT_ARB]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -16788,30 +16788,30 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_KWSR_1_CNT_ARB]
+CREATE view [dbo].[V_TheCompany_KWSR_1_CNT_ARB]
 
 as
 
 	select 0 as 'Download File', 'Contiki' as DatabaseSource, * from 
-	[dbo].[V_Takeda_KWSR_0_CNT]
+	[dbo].[V_TheCompany_KWSR_0_CNT]
 
 	union all
 
 	select 0 as 'Download File','Ariba' as DatabaseSource, * from 
-	[dbo].[V_Takeda_KWSR_0_ARB] 
+	[dbo].[V_TheCompany_KWSR_0_ARB] 
 
 	union all
 	
 	select 0 as 'Download File','JP_Sunrise' as DatabaseSource, * from 
-	[dbo].[V_Takeda_KWSR_0_JPS] 
+	[dbo].[V_TheCompany_KWSR_0_JPS] 
 
 	union all
 	
 	select 0 as 'Download File','LINC(Axxerion)' as DatabaseSource, * from 
-	[dbo].[V_Takeda_KWSR_0_LNC] 
+	[dbo].[V_TheCompany_KWSR_0_LNC] 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_1_JPS_MiscMetadataFields]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_1_JPS_MiscMetadataFields]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -16822,7 +16822,7 @@ GO
 
 
 CREATE view 
-[dbo].[V_Takeda_KWS_1_JPS_MiscMetadataFields]
+[dbo].[V_TheCompany_KWS_1_JPS_MiscMetadataFields]
 
 as 
 
@@ -16837,15 +16837,15 @@ as
 				as 'FieldContent'
 		, p.CONTRACTID
 
-	FROM [V_Takeda_KeyWordSearch] s 
-		inner join V_Takeda_KWS_0_ContikiView_JPS p 
+	FROM [V_TheCompany_KeyWordSearch] s 
+		inner join V_TheCompany_KWS_0_ContikiView_JPS p 
 			on p.[Agreement Type] like '%'+s.KeyWordVarchar255+'%' /* NO type for e.g. supply */
 			OR p.[Contract Description] like '%'+s.KeyWordVarchar255+'%' /* e.g. supply agreement does not exist as agreement type */
 	where /* p.statusid = 5  active */
 		s.KeyWordtype = 'AgreementType'
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VDEPARTMENTROLE_IN_OBJECT_OLD]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VDEPARTMENTROLE_IN_OBJECT_OLD]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -16854,7 +16854,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_VDEPARTMENTROLE_IN_OBJECT_OLD]
+CREATE view [dbo].[V_TheCompany_VDEPARTMENTROLE_IN_OBJECT_OLD]
 /* used in BO PROD Universe */
 as 
 
@@ -16884,14 +16884,14 @@ select
 FROM TDEPARTMENTROLE_IN_OBJECT o 
 	inner join TUSERGROUP u on o.DEPARTMENTID = u.DEPARTMENTID
 	inner join TROLE r on o.ROLEID = r.ROLEID
-	left join [dbo].[V_Takeda_VDepartment_Parsed] /* TDEPARTMENT */ d 
+	left join [dbo].[V_TheCompany_VDepartment_Parsed] /* TDEPARTMENT */ d 
 		on u.DEPARTMENTID = d.DEPARTMENTID
-	/* left join [V_Takeda_VDepartment_InternalPartner_ParsedDpt] di 
+	/* left join [V_TheCompany_VDepartment_InternalPartner_ParsedDpt] di 
 		on o.DEPARTMENTID = di.DEPARTMENTID */
 WHERE d.noderole = 'I'
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_7_JPS_ContractID_SummaryByContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_7_JPS_ContractID_SummaryByContractID]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -16914,10 +16914,10 @@ GO
 
 CREATE view
 
-[dbo].[V_Takeda_KWS_7_JPS_ContractID_SummaryByContractID]
+[dbo].[V_TheCompany_KWS_7_JPS_ContractID_SummaryByContractID]
 
 as 
-/* EXEC [dbo].[Takeda_KeyWordSearch] */
+/* EXEC [dbo].[TheCompany_KeyWordSearch] */
 	SELECT  
 		u.contractid /* as ContractID_KWS */
 
@@ -16927,13 +16927,13 @@ as
 
 		,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ',' + c.[CompanyMatch_Exact] 
-			FROM [T_Takeda_KWS_3_JPS_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_JPS_TCompany_ContractID_Extended] c
 			WHERE  c.contractid = u.contractid 
 				AND c.companyMatch_Exact_Flag > 0
 			FOR XML PATH('')),1,1,''),'&amp;','&')) AS [CompanyMatch_Exact]
 		,
 			(SELECT max(CompanyMatch_Exact_Flag)
-			FROM [T_Takeda_KWS_3_JPS_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_JPS_TCompany_ContractID_Extended] c
 			WHERE  c.contractid = u.contractid
 				AND c.companyMatch_Exact_Flag > 0
 				)
@@ -16944,7 +16944,7 @@ as
 			(SELECT DISTINCT ', ' + c.[CompanyMatch_Like] /*+': ' 
 
 				+ ', Company: ' + rs.[Company_LettersNumbersSpacesOnly] +')' */
-			FROM [T_Takeda_KWS_3_JPS_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_JPS_TCompany_ContractID_Extended] c
 			where  c.contractid = u.contractid   
 				and [CompanyMatch_Like_FLAG] > 0
 				and [CompanyMatch_Exact_FLAG] = 0
@@ -16952,7 +16952,7 @@ as
 
 		,
 			(SELECT max(CompanyMatch_LIKE_Flag)
-			FROM [T_Takeda_KWS_3_JPS_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_JPS_TCompany_ContractID_Extended] c
 			WHERE  c.contractid = u.contractid
 				and [CompanyMatch_Like_FLAG] > 0
 				and [CompanyMatch_Exact_FLAG] = 0
@@ -16964,7 +16964,7 @@ as
 			(SELECT DISTINCT ', ' + c.[KeyWordVarchar255] /*+': ' 
 
 				+ ', Company: ' + rs.[Company_LettersNumbersSpacesOnly] +')' */
-			FROM [T_Takeda_KWS_3_JPS_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_JPS_TCompany_ContractID_Extended] c
 			where  c.contractid = u.contractid   
 				and [CompanyMatch_Like_FLAG] = 0
 				and [CompanyMatch_Exact_FLAG] = 0
@@ -16974,7 +16974,7 @@ as
 			(SELECT DISTINCT ', ' + c.[Companytype] /*+': ' 
 
 				+ ', Company: ' + rs.[Company_LettersNumbersSpacesOnly] +')' */
-			FROM [T_Takeda_KWS_3_JPS_TCompany_ContractID_Extended] c
+			FROM [T_TheCompany_KWS_3_JPS_TCompany_ContractID_Extended] c
 			where  c.contractid = u.contractid   
 			FOR XML PATH('')),1,1,''),'&amp;','&')) AS CompanyType
 
@@ -16994,7 +16994,7 @@ as
 					WHEN [CompanyMatch_FirstWord2Way_REV_FLAG] > 0 THEN '4e - First Word 2-W REV'
 					ELSE '' END) 
 					)
-				FROM T_Takeda_KWS_3_JPS_TCompany_ContractID_Extended c
+				FROM T_TheCompany_KWS_3_JPS_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid)
 					AS [CompanyMatch_Level]
 
@@ -17019,7 +17019,7 @@ as
 						THEN 'Company(4-Any)'
 					ELSE '' END) 
 					)
-				FROM T_Takeda_KWS_3_JPS_TCompany_ContractID_Extended c
+				FROM T_TheCompany_KWS_3_JPS_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid)
 					AS [CompanyMatch_LevelCategory]
 
@@ -17041,7 +17041,7 @@ as
 				WHEN [CompanyMatch_FirstWord2Way_REV_FLAG] > 0 THEN CompanyMatch_FirstWord2Way_REV_FLAG
 				ELSE 0 END)
 					)
-				FROM T_Takeda_KWS_3_JPS_TCompany_ContractID_Extended c
+				FROM T_TheCompany_KWS_3_JPS_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid)
 					AS [CompanyMatch_Score]
 
@@ -17059,14 +17059,14 @@ as
 				WHEN [CompanyMatch_FirstWord2Way_REV_FLAG] > 0 THEN CompanyMatch_FirstWord2Way_REV
 				ELSE '' END)
 					)
-				FROM T_Takeda_KWS_3_JPS_TCompany_ContractID_Extended c
+				FROM T_TheCompany_KWS_3_JPS_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid),255))
 					AS [CompanyMatch_Name]
 
-			, (SELECT MAX([KeyWordVarchar255]) from T_Takeda_KWS_3_JPS_TCompany_ContractID_Extended c
+			, (SELECT MAX([KeyWordVarchar255]) from T_TheCompany_KWS_3_JPS_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid) 
 					as CompanyMatch_KeyWord
-			, (SELECT MAX([KeyWordVarchar255_UPPER]) from T_Takeda_KWS_3_JPS_TCompany_ContractID_Extended c
+			, (SELECT MAX([KeyWordVarchar255_UPPER]) from T_TheCompany_KWS_3_JPS_TCompany_ContractID_Extended c
 					where  c.contractid = u.contractid) 
 					as CompanyMatch_KeyWord_UPPER					   
 	/* COUNTRY - Company */
@@ -17075,7 +17075,7 @@ as
 			(SELECT DISTINCT ', ' + rs.[KeyWordVarchar255] /*+': ' 
 				+ rs.[CompanyMatch_Name]  + ' (Keyword: '+ rs.keywordvarchar255 
 				+ ', Company: ' + rs.[Company_LettersNumbersSpacesOnly] +')' */
-			FROM T_Takeda_KWS_2_JPS_TCOMPANYCountry_ContractID rs
+			FROM T_TheCompany_KWS_2_JPS_TCOMPANYCountry_ContractID rs
 			where  rs.contractid = u.contractid   
 			FOR XML PATH('')),1,1,''),'&amp;','&')) AS [CompanyCountryMatch]	
 			
@@ -17085,9 +17085,9 @@ as
 		,Replace(STUFF(
 			(
 			SELECT DISTINCT ',' + rs.[KeyWordCustom1]
-			FROM (select [KeyWordCustom1], contractid from T_Takeda_KWS_2_JPS_TPRODUCT_ContractID
+			FROM (select [KeyWordCustom1], contractid from T_TheCompany_KWS_2_JPS_TPRODUCT_ContractID
 					UNION
-					select [KeyWordCustom1], contractid from T_Takeda_KWS_2_JPS_TCompany_ContractID
+					select [KeyWordCustom1], contractid from T_TheCompany_KWS_2_JPS_TCompany_ContractID
 					) rs
 			where  rs.contractid = u.contractid
 				AND rs.[KeyWordCustom1] IS NOT NULL
@@ -17097,7 +17097,7 @@ as
 
 		,Replace(STUFF(
 			(SELECT DISTINCT ',' + rs.[KeyWordCustom2]
-			FROM T_Takeda_KWS_2_JPS_TPRODUCT_ContractID rs
+			FROM T_TheCompany_KWS_2_JPS_TPRODUCT_ContractID rs
 			where  rs.contractid = u.contractid
 			AND rs.[KeyWordCustom2] IS NOT NULL
 			/* and rs.ProductExact_Flag = 1 */
@@ -17107,7 +17107,7 @@ as
 
 		,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ', ' + rs.[DescriptionKeyword]
-			FROM [T_Takeda_KWS_5c_JPS_DESCRIPTION_ContractID] rs
+			FROM [T_TheCompany_KWS_5c_JPS_DESCRIPTION_ContractID] rs
 			where  rs.contractid = u.contractid
 			/* only include records that are not a company match */
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS Description_Match
@@ -17116,7 +17116,7 @@ as
 
 		,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ', ' + rs.[KeyWordVarchar255]
-			FROM [T_Takeda_KWS_2_JPS_InternalPartner_ContractID] rs
+			FROM [T_TheCompany_KWS_2_JPS_InternalPartner_ContractID] rs
 			where  rs.contractid = u.contractid
 			/* only include records that are not a company match */
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS InternalPartner_Match
@@ -17125,7 +17125,7 @@ as
 
 		,LTRIM(Replace(STUFF(
 			(SELECT DISTINCT ', ' + rs.[KeyWordVarchar255]
-			FROM [T_Takeda_KWS_2_JPS_Territories_ContractID] rs
+			FROM [T_TheCompany_KWS_2_JPS_Territories_ContractID] rs
 			where  rs.contractid = u.contractid
 			/* only include records that are not a company match */
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS Territory_Match
@@ -17134,38 +17134,38 @@ as
 
 		,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup + ' ('+ p.keywordvarchar255 + ')' 
-		FROM [dbo].[T_Takeda_KWS_3_JPS_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_JPS_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid and p.[ProductMatch_TN] = 1
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS KeyWordMatch_TradeName
 
 						 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup + ' ('+ p.keywordvarchar255 + ')' 
-		FROM [dbo].[T_Takeda_KWS_3_JPS_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_JPS_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid and p.[ProductMatch_AI] = 1
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS KeyWordMatch_ActiveIngredients
 
 		 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup
-		FROM [dbo].[T_Takeda_KWS_3_JPS_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_JPS_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid and p.[ProductMatch_Exact] = 1
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS KeyWordMatch_Product_EXACT
 
 		 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup + ' ('+ p.keywordvarchar255 + ')' 
-		FROM [dbo].[T_Takeda_KWS_3_JPS_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_JPS_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid and p.[ProductMatch_NotExact] = 1
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS KeyWordMatch_Product_NotExact
 
 			 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup + ' ('+ p.keywordvarchar255 + ')' 
-		FROM [dbo].[T_Takeda_KWS_3_JPS_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_JPS_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid and (p.[ProductMatch_AI] = 1 OR p.[ProductMatch_TN] = 1)
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS KeyWordMatch_Product_AIorTN
 
 				 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.productgroup 
 			+ (CASE WHEN PrdGrpMatch_EXACT_FLAG = 1 THEN '' ELSE ' ('+ p.keywordvarchar255 + ')' END)
-		FROM [dbo].[T_Takeda_KWS_3_JPS_TProduct_ContractID_Extended] p 
+		FROM [dbo].[T_TheCompany_KWS_3_JPS_TProduct_ContractID_Extended] p 
 		where  p.CONTRACTID = u.contractid 
 		/* and (p.[ProductMatch_AI] = 1 OR p.[ProductMatch_TN] = 1) */
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS ProductKeyword_Any
@@ -17173,7 +17173,7 @@ as
 	/* TAG */
 	/*			 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.tagcategory
-		FROM [dbo].[T_Takeda_KWS_2_JPS_Tag_ContractID] p 
+		FROM [dbo].[T_TheCompany_KWS_2_JPS_Tag_ContractID] p 
 		where  p.CONTRACTID = u.contractid 
 		and P.keywordtype = 'TagCategory'
 		FOR XML PATH('')),1,1,''),'&amp;','&')) */, '' AS TagCategory_Match
@@ -17181,31 +17181,31 @@ as
 		/*
 				 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.tag
-		FROM [dbo].[T_Takeda_KWS_2_JPS_Tag_ContractID] p 
+		FROM [dbo].[T_TheCompany_KWS_2_JPS_Tag_ContractID] p 
 		where  p.CONTRACTID = u.contractid 
 		and P.keywordtype = 'Tag'
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS Tag_Match */
 				 ,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + p.FieldContent
-		FROM [dbo].[V_Takeda_KWS_1_JPS_MiscMetadataFields] p 
+		FROM [dbo].[V_TheCompany_KWS_1_JPS_MiscMetadataFields] p 
 		where  p.CONTRACTID = u.contractid 
 		and P.keywordtype = 'AgreementType'
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS AgreementType_Match
 
 	FROM 
-		T_Takeda_KWS_6_JPS_ContractID_UNION  u /* product, company, description */
+		T_TheCompany_KWS_6_JPS_ContractID_UNION  u /* product, company, description */
 	group by 
 		u.contractid
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_FullText_TFILEINFO_OCR_FileIDsInScope]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_FullText_TFILEINFO_OCR_FileIDsInScope]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE View [dbo].[V_Takeda_FullText_TFILEINFO_OCR_FileIDsInScope]
+CREATE View [dbo].[V_TheCompany_FullText_TFILEINFO_OCR_FileIDsInScope]
 
 as
 /* View will result in duplicate file ids if there is more than one version of a file */
@@ -17234,14 +17234,14 @@ as
 	order by LastChangedDate desc /* make sure latest files get scanned first! */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_FullText_IncludeOverview]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_FullText_IncludeOverview]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE View 
 
-[dbo].[V_Takeda_FullText_IncludeOverview]
+[dbo].[V_TheCompany_FullText_IncludeOverview]
 
 as
 
@@ -17257,16 +17257,16 @@ as
 		, LastChangedDate
 		, LastChangedBy			
 	from
-		[dbo].[V_Takeda_FullText_TFILEINFO_OCR_FileIDsInScope] f 
+		[dbo].[V_TheCompany_FullText_TFILEINFO_OCR_FileIDsInScope] f 
 			inner join Vdocument d on f.documentid = d.documentid
-			inner join T_Takeda_ALL c on d.objectid = c.contractid
+			inner join T_TheCompany_ALL c on d.objectid = c.contractid
 GO
-/****** Object:  View [dbo].[V_Takeda_VPRODUCTGROUP_ALL_NOMENCLATURES]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VPRODUCTGROUP_ALL_NOMENCLATURES]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-Create view [dbo].[V_Takeda_VPRODUCTGROUP_ALL_NOMENCLATURES]
+Create view [dbo].[V_TheCompany_VPRODUCTGROUP_ALL_NOMENCLATURES]
 
 as
 
@@ -17659,12 +17659,12 @@ FROM	dbo.TUser										U1
 		)
 
 GO
-/****** Object:  View [dbo].[V_Takeda_FullText_Vipidia_WithFilterOnContractNumber]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_FullText_Vipidia_WithFilterOnContractNumber]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[V_Takeda_FullText_Vipidia_WithFilterOnContractNumber]
+create view [dbo].[V_TheCompany_FullText_Vipidia_WithFilterOnContractNumber]
 
 as
 
@@ -17677,19 +17677,19 @@ WHERE TFILE.FileId IN (SELECT KEY_TBL.[KEY]
 						AND (1=1 AND t.MIKVALID = N'1') 
 						and t.OBJECTOWNERNAME like 'CTK-Case-00001451%'
 GO
-/****** Object:  View [dbo].[V_Takeda_LNC_Mig_MASTER_Products_ALL]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_LNC_Mig_MASTER_Products_ALL]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[V_Takeda_LNC_Mig_MASTER_Products_ALL]
+create view [dbo].[V_TheCompany_LNC_Mig_MASTER_Products_ALL]
 
 as
 
 select
 /*
-select productgroupid from [dbo].[V_Takeda_LNC_Mig_PRODUCTGROUPID_CONTRACTID]
-where PRODUCTGROUPID not in (select productgroupid [V_Takeda_LNC_Products])
+select productgroupid from [dbo].[V_TheCompany_LNC_Mig_PRODUCTGROUPID_CONTRACTID]
+where PRODUCTGROUPID not in (select productgroupid [V_TheCompany_LNC_Products])
 */
      		'CTK-' + convert(varchar(50),[PRODUCTGROUPID]) as [PRODUCTGROUPID_CTK]
 		  ,[TN_or_AI]
@@ -17707,20 +17707,20 @@ where PRODUCTGROUPID not in (select productgroupid [V_Takeda_LNC_Products])
 		  ,[ParentProductGroup]
  , GETDATE() as DateRefreshed
 		from
-			V_Takeda_VPRODUCTGROUP_ALL_NOMENCLATURES
-			/* V_Takeda_VPRODUCTGROUP_TN_AI_INCL_INACTIVE */
+			V_TheCompany_VPRODUCTGROUP_ALL_NOMENCLATURES
+			/* V_TheCompany_VPRODUCTGROUP_TN_AI_INCL_INACTIVE */
 	/*	WHERE [ProductGroup_MIK_VALID] = 1
 			OR  [ProductGroup_IsUsed] = 1*/
 
 GO
-/****** Object:  View [dbo].[V_Takeda_TPERSONROLE_IN_OBJECT_FLAT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_TPERSONROLE_IN_OBJECT_FLAT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_TPERSONROLE_IN_OBJECT_FLAT]
+CREATE view [dbo].[V_TheCompany_TPERSONROLE_IN_OBJECT_FLAT]
 
 as
 
@@ -17811,15 +17811,15 @@ OBJECTID
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VPRODUCT_RAW]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VPRODUCT_RAW]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[V_Takeda_VPRODUCT_RAW]
+create view [dbo].[V_TheCompany_VPRODUCT_RAW]
 
 /* 
-[dbo].[Takeda_KeyWordSearch]
+[dbo].[TheCompany_KeyWordSearch]
 - elminiate double spaces
 - ltrim, rtrim
 */
@@ -17827,10 +17827,10 @@ as
 
 	select 
 		* 
-		, dbo.Takeda_RemoveNonAlphaNonNumericCharacters([PRODUCTGROUP]) as Product_LettersNumbersOnly
-		, replace(dbo.Takeda_RemoveNonAlphaNonNumNonSpace([PRODUCTGROUP]),'  ',' ') as Product_LettersNumbersSpacesOnly /* e.g. Hansen & Rosenthal */
-		, LEN(replace(dbo.Takeda_RemoveNonAlphaNonNumNonSpace([PRODUCTGROUP]),'  ',' '))
-			-LEN(dbo.Takeda_RemoveNonAlphaNonNumericCharacters([PRODUCTGROUP])) as Product_LettersNumbersOnly_NumSpacesWords
+		, dbo.TheCompany_RemoveNonAlphaNonNumericCharacters([PRODUCTGROUP]) as Product_LettersNumbersOnly
+		, replace(dbo.TheCompany_RemoveNonAlphaNonNumNonSpace([PRODUCTGROUP]),'  ',' ') as Product_LettersNumbersSpacesOnly /* e.g. Hansen & Rosenthal */
+		, LEN(replace(dbo.TheCompany_RemoveNonAlphaNonNumNonSpace([PRODUCTGROUP]),'  ',' '))
+			-LEN(dbo.TheCompany_RemoveNonAlphaNonNumericCharacters([PRODUCTGROUP])) as Product_LettersNumbersOnly_NumSpacesWords
 		/*, (CASE 
 			WHEN UPPER([COMPANY]) like '% GMBH%' 
 				OR UPPER([COMPANY]) like '% LTD%' 
@@ -17853,18 +17853,18 @@ as
 			ELSE 'U' END) AS CompanyType */
 	from TPRODUCTGROUP 
 	/* where [KeyWordVarchar255] like 'Si%' */
-	/* where dbo.Takeda_RemoveNonAlphaNonNumNonSpace([KeyWordVarchar255]) like '%  %' */
+	/* where dbo.TheCompany_RemoveNonAlphaNonNumNonSpace([KeyWordVarchar255]) like '%  %' */
 
 GO
-/****** Object:  View [dbo].[V_Takeda_VPRODUCT]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_VPRODUCT]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view [dbo].[V_Takeda_VPRODUCT]
-/* refreshed via Takeda_Product_Search */
+CREATE view [dbo].[V_TheCompany_VPRODUCT]
+/* refreshed via TheCompany_Product_Search */
 as
 
 	select 
@@ -17872,7 +17872,7 @@ as
 		,  Upper([PRODUCTGROUP]) as Productgroup_UPPER
 		, (CASE WHEN (PRODUCTGROUPID IN (select PRODUCTGROUPID from TTENDERER) )
 							THEN 1 ELSE 0 END) as ProductIDExists
-			/* , dbo.Takeda_RemoveNonAlphaNonNumericCharacters(c.COMPANY) 
+			/* , dbo.TheCompany_RemoveNonAlphaNonNumericCharacters(c.COMPANY) 
 		as CompanyName_RemoveNonAlphaNonNumericChar /* leave numbers, e.g. 3M */ */
 
 		, len([PRODUCTGROUP]) as Product_Length
@@ -17897,7 +17897,7 @@ as
 		, (CASE WHEN [Product_LettersNumbersOnly_NumSpacesWords] = 1 /* two words, one space */
 					THEN [Product_LettersNumbersOnly]
 				WHEN Product_LettersNumbersOnly_NumSpacesWords > 1 /* two spaces or more, make sure there is at least one space, otherwise '' */
-					THEN dbo.Takeda_RemoveNonAlphaNonNumericCharacters(SUBSTRING([Product_LettersNumbersSpacesOnly],0,CHARINDEX(' ', [Product_LettersNumbersSpacesOnly],
+					THEN dbo.TheCompany_RemoveNonAlphaNonNumericCharacters(SUBSTRING([Product_LettersNumbersSpacesOnly],0,CHARINDEX(' ', [Product_LettersNumbersSpacesOnly],
 						CHARINDEX(' ', [Product_LettersNumbersSpacesOnly],
 									   CHARINDEX(' ', [Product_LettersNumbersSpacesOnly],+1)+1)) ))	/* e.g. SI Group */	
 				ELSE NULL /* no space */ END)			
@@ -17906,27 +17906,27 @@ as
 			,  LEN((CASE WHEN [Product_LettersNumbersOnly_NumSpacesWords] = 1 /* two words, one space */
 					THEN [Product_LettersNumbersOnly]
 				WHEN Product_LettersNumbersOnly_NumSpacesWords > 1 /* two spaces or more, make sure there is at least one space, otherwise '' */
-					THEN dbo.Takeda_RemoveNonAlphaNonNumericCharacters(SUBSTRING([Product_LettersNumbersSpacesOnly],0,CHARINDEX(' ', [Product_LettersNumbersSpacesOnly],
+					THEN dbo.TheCompany_RemoveNonAlphaNonNumericCharacters(SUBSTRING([Product_LettersNumbersSpacesOnly],0,CHARINDEX(' ', [Product_LettersNumbersSpacesOnly],
 						CHARINDEX(' ', [Product_LettersNumbersSpacesOnly],
 									   CHARINDEX(' ', [Product_LettersNumbersSpacesOnly],+1)+1)) ))	/* e.g. SI Group */	
 				ELSE NULL /* no space */ END)	)	
 		as Product_FirstTwoWords_LettersOnly_LEN
 
-		, (CASE WHEN LEN(dbo.Takeda_GetFirstLetterOfEachWord([Product_LettersNumbersSpacesOnly])) >=3 
+		, (CASE WHEN LEN(dbo.TheCompany_GetFirstLetterOfEachWord([Product_LettersNumbersSpacesOnly])) >=3 
 			/* AND c.CompanyType = 'C' */ THEN 
-				/* dbo.Takeda_GetFirstLetterOfEachWord([Product_LettersNumbersOnly])
-			WHEN LEN(dbo.Takeda_GetFirstLetterOfEachWord([Product_LettersNumbersOnly]))<3 
+				/* dbo.TheCompany_GetFirstLetterOfEachWord([Product_LettersNumbersOnly])
+			WHEN LEN(dbo.TheCompany_GetFirstLetterOfEachWord([Product_LettersNumbersOnly]))<3 
 				and len(left([[Product_LettersNumbersOnly],3)) >=3 THEN */
 				left([Product_LettersNumbersOnly],3)
 			ELSE NULL END
 			) 
 			as Product_FirstLetterOfEachWord
 
-	from V_Takeda_VPRODUCT_RAW c 
+	from V_TheCompany_VPRODUCT_RAW c 
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_Audittrail_HardcopyArchiving]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_Audittrail_HardcopyArchiving]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -17935,7 +17935,7 @@ GO
 
 CREATE view 
 
-[dbo].[V_Takeda_Audittrail_HardcopyArchiving]
+[dbo].[V_TheCompany_Audittrail_HardcopyArchiving]
 
 as
 
@@ -17951,20 +17951,20 @@ select
 	, a.OBJECTDESCRIPTION */
 	, u.DISPLAYNAME
 from 
-	TAUDITTRAIL a /* oruse V_Takeda_Audittrail_WithHistory for more than 3 months 
+	TAUDITTRAIL a /* oruse V_TheCompany_Audittrail_WithHistory for more than 3 months 
 	but then query needs tuning or audittrail first saved as table 
 	with objectid for all hardcopy edits */
 	inner join vuser u on a.userid = u.USERID
-	inner join V_Takeda_All c on a.PARENTOBJECTID = c.contractid
-	inner join V_Takeda_VCONTRACT_DPTROLES_FLAT r on r.Dpt_contractid = c.contractid
+	inner join V_TheCompany_All c on a.PARENTOBJECTID = c.contractid
+	inner join V_TheCompany_VCONTRACT_DPTROLES_FLAT r on r.Dpt_contractid = c.contractid
 where OBJECTDESCRIPTION like '%Hardcopy Archive%'
 GO
-/****** Object:  View [dbo].[V_Takeda_DupeDocs_CustID_MinDocID_DescExactMatch]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_DupeDocs_CustID_MinDocID_DescExactMatch]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE view [dbo].[V_Takeda_DupeDocs_CustID_MinDocID_DescExactMatch]
+CREATE view [dbo].[V_TheCompany_DupeDocs_CustID_MinDocID_DescExactMatch]
 
 as
 
@@ -17973,16 +17973,16 @@ SELECT Descriptionfull
 , COUNT(DOCUMENTID) as CountDocID
 , MIN(documentid) as MinDocID 
 , MAX(Documentid) as MaxDocID
-FROM T_Takeda_Docx 
+FROM T_TheCompany_Docx 
 group by DescriptionFull, CompanyIDList
 having COUNT(Documentid) >1
 GO
-/****** Object:  View [dbo].[V_Takeda_DupeDocs_CustID_MinDocID_SameHash_FileSize]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_DupeDocs_CustID_MinDocID_SameHash_FileSize]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE view [dbo].[V_Takeda_DupeDocs_CustID_MinDocID_SameHash_FileSize]
+CREATE view [dbo].[V_TheCompany_DupeDocs_CustID_MinDocID_SameHash_FileSize]
 
 as
 
@@ -17992,11 +17992,11 @@ SELECT DescRemNonAlphaHashbSHA1
 , COUNT(DOCUMENTID) as CountDocID
 , MIN(documentid) as MinDocID 
 , MAX(Documentid) as MaxDocID
-FROM T_Takeda_Docx 
+FROM T_TheCompany_Docx 
 group by DescRemNonAlphaHashbSHA1, filesize,CompanyIDList
 having COUNT(Documentid) >1
 GO
-/****** Object:  View [dbo].[V_Takeda_DuplicateDocuments]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_DuplicateDocuments]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -18006,7 +18006,7 @@ GO
 
 
 
-CREATE view [dbo].[V_Takeda_DuplicateDocuments]
+CREATE view [dbo].[V_TheCompany_DuplicateDocuments]
 
 as 
 
@@ -18030,7 +18030,7 @@ d.OBJECTID
 , d.datecreated
 , d.filetype
 , d.filesize
-FROM T_Takeda_Docx d /* generated from [dbo].[V_Takeda_DocxValidSignedNotRegForm] */
+FROM T_TheCompany_Docx d /* generated from [dbo].[V_TheCompany_DocxValidSignedNotRegForm] */
 INNER JOIN 
 (
 		SELECT 
@@ -18043,35 +18043,35 @@ INNER JOIN
 			/* ALL IDs */
 			,SUBSTRING(STUFF(
 				(SELECT ',' + Convert(nvarchar(10),s.DOCUMENTID)
-				FROM T_Takeda_Docx s
+				FROM T_TheCompany_Docx s
 				WHERE s.DescRemNonAlphaHashbSHA1 = r.DescRemNonAlphaHashbSHA1 AND s.CompanyIDList = r.CompanyIDList 
 				FOR XML PATH('')),1,1,''),1,255) 
 				AS DP_Doc_IDs
-			, (select MinDocID from dbo.[V_Takeda_DupeDocs_CustID_MinDocID_DescExactMatch]
+			, (select MinDocID from dbo.[V_TheCompany_DupeDocs_CustID_MinDocID_DescExactMatch]
 				where minDocID = MIN(r.Documentid)) as SameTitle
-			, (select MinDocID from dbo.[V_Takeda_DupeDocs_CustID_MinDocID_SameHash_FileSize]
+			, (select MinDocID from dbo.[V_TheCompany_DupeDocs_CustID_MinDocID_SameHash_FileSize]
 				where minDocID = MIN(r.Documentid)) as SameHashAndFileSize			
 			/* ,SUBSTRING(STUFF(
 				(SELECT ',' + Convert(nvarchar(10),s.DOCUMENTID)
-				FROM T_Takeda_Docx s
+				FROM T_TheCompany_Docx s
 				WHERE s.DescriptionFull = r.DescriptionFull AND s.CompanyIDList = r.CompanyIDList 
 				FOR XML PATH('')),1,1,''),1,255) 
 				AS DP_DocExactMatch_IDs */
 			,SUBSTRING(STUFF(
 				(SELECT DISTINCT ', ' + Convert(nvarchar(10),s.objectid)
-				FROM T_Takeda_Docx s
+				FROM T_TheCompany_Docx s
 				WHERE s.DescRemNonAlphaHashbSHA1 = r.DescRemNonAlphaHashbSHA1 AND s.CompanyIDList = r.CompanyIDList 
 				FOR XML PATH('')),1,1,''),1,255) 
 				AS DP_Object_IDs
 			,SUBSTRING(STUFF(
 				(SELECT DISTINCT ',' + c.CONTRACTNUMBER
-				FROM T_Takeda_Docx s inner join TCONTRACT c on s.OBJECTID = c.contractid
+				FROM T_TheCompany_Docx s inner join TCONTRACT c on s.OBJECTID = c.contractid
 				WHERE s.DescRemNonAlphaHashbSHA1 = r.DescRemNonAlphaHashbSHA1 AND s.CompanyIDList = r.CompanyIDList 
 				FOR XML PATH('')),1,1,''),1,255) 
 				AS DP_Contract_Numbers
 			, r.CompanyIDList
 			
-		FROM T_Takeda_Docx r		
+		FROM T_TheCompany_Docx r		
 		GROUP BY
 			/* Same company */
 			r.CompanyIDList
@@ -18090,16 +18090,16 @@ INNER JOIN
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_UserID_CountractRoleCount_VUSER_DEL]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_UserID_CountractRoleCount_VUSER_DEL]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE view
-[dbo].[V_Takeda_UserID_CountractRoleCount_VUSER_DEL] 
+[dbo].[V_TheCompany_UserID_CountractRoleCount_VUSER_DEL] 
 as
 
-select * from dbo.V_Takeda_UserID_CountractRoleCount_VUSER 
+select * from dbo.V_TheCompany_UserID_CountractRoleCount_VUSER 
 WHERE userid = 85072 /* and
 	NumTotalRoles = 0 
 	and MIK_VALID = 0 
@@ -18117,13 +18117,13 @@ WHERE userid = 85072 /* and
 
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_4_CNT_TPRODUCT_Summary]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_4_CNT_TPRODUCT_Summary]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 create view 
-[dbo].[V_Takeda_KWS_4_CNT_TPRODUCT_Summary]
+[dbo].[V_TheCompany_KWS_4_CNT_TPRODUCT_Summary]
 
 as 
 
@@ -18135,7 +18135,7 @@ as
 
 				,Replace(STUFF(
 			(SELECT DISTINCT ',' + rs.[KeyWordSource]
-			FROM [V_Takeda_KeyWordSearch] rs
+			FROM [V_TheCompany_KeyWordSearch] rs
 			where  rs.KeyWordVarchar255 = p.KeyWordVarchar255
 			AND rs.[KeyWordSource] IS NOT NULL
 			/* and rs.ProductExact_Flag = 1 */
@@ -18143,7 +18143,7 @@ as
 
 		,Replace(STUFF(
 			(SELECT DISTINCT ',' + rs.[KeyWordCustom1]
-			FROM [V_Takeda_KeyWordSearch] rs
+			FROM [V_TheCompany_KeyWordSearch] rs
 			where  rs.KeyWordVarchar255 = p.KeyWordVarchar255
 			AND rs.[KeyWordCustom1] IS NOT NULL
 			/* and rs.ProductExact_Flag = 1 */
@@ -18151,7 +18151,7 @@ as
 
 		,Replace(STUFF(
 			(SELECT DISTINCT ',' + rs.[KeyWordCustom2]
-			FROM [V_Takeda_KeyWordSearch] rs
+			FROM [V_TheCompany_KeyWordSearch] rs
 			where  rs.KeyWordVarchar255 = p.KeyWordVarchar255
 			AND rs.[KeyWordCustom2] IS NOT NULL
 			/* and rs.ProductExact_Flag = 1 */
@@ -18159,7 +18159,7 @@ as
 
 		, count(/* DISTINCT */ p.contractid) as ContractCount
 
-	FROM [V_Takeda_KWS_3_CNT_TPRODUCT_ContractID_Extended] p
+	FROM [V_TheCompany_KWS_3_CNT_TPRODUCT_ContractID_Extended] p
 	GROUP BY 
 		p.KeyWordVarchar255
 		, p.PRODUCTGROUP
@@ -18167,7 +18167,7 @@ as
 		, p.PRODUCTGROUPNOMENCLATUREID
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_5a_CNT_TPRODUCT_Summary_KeyWord]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_5a_CNT_TPRODUCT_Summary_KeyWord]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -18177,35 +18177,35 @@ GO
 
 
 CREATE view 
-[dbo].[V_Takeda_KWS_5a_CNT_TPRODUCT_Summary_KeyWord]
+[dbo].[V_TheCompany_KWS_5a_CNT_TPRODUCT_Summary_KeyWord]
 
 as 
 
 	SELECT  r.KeyWordVarchar255
 			,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + rs.productgroup
-		FROM V_Takeda_KWS_4_CNT_TPRODUCT_Summary rs
+		FROM V_TheCompany_KWS_4_CNT_TPRODUCT_Summary rs
 		where  rs.keywordvarchar255 = r.keywordvarchar255
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS Product_List
 
 
 			,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + rs.[KeyWordSource_List]
-		FROM V_Takeda_KWS_4_CNT_TPRODUCT_Summary rs
+		FROM V_TheCompany_KWS_4_CNT_TPRODUCT_Summary rs
 		where  rs.keywordvarchar255 = r.keywordvarchar255
 		AND rs.[KeyWordSource_List] IS NOT NULL
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS KeyWordSource_List
 			
 			,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + rs.[Custom1_List]
-		FROM V_Takeda_KWS_4_CNT_TPRODUCT_Summary rs
+		FROM V_TheCompany_KWS_4_CNT_TPRODUCT_Summary rs
 		where  rs.keywordvarchar255 = r.keywordvarchar255
 		AND rs.[Custom1_List] IS NOT NULL
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS Custom1_List
 
 			,LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ', ' + rs.[Custom2_List]
-		FROM V_Takeda_KWS_4_CNT_TPRODUCT_Summary rs
+		FROM V_TheCompany_KWS_4_CNT_TPRODUCT_Summary rs
 		where  rs.keywordvarchar255 = r.keywordvarchar255
 		AND rs.[Custom2_List] IS NOT NULL
 		FOR XML PATH('')),1,1,''),'&amp;','&')) AS Custom2_List
@@ -18215,22 +18215,22 @@ as
 	
 	,LEFT(LTRIM(Replace(STUFF(
 		(SELECT DISTINCT ',' + c.CONTRACTNUMBER
-		FROM [dbo].[T_Takeda_KWS_2_CNT_TPRODUCT_CONTRACTID] rs 
+		FROM [dbo].[T_TheCompany_KWS_2_CNT_TPRODUCT_CONTRACTID] rs 
 			inner join tcontract c on rs.contractid = c.contractid
 		where  rs.keywordvarchar255 = r.keywordvarchar255
 		FOR XML PATH('')),1,1,''),'&amp;','&')),255) AS Contract_List
-	FROM V_Takeda_KWS_4_CNT_TPRODUCT_Summary r
+	FROM V_TheCompany_KWS_4_CNT_TPRODUCT_Summary r
 	group by r.KeyWordVarchar255
 
 GO
-/****** Object:  View [dbo].[V_Takeda_KWS_5b_CNT_TPRODUCT_Summary_KeyWord_GAP]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_KWS_5b_CNT_TPRODUCT_Summary_KeyWord_GAP]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE view  [dbo].[V_Takeda_KWS_5b_CNT_TPRODUCT_Summary_KeyWord_GAP]
+CREATE view  [dbo].[V_TheCompany_KWS_5b_CNT_TPRODUCT_Summary_KeyWord_GAP]
 
 as
 
@@ -18247,8 +18247,8 @@ as
 		, r.Custom2_List
 		, r.ContractCount
 
-	from V_Takeda_KeyWordSearch s 
-		left join V_Takeda_KWS_5a_CNT_TPRODUCT_Summary_KeyWord  r 
+	from V_TheCompany_KeyWordSearch s 
+		left join V_TheCompany_KWS_5a_CNT_TPRODUCT_Summary_KeyWord  r 
 		on s.KeyWordVarchar255 = r.KeyWordVarchar255
 	where 
 	[KeyWordType] = 'Product'  
@@ -18257,12 +18257,12 @@ as
 	order by s.keywordcategory desc, s.KeyWordVarchar255
 
 GO
-/****** Object:  View [dbo].[V_Takeda_FullTextNonCompete]    Script Date: 24 Jun 2024 08:57:53 ******/
+/****** Object:  View [dbo].[V_TheCompany_FullTextNonCompete]    Script Date: 24 Jun 2024 08:57:53 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create view [dbo].[V_Takeda_FullTextNonCompete]
+create view [dbo].[V_TheCompany_FullTextNonCompete]
 
 as
 
