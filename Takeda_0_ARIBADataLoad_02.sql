@@ -1,4 +1,4 @@
-USE [DAQ-1445_Contiki_App_DESQL016_Divestment]
+USE [DAQ-1445_TheVendor_App_DESQL016_Divestment]
 GO
 /****** Object:  StoredProcedure [dbo].[Takeda_0_ARIBADataLoad_02]    Script Date: 24 Jun 2024 08:39:02 ******/
 SET ANSI_NULLS ON
@@ -29,11 +29,11 @@ begin
 
 
 
-	/* if migrated Contiki contract, replace 'unclassified' supplier with supplier name */
+	/* if migrated TheVendor contract, replace 'unclassified' supplier with supplier name */
 	update  T_Takeda_Ariba_Dump_Raw
 	set [AllSupplier] = (case when ([Affected Parties - Common Supplier] like '%legacy%supplier%' 
 						OR [Affected Parties - Common Supplier] like '%nclassifie%'
-						) /* e.g. Contiki contracts */ 				
+						) /* e.g. TheVendor contracts */ 				
 				then (select CompanyList from T_Takeda_ALL where number = rtrim(substring([Contract id],6,25)))
 				else [Affected Parties - Common Supplier] end)
 
@@ -49,10 +49,10 @@ begin
 
 /* supplier country */
 /* now in part 1		alter table [dbo].[T_Takeda_Ariba_Dump_Raw]
-		add [CompanyCountry] varchar(25) /* for Contiki legacy contracts , since those are all 'legacy suppliers' */
+		add [CompanyCountry] varchar(25) /* for TheVendor legacy contracts , since those are all 'legacy suppliers' */
 	*/
 	/*	alter table [dbo].[T_Takeda_Ariba_Dump_Raw]
-		add [CompanyCountryID] bigint /* for Contiki legacy contracts , since those are all 'legacy suppliers' */
+		add [CompanyCountryID] bigint /* for TheVendor legacy contracts , since those are all 'legacy suppliers' */
 */
 	alter table [dbo].[T_Takeda_Ariba_Dump_Raw]
 	alter column [Affected Parties - Common Supplier] varchar(150)
