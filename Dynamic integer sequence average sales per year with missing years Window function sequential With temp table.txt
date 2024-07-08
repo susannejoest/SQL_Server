@@ -1,0 +1,47 @@
+WITH  
+
+integer_sequence(n) AS (
+  SELECT 2019 -- starting value
+  UNION ALL
+  SELECT n+1 FROM integer_sequence WHERE n < 2021 -- ending value
+) 
+, 
+
+customers_years as
+(
+	SELECT * FROM integer_sequence A  cross join  
+		(Select distinct customer_id,customer_name 
+		from [DAQ-1445_Contiki_App_DESQL016_Divestment].[dbo].[T_0_SJ_Customers]) B
+
+		)
+															
+, 
+
+Billing_Customer_Year as
+
+(select * , DATEPART(YEAR,billing_creation_date) as Billing_Creation_Date_YYYY
+from [DAQ-1445_Contiki_App_DESQL016_Divestment].[dbo].[T_0_SJ_Customers])
+
+,
+
+Billing_Customer_Year_Joined as
+
+(				Select A.n as bill_Year,
+						A.customer_id ,
+						A.customer_name,
+						b.billing_id,
+						b.Billing_Creation_Date_YYYY,
+						ISNULL(billing_amount,0) AS Amount 
+				from customers_years A
+
+				left outer join  Billing_Customer_Year B on  
+					A.n=B.Billing_Creation_Date_YYYY and A.customer_id=B.customer_id
+
+)
+/* begin main statement */
+
+			Select customer_id,
+				customer_name,
+				AVG(Amount) as avg_amt
+			from Billing_Customer_Year_Joined
+			group by customer_id,customer_name
