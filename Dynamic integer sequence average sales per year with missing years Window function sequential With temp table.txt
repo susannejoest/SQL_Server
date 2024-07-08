@@ -1,3 +1,5 @@
+/* get average sales per customer for a specific range of years while including years with zero turnover with a value of 0 */
+
 WITH  
 
 integer_sequence(n) AS (
