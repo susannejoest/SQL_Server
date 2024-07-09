@@ -88,33 +88,11 @@ Begin
 	SET @Temp = Replace(@Temp,'"','') /* "" leads to issues */
 	      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'a', 'a' )
 
-      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'e', 'e' )
-      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'i', 'i' )
-      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'o', 'o' )
-      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'u', 'u' )
-      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'y', 'y' )
-      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'n', 'n' )
       SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'œ', 'oe' )
 
       SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'æ', 'ae' )
 
       SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'ß', 'ss' )
-
-      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 's', 's' )
-
-      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'A', 'A' )
-
-      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'E', 'E' )
-
-      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'I', 'I' )
-
-      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'O', 'O' )
-
-      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'U', 'U' )
-
-      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'Y', 'Y' )
-
-      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'N', 'N' )
 
       SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'Œ', 'OE' )
 
@@ -122,7 +100,7 @@ Begin
 
       SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'ß', 'SS' )
 
-      SET @TEMP = Replace( @TEMP COLLATE Latin1_General_CS_AI, 'S', 'S' )
+
 
 
     Return ltrim(@Temp)
