@@ -28,7 +28,7 @@ WITH Numbers AS (
 /* Short solution with nesting */
 
 WITH  integer_sequence(n) AS (
-  SELECT 2019 -- starting value
+  SELECT 2019 -- anchor / starting value
   UNION ALL
   SELECT n+1 FROM integer_sequence WHERE n < 2021 -- ending value
 )
