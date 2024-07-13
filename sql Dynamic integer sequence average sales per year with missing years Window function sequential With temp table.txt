@@ -1,3 +1,11 @@
+WITH Numbers AS (
+    SELECT 1 AS Number
+    UNION ALL
+    SELECT Number + 1
+    FROM Numbers
+    WHERE Number < 100
+) select * from numbers
+
 /* get average sales per customer for a specific range of years while including years with zero turnover with a value of 0 */
 
 /* Short solution with nesting */
