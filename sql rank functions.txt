@@ -4,15 +4,20 @@ SELECT
        
 	   city, 
 	   Marks, 
-       /* ROW_NUMBER() OVER(partition by city ORDER BY e.Marks asc) Subject_Mark_RowNumber,
-	   RANK() OVER(PARTITION BY Studentname ORDER BY Marks DESC) as Student_Rank,
-	   DENSE_RANK() OVER(PARTITION BY e.Subject ORDER BY Marks DESC) as Subject_Rank,
-	   NTILE(2) OVER(partition by e.subject ORDER BY Marks DESC) as Ntile_2_Rank, 
-	   avg(marks) over ( partition by city /* order by marks desc */) as Avg_Marks, */
-	   SUM(marks) OVER(/* PARTITION BY city */ ORDER BY marks asc ROWS BETWEEN CURRENT ROW AND 1 FOLLOWING) AS CumulativeTotalMarks
+       /* ROW_NUMBER() OVER(partition by city ORDER BY e.Marks asc) Subject_Mark_RowNumber, */
+	   /* RANK() OVER(PARTITION BY city ORDER BY Marks DESC) as City_Rank */
+	   /* DENSE_RANK() OVER(PARTITION BY e.Subject ORDER BY Marks DESC) as Subject_Rank,
+	   NTILE(2) OVER(partition by e.subject ORDER BY Marks DESC) as Ntile_2_Rank, */
+	   avg(marks) over ( partition by city order by marks desc ROWS BETWEEN 1 /* UNBOUNDED */ PRECEDING AND 1 /* UNBOUNDED */ FOLLOWING) as Avg_Marks,
+	   /* SUM(marks) OVER( PARTITION BY city   ORDER BY marks asc 
+	   /* ROWS BETWEEN CURRENT ROW AND 1 FOLLOWING */) AS CumulativeTotalMarks */
+	   first_value(marks) over (order by marks) as lowest_Mark,
+	   last_value(marks) over (order by marks RANGE BETWEEN /* 1 */ UNBOUNDED PRECEDING AND 
+                               /* 1 */ UNBOUNDED FOLLOWING) as hightest_Mark,
+		lag(marks) over (partition by city order by marks) as Prev_row_mark,
+		lead(marks) over (partition by city order by marks) as Next_row_mark
 FROM ExamResult e
-order by city,
-	SUM(marks) OVER(/* PARTITION BY city */ ORDER BY marks asc ROWS BETWEEN CURRENT ROW AND 1 FOLLOWING)
+order by city, marks desc
 	/* ROW_NUMBER() OVER(partition by city ORDER BY e.Marks asc) */
 /* order by ntile_2_rank
 OFFSET 1 ROWS FETCH NEXT 3 ROWS ONLY;*/
