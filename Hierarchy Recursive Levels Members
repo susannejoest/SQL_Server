@@ -1,12 +1,13 @@
 WITH Hierarchy AS (
-    -- Anchor member
+    -- Anchor member (starting point)
     SELECT
         1 AS Level,
         id,
         par,
-        name
+        name,
+        CAST(id AS NVARCHAR(MAX)) AS Path
     FROM
-        my_table
+        T_0_SJ_Hierarchy_Data
     WHERE
         name = 'Nicole'
     
@@ -17,11 +18,14 @@ WITH Hierarchy AS (
         h.Level + 1 AS Level,
         m.id,
         m.par,
-        m.name
+        m.name,
+        CAST(h.Path + '->' + CAST(m.id AS NVARCHAR(MAX)) AS NVARCHAR(MAX)) AS Path
     FROM
-        my_table m
+        T_0_SJ_Hierarchy_Data m
     INNER JOIN
         Hierarchy h ON m.par = h.id
+    WHERE
+        CHARINDEX('->' + CAST(m.id AS NVARCHAR(MAX)) + '->', h.Path + '->') = 0
 )
 SELECT
     Level,
@@ -32,3 +36,22 @@ FROM
     Hierarchy
 ORDER BY
     Level, name;
+
+
+
+/* insert sample data */
+    CREATE TABLE T_0_SJ_Hierarchy_Data (
+        id INT PRIMARY KEY,
+        par INT,
+        name NVARCHAR(100)
+    );
+    
+    INSERT INTO T_0_SJ_Hierarchy_Data (id, par, name) VALUES
+    (1, NULL, 'Root'),
+    (2, 1, 'Nicole'),
+    (3, 1, 'Alex'),
+    (4, 2, 'John'),
+    (5, 2, 'Sophie'),
+    (6, 3, 'Susanne')
+    ;
+
