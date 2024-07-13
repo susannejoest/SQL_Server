@@ -1,3 +1,20 @@
+/* date series */
+DECLARE @StartDateTime DATETIME = '2024-01-01 00:00:00';
+DECLARE @EndDateTime DATETIME = '2024-01-01 23:59:00';
+
+WITH DateSeries AS (
+    SELECT @StartDateTime AS DateTimeValue
+    UNION ALL
+    SELECT DATEADD(MINUTE, 1, DateTimeValue)
+    FROM DateSeries
+    WHERE DATEADD(MINUTE, 1, DateTimeValue) <= @EndDateTime
+)
+SELECT DateTimeValue
+FROM DateSeries
+OPTION (MAXRECURSION 0); /* used to prevent a poorly formed recursive CTE from entering into an infinite loop */
+
+/* number series */
+
 WITH Numbers AS (
     SELECT 1 AS Number
     UNION ALL
