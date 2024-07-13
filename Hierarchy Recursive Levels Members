@@ -1,0 +1,34 @@
+WITH Hierarchy AS (
+    -- Anchor member
+    SELECT
+        1 AS Level,
+        id,
+        par,
+        name
+    FROM
+        my_table
+    WHERE
+        name = 'Nicole'
+    
+    UNION ALL
+    
+    -- Recursive member
+    SELECT
+        h.Level + 1 AS Level,
+        m.id,
+        m.par,
+        m.name
+    FROM
+        my_table m
+    INNER JOIN
+        Hierarchy h ON m.par = h.id
+)
+SELECT
+    Level,
+    id,
+    par,
+    name
+FROM
+    Hierarchy
+ORDER BY
+    Level, name;
