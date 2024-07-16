@@ -1,0 +1,25 @@
+select year([Exam_Date]) as year,
+		month([Exam_Date]) as month,
+		sum(marks) as Marks_Sum,
+		count(marks) as Marks_Count
+from [dbo].[ExamResult]
+group by  year([Exam_Date]), month([Exam_Date])
+
+
+select year([Exam_Date]),
+		month([Exam_Date]),
+		sum(marks) as Marks_Sum,
+		count(marks) as Marks_Count
+from [dbo].[ExamResult]
+group by grouping sets
+((year([Exam_Date]), month([Exam_Date])))
+
+
+
+select year([Exam_Date]),
+		month([Exam_Date]),
+		sum(marks) as Marks_Sum,
+		count(marks) as Marks_Count
+from [dbo].[ExamResult]
+group by grouping sets
+(year([Exam_Date]), month([Exam_Date]))
