@@ -20,10 +20,13 @@ WITH generate_series AS (
     SELECT DATEADD(day, 1, date_created)
     FROM generate_series
     WHERE date_created < '2020-01-01'
+
 )
 SELECT *
 FROM generate_series
+order by date_created
 OPTION (MAXRECURSION 0);
+
 
 
 /* number series */
