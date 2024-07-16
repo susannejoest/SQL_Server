@@ -3,7 +3,7 @@ DECLARE @StartDateTime DATETIME = '2024-01-01 00:00:00';
 DECLARE @EndDateTime DATETIME = '2024-01-01 23:59:00';
 
 WITH DateSeries AS (
-    SELECT @StartDateTime AS DateTimeValue
+    SELECT @StartDateTime AS DateTimeValue  /* Anchor member determines data type !*/
     UNION ALL
     SELECT DATEADD(MINUTE, 1, DateTimeValue)
     FROM DateSeries
@@ -15,7 +15,7 @@ OPTION (MAXRECURSION 0); /* used to prevent a poorly formed recursive CTE from e
 
 /* WITH date series , Max Recursion */
 WITH generate_series AS (
-    SELECT CAST('2019-01-01' AS DATE) AS date_created
+    SELECT CAST('2019-01-01' AS DATE) AS date_created /* Anchor member determines data type !*/
     UNION ALL
     SELECT DATEADD(day, 1, date_created)
     FROM generate_series
@@ -25,14 +25,14 @@ WITH generate_series AS (
 SELECT *
 FROM generate_series
 order by date_created
-OPTION (MAXRECURSION 0);
+OPTION (MAXRECURSION 0); /* or e.g. 365 for a whole year */
 
 
 
 /* number series */
 
 WITH Numbers AS (
-    SELECT 1 AS Number
+    SELECT 1 AS Number  /* Anchor member determines data type !*/
     UNION ALL
     SELECT Number + 1
     FROM Numbers
@@ -44,7 +44,7 @@ WITH Numbers AS (
 /* Short solution with nesting */
 
 WITH  integer_sequence(n) AS (
-  SELECT 2019 -- anchor / starting value
+  SELECT 2019 -- anchor / starting value  /* Anchor member determines data type !*/
   UNION ALL
   SELECT n+1 FROM integer_sequence WHERE n < 2021 -- ending value
 )
