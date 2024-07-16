@@ -13,6 +13,19 @@ SELECT DateTimeValue
 FROM DateSeries
 OPTION (MAXRECURSION 0); /* used to prevent a poorly formed recursive CTE from entering into an infinite loop */
 
+/* WITH date series , Max Recursion */
+WITH generate_series AS (
+    SELECT CAST('2019-01-01' AS DATE) AS date_created
+    UNION ALL
+    SELECT DATEADD(day, 1, date_created)
+    FROM generate_series
+    WHERE date_created < '2020-01-01'
+)
+SELECT *
+FROM generate_series
+OPTION (MAXRECURSION 0);
+
+
 /* number series */
 
 WITH Numbers AS (
