@@ -19,7 +19,7 @@ SELECT
 		lead(marks) over (partition by city order by marks) as Next_row_mark
 
 	PERCENT_RANK(5) WITHIN GROUP (ORDER BY X DESC) as How_would_rank_x_percent
-	PERCENT_CONT(0) WITHIN GROUP (ORDER BY X DESC) as Inverse_continuous
+	PERCENT_CONT(0) WITHIN GROUP (ORDER BY X DESC) as Inverse_continuous /* 0.5 = Median */
 	PERCENT_DISC(0) WITHIN GROUP (ORDER BY X DESC) as Inverse_Discrete
 FROM ExamResult e
 order by city, marks desc
