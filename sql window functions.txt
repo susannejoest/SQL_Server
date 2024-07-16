@@ -17,6 +17,10 @@ SELECT
 		/* nth_value(count(marks)) over (partition by city) as hightest_Mark, ORACLE ONLY */
 		lag(marks) over (partition by city order by marks) as Prev_row_mark,
 		lead(marks) over (partition by city order by marks) as Next_row_mark
+
+	PERCENT_RANK(5) WITHIN GROUP (ORDER BY X DESC) as How_would_rank_x_percent
+	PERCENT_CONT(0) WITHIN GROUP (ORDER BY X DESC) as Inverse_continuous
+	PERCENT_DISC(0) WITHIN GROUP (ORDER BY X DESC) as Inverse_Discrete
 FROM ExamResult e
 order by city, marks desc
 	/* ROW_NUMBER() OVER(partition by city ORDER BY e.Marks asc) */
