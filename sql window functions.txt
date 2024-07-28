@@ -26,3 +26,30 @@ order by city, marks desc
 	/* ROW_NUMBER() OVER(partition by city ORDER BY e.Marks asc) */
 /* order by ntile_2_rank
 OFFSET 1 ROWS FETCH NEXT 3 ROWS ONLY;*/
+
+/* 28-Jul-2024 */
+select
+city, 
+subject,
+Marks,
+avg(marks) OVER (partition by city order by city ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) as avg_marks_city,
+sum(marks) OVER (ORDER BY marks ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as sum_marks_unbprec_curr,
+first_value(marks) OVER (partition by city order by marks) as first_value_marks_city,
+last_value(marks) OVER (partition by city order by marks) as last_value_marks_city,
+rank() over (/* partition by city */ order by subject desc) as rank_city_marks,
+ntile(4) over (order by marks desc) as ntile_c,
+sum(marks) OVER (order by city asc, marks asc ) as city_sum_marks,
+lag(marks) over (order by city ) as lag_mark,
+lead(marks) over (order by city, marks) as lead_mark,
+row_number() over (order by city, marks) as row_no,
+PERCENT_RANK() over (order by marks desc) as pct_rank_grp
+
+FROM ExamResult e
+/* where subject = 'english' */
+order by city asc, marks asc
+
+/* cast is ansi sql, convert has additional formatting */
+SELECT CAST('2024-07-28' AS DATETIME) AS DateValue;
+
+SELECT CONVERT(DATETIME, '2024-07-28', 120) AS DateValue;
+
