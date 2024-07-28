@@ -21,30 +21,48 @@ WITH generate_series AS (
     FROM generate_series
     WHERE date_created < '2020-01-01'
 
-)
-SELECT *
-FROM generate_series
-order by date_created
-OPTION (MAXRECURSION 0); /* or e.g. 365 for a whole year */
+	)
+	SELECT *
+	FROM generate_series
+	order by date_created
+	OPTION (MAXRECURSION 0); /* or e.g. 365 for a whole year */
 
+/* Weekday name, e.g. Sunday */
+select DATENAME(weekday, date_created) as cd 
+from date_series
 
+/* Weekday name short e.g. Sat */
+SELECT
+  FORMAT(CAST('2022-01-01' AS DATE), 'ddd');
+The result is 'Sat'.
 
-/* number series */
+/* yyyy-MM-dd */
+SELECT FORMAT(date_created, 'yyyy-MM-dd') AS dt /* Month as two digit number, do not use lower case mm since this is MINUTES */
+SELECT FORMAT(date_created, 'yyyy-MMM-dd') AS dt 
+FROM generate_date_series;
 
-WITH Numbers AS (
-    SELECT 1 AS Number  /* Anchor member determines data type !*/
-    UNION ALL
-    SELECT Number + 1
-    FROM Numbers
-    WHERE Number < 100
-) select * from numbers
+/* Weekday number 1-7 */
+select datepart(WEEKDAY, date_created) as cd 
+from generate_date_series
+
+/* DYNAMIC NUMBER SERIES */
+
+	WITH number_series as (
+	select 1 as Number  /* Anchor member determines data type !*/
+	UNION ALL
+	SELECT Number + 1
+	FROM number_series
+	 WHERE Number <3)
+
+select * from number_series
+
 
 /* get average sales per customer for a specific range of years while including years with zero turnover with a value of 0 */
 
 /* Short solution with nesting */
 
-WITH  integer_sequence(n) AS (
-  SELECT 2019 -- anchor / starting value  /* Anchor member determines data type !*/
+WITH  integer_sequence(n) AS ( /* the (n) in brackets is OPTIONAL and just to illustrate what the variable is */
+  SELECT 2019 /* as n */ -- anchor / starting value  /* Anchor member determines data type !*/
   UNION ALL
   SELECT n+1 FROM integer_sequence WHERE n < 2021 -- ending value
 )
