@@ -1,19 +1,19 @@
 /* simplest version */
 
-  with hierarchy as 
-  (
-	/* Anchor Query */
-  select id, par, name, 1 as level
-  from [dbo].[T_0_SJ_Hierarchy_Data]
-  where id = 1
-
-  UNION ALL
-	/* Recursive Query */
-    select hd.id, hd.par, hd.name, h.level + 1
-  from [dbo].[T_0_SJ_Hierarchy_Data] hd
-	inner join hierarchy h on h.id = hd.par
-)
-select * from hierarchy
+	  with hierarchy as 
+	  (
+	  select id, par, name, 1 as level
+	  from [dbo].[T_0_SJ_Hierarchy_Data]
+	  where id = 1 and par is null /* root */
+	
+	  UNION ALL
+	
+	    select hd.id, hd.par, hd.name, h.level + 1
+	  from [dbo].[T_0_SJ_Hierarchy_Data] hd
+		inner join hierarchy h on h.id = hd.par
+		where hd.par is not null /* non-root */
+	)
+	select * from hierarchy
 
 /* more complex */
 
