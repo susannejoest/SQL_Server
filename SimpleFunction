@@ -5,7 +5,7 @@ Declare @CandidateID as integer
 set @CandidateName = 'Darrin'
 
 /* Contract ID must be valid */
-	IF EXISTS ( SELECT  CandidateID
+	IF EXISTS ( SELECT  null
 					FROM    candidates
 					WHERE   candidate = @CandidateName)
 		BEGIN
