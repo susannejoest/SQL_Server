@@ -1,0 +1,6 @@
+SELECT *
+FROM TestTable
+WHERE TextData LIKE '%' + CHAR(13) + '%' OR TextData LIKE '%' + CHAR(10) + '%';
+
+SELECT charindex(CHAR(13),TextData) as StringPos
+FROM TestTable
