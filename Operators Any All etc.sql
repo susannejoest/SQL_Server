@@ -12,3 +12,8 @@ where exists (select null from candidateskills where candidateskills.candidate =
 select studentname, marks
 from examresult
 where marks >= ALL (select marks from examresult)
+
+IF 3 < SOME (SELECT ID FROM T1)  
+PRINT 'TRUE'   
+ELSE  
+PRINT 'FALSE' ;
