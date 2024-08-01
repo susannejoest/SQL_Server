@@ -1,0 +1,8 @@
+select * 
+from candidates c
+	left outer join 
+		(candidateskills as cs
+			inner join roleskills as r 
+			on cs.skill = r.skill)
+			on c.candidate = cs.candidate
+			
