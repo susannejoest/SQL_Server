@@ -1,3 +1,34 @@
+
+with all_candidates_skills
+as (select c.candidate, s.skill ,
+	row_number() over (partition by c.candidate order by skill) as Row_No_Candidate_Skill
+	from candidates c, skills s)
+/* select * from candidates_Skills, 9 per person */
+,
+candidate_skill_matrix as
+(
+select c_s.candidate, c_s.Row_No_Candidate_Skill, c_s.skill as All_Skills, cs.skill 
+from all_candidates_skills c_s
+left outer join [dbo].[CandidateSkills] cs on c_s.skill = cs.skill and c_s.candidate = cs.candidate
+)
+/*
+select candidate,
+	string_agg(skill,',') as Skill_List
+from candidate_skill_matrix
+group by candidate
+*/
+
+SELECT 
+    candidate,
+    STRING_AGG(CASE WHEN Skill IS NULL THEN All_Skills END, ',') AS Missing_Skill_List,
+    STRING_AGG(skill, ',') AS Candidate_Skill_List
+	/* STRING_AGG(if count(select skill from roleskills rs where role = 'DB Architect' and rs.skill = skill)>0, skill, null) as Skills_DB_Architect */
+FROM 
+    candidate_skill_matrix
+GROUP BY 
+    candidate;
+
+/* Students marks etc. */
 SELECT 
 		/* Studentname, 
        Subject, */
