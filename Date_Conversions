@@ -1,0 +1,17 @@
+/* Weekday name, e.g. Sunday */
+select DATENAME(weekday, date_created) as cd 
+from date_series
+
+/* Weekday name short e.g. Sat */
+SELECT
+  FORMAT(CAST('2022-01-01' AS DATE), 'ddd');
+The result is 'Sat'.
+
+/* yyyy-MM-dd */
+SELECT FORMAT(date_created, 'yyyy-MM-dd') AS dt /* Month as two digit number, do not use lower case mm since this is MINUTES */
+SELECT FORMAT(date_created, 'yyyy-MMM-dd') AS dt 
+FROM generate_date_series;
+
+/* Weekday number 1-7 */
+select datepart(WEEKDAY, date_created) as cd 
+from generate_date_series
