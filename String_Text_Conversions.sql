@@ -14,3 +14,9 @@ FROM TestTable
   SELECT value COLLATE SQL_Latin1_General_CP1_CI_AS
   FROM STRING_SPLIT(@tags, ',')
   WHERE RTRIM(value) <> '';
+
+
+select charindex('@','susanne@gmail.com') /* 8 */
+, right('susanne@gmail.com',charindex('@','susanne@gmail.com')+1)
+, len('susanne@gmail.com')
+, len(replace('susanne@gmail.com','@',''))
