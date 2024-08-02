@@ -1,3 +1,4 @@
+Retain data lineage / metadata
 In SQL Server, the MINUS operator, which is used in some other SQL dialects (such as Oracle), is not directly available. 
   Instead, you can use a combination of EXCEPT and UNION to compare tables for differences.
 
