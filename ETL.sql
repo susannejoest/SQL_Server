@@ -10,30 +10,7 @@ Performing ETL (Extract, Transform, Load) checks is crucial to ensure data integ
 Description: Apache Airflow is an open-source tool to programmatically author, schedule, and monitor workflows.
 ETL Check Features: Custom sensors, operators, and task dependencies to implement data validation checks.
 Use Case: Schedule and monitor ETL jobs with custom data validation steps.
-2. Great Expectations
-Description: Great Expectations is an open-source tool for data validation, documentation, and profiling.
-ETL Check Features: Define and execute "expectations" to validate data at each stage of the ETL process.
-Use Case: Validate data consistency, completeness, and accuracy during ETL.
-3. dbt (Data Build Tool)
-Description: dbt is a command-line tool that enables data analysts and engineers to transform data in their warehouse more effectively.
-ETL Check Features: Test data models using built-in or custom tests for schema and data quality.
-Use Case: Implement data transformation and testing as part of the ETL pipeline.
-4. Talend Data Quality
-Description: Talend is an ETL tool that provides data integration and data quality solutions.
-ETL Check Features: Data profiling, validation, cleansing, and monitoring within the ETL workflows.
-Use Case: Comprehensive ETL tool with built-in data quality checks.
-5. Apache Nifi
-Description: Apache NiFi is an open-source data integration tool designed to automate the flow of data between systems.
-ETL Check Features: Data provenance, validation processors, and real-time monitoring.
-Use Case: Real-time data flow automation with integrated validation checks.
-6. Informatica Data Quality
-Description: Informatica provides a suite of data quality tools to manage and maintain data accuracy and integrity.
-ETL Check Features: Data profiling, cleansing, matching, and monitoring capabilities.
-Use Case: Enterprise-level data quality management in ETL processes.
-7. AWS Glue DataBrew
-Description: AWS Glue DataBrew is a visual data preparation tool that makes it easy to clean and normalize data.
-ETL Check Features: Over 250 built-in transformations to clean and validate data.
-Use Case: Visual data preparation and validation within AWS ecosystem.
+
 8. Microsoft SQL Server Integration Services (SSIS)
 Description: SSIS is a platform for building enterprise-level data integration and transformation solutions.
 ETL Check Features: Data flow transformations, data profiling tasks, and built-in data quality checks.
@@ -51,19 +28,17 @@ Key ETL Check Types
   
 Schema Validation: Ensure that the structure of the data (columns, data types) is consistent between source and target.
   Mapping executed correctly? can calculate mapping result as a simulation then compare
-  source minus target (source except target in sql server)
-          select candidate, candidateage from candidates
-          except
-          select candidate, candidateage from candidates2
-          result: 0 , and vice versa (intersect works too and should show entire table)
+  source minus except intersect target (source except target in sql server)
+
 Data Type Checks: Verify that data types are correctly maintained during transformation.
 Data Completeness: Ensure no data is missing or truncated during the ETL process.
+  Check for NULL Values
   - count total row count
 Data Accuracy: Validate that data is correctly transformed and calculations are accurate.
 Data Consistency: Check that data remains consistent across different stages of the ETL pipeline.
 Duplicate Detection: Identify and handle duplicate records.
 Range Checks: Validate that data falls within expected ranges or sets of values.
-  , boundary check max min value
+  , boundary check max min value / string length
   
 Custom Business Rules: Implement specific checks relevant to business logic or domain-specific requirements.
 Conclusion
@@ -71,7 +46,8 @@ Choosing the right tool for ETL checks depends on your specific needs, the compl
 
 anything specific about dataflow etl
 ChatGPT
-Google Cloud Dataflow is a fully managed service for stream and batch data processing that supports ETL processes. It is part of the Google Cloud Platform (GCP) and is built on the Apache Beam programming model. Here’s how you can leverage Dataflow for ETL tasks and ensure data quality:
+Google Cloud Dataflow is a fully managed service for stream and batch data processing that supports ETL processes. 
+  It is part of the Google Cloud Platform (GCP) and is built on the Apache Beam programming model. Here’s how you can leverage Dataflow for ETL tasks and ensure data quality:
 
 Key Features of Dataflow for ETL
 Unified Stream and Batch Processing: Dataflow can handle both real-time (stream) and batch data processing within the same framework.
