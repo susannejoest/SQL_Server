@@ -1,3 +1,6 @@
+Functions calculate the results of a program on the basis of the given input. 
+Procedures perform certain tasks in a particular order on the basis of the given inputs.
+	
 DECLARE @CandidateName as varchar(30)
 DECLARE @RESULTSTRING AS VARCHAR(255)
 Declare @CandidateID as integer
