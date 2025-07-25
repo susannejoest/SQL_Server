@@ -1,0 +1,238 @@
+ALTER VIEW [GEX].[V_DynamicDate_Last2Yrs] AS
+
+
+
+
+WITH DateGenerator AS (
+    SELECT DATEFROMPARTS(YEAR(GETDATE()) - 1, 1, 1) AS FirstOfMonth
+    UNION ALL
+    SELECT DATEADD(MONTH, 1, FirstOfMonth)
+    FROM DateGenerator
+    WHERE DATEADD(MONTH, 1, FirstOfMonth) < DATEFROMPARTS(YEAR(GETDATE()) + 1, 1, 1)
+)
+
+
+
+	SELECT 
+		ROW_NUMBER() OVER (ORDER BY FirstOfMonth) AS DT_ID,
+	
+		CAST(FORMAT(FirstOfMonth, 'd')  AS date) AS DT_Date,	
+		
+		CAST(FORMAT(FirstOfMonth, 'MM.yyyy') AS varchar(7)) AS [DT_MM.YYYY],
+
+		/* CAST(FORMAT(FirstOfMonth, 'dd_mm') AS varchar(2)) AS DT_DD_MM, */
+		CAST(FORMAT(FirstOfMonth, 'yyyy_MM') AS varchar(7)) AS [DT_YYYY_MM],
+
+		CAST(FORMAT(FirstOfMonth, 'yyyy-MM') AS varchar(7)) AS [DT_YYYY-MM],
+
+		MONTH(FirstOfMonth) AS DT_Month_M,
+
+		RIGHT('0' + CAST(MONTH(FirstOfMonth) AS VARCHAR), 2) AS DT_Month_MM,
+
+		/* FORMAT(FirstOfMonth, 'yyyy-MM') AS DT_BD1, */
+
+		YEAR(FirstOfMonth) AS DT_Year,
+
+	/* /* same as dt_ytd_yn  DT_MTD_YN - Is Month to Date YN,  Jan - current month) */
+		CASE 
+			WHEN MONTH(FirstOfMonth) = MONTH(FirstOfMonth) AND YEAR(FirstOfMonth) = YEAR(GETDATE()) THEN -1
+			ELSE 0
+		END AS DT_MTD_YN, */
+
+		/* DT_MTD_CYE_M_YN - Same Month Current Year Flag */
+		CASE 
+			WHEN MONTH(FirstOfMonth) = MONTH(DATEADD(MONTH, -1, GETDATE())) AND YEAR(FirstOfMonth) = YEAR(DATEADD(MONTH, -1, GETDATE())) THEN -1
+			ELSE 0
+		END 
+
+		AS DT_IsCurMth_CY_YN,
+
+		CASE 
+			WHEN MONTH(FirstOfMonth) = MONTH(DATEADD(MONTH, -1, GETDATE())) AND YEAR(FirstOfMonth) = YEAR(DATEADD(MONTH, -1, GETDATE())) THEN FORMAT(FirstOfMonth, 'MM') 
+			ELSE ''
+		END 
+
+		AS DT_IsCurMth_CY_Name,
+
+	/* DT_MTD_PYD_M_YN - Same Month Previous Year Flag - 0 */
+		CASE 
+			WHEN MONTH(FirstOfMonth) = MONTH(DATEADD(MONTH, -1, GETDATE())) AND YEAR(FirstOfMonth) = YEAR(DATEADD(YEAR, -1, GETDATE())) THEN -1
+			ELSE 0
+		END 
+		AS DT_IsCurMth_PY_YN ,
+
+		CASE 
+			WHEN MONTH(FirstOfMonth) = MONTH(DATEADD(MONTH, -1, GETDATE())) AND YEAR(FirstOfMonth) = YEAR(DATEADD(YEAR, -1, GETDATE())) THEN FORMAT(FirstOfMonth, 'MM') 
+			ELSE ''
+		END 
+
+		AS DT_IsCurMth_PY_Name,
+
+		CASE 
+			WHEN MONTH(FirstOfMonth) = MONTH(DATEADD(MONTH, -1, GETDATE()))  THEN -1
+			ELSE 0
+		END 
+		AS DT_IsCurMth_CY_PY_YN ,
+	/* DT_MTD_CYD_MY_YN - all 0 
+		CASE 
+			WHEN MONTH(FirstOfMonth) = MONTH(DATEADD(MONTH, -1, GETDATE())) AND YEAR(FirstOfMonth) = YEAR(DATEADD(YEAR, -1, GETDATE())) THEN -1
+			ELSE 0	
+		END 
+		
+		AS DT_MTD_PYD_MY_YN,*/
+
+	/* /* same as dt_ytd_yn - DT_YTD_PRV_YN - 0 if previous year, -13 if current year */
+		CASE 
+			WHEN YEAR(FirstOfMonth) = YEAR(GETDATE()) THEN -1
+			ELSE 0
+		END AS DT_YTD_YN,
+		*/
+
+	/* DT_PYE_YN - Is Previous Year Flag */
+		CASE 
+			WHEN YEAR(FirstOfMonth) = YEAR(DATEADD(MONTH, -13, GETDATE())) THEN -1
+			ELSE 0
+		END AS DT_Year_PY_YN,
+
+	/* DT_CYE_YN - Is current year flag, regardless of month */
+		CASE 
+			WHEN YEAR(FirstOfMonth) = YEAR(GETDATE()) THEN -1
+			ELSE 0
+		END 
+			AS DT_Year_CY_YN,	
+
+		/* DT_PYE_MTD_YN - Previous Year MTD Flag through PY previous reporting month */		
+		CASE 
+   			WHEN YEAR(FirstOfMonth) = YEAR(DATEADD(YEAR, -1, GETDATE())) AND MONTH(FirstOfMonth) < MONTH(GETDATE()) THEN -1
+   			ELSE 0
+		END
+			AS DT_YTD_PM_PY_YN,	
+
+		/* DT_CYE_MTD_YN - Previous Year MTD Flag through PY previous reporting month */		
+		CASE 
+   			WHEN YEAR(FirstOfMonth) = YEAR( GETDATE()) AND MONTH(FirstOfMonth) < MONTH(GETDATE()) THEN -1
+   			ELSE 0
+		END
+			AS DT_YTD_PM_CY_YN,	
+
+		/* same month current and previous year */
+		CASE 
+   			WHEN MONTH(FirstOfMonth) < MONTH(GETDATE()) THEN -1
+   			ELSE 0
+		END
+			AS DT_PM_YN,	
+	/* DT_MTD_Detail - MTD if current month, MTD_PY if current month previous year, otherwise YYYY_MM,  e.g. 2024_04 / MTD / MTD_PY */
+		CASE 
+   			WHEN MONTH(FirstOfMonth) = MONTH(DATEADD(MONTH, -1, GETDATE())) AND YEAR(FirstOfMonth) = YEAR(GETDATE()) THEN 'MTD' /* 'MTD_CY' */
+   			WHEN MONTH(FirstOfMonth) = MONTH(GETDATE()) AND YEAR(FirstOfMonth) = YEAR(DATEADD(YEAR, -1, GETDATE())) THEN 'MTD_PY'
+   			ELSE CAST(YEAR(FirstOfMonth) AS VARCHAR) + '_' + RIGHT('0' + CAST(MONTH(FirstOfMonth) AS VARCHAR), 2)
+		END
+			AS DT_Detail_MTD,
+
+	/* /* Date YYYY_MM , e.g. 2024_04 */
+		CAST(YEAR(FirstOfMonth) AS VARCHAR) + '_' + RIGHT('0' + CAST(MONTH(FirstOfMonth) AS VARCHAR), 2) AS DT_Date_YYYY_MM
+		*/
+	/* DT_YTD_Detail - 2024 PYE, 2025 YTD */
+		CASE 
+			WHEN YEAR(FirstOfMonth) = YEAR(GETDATE()) THEN CAST(YEAR(FirstOfMonth) AS VARCHAR) + ' CYE'
+			WHEN YEAR(FirstOfMonth) = YEAR(DATEADD(YEAR, -1, GETDATE())) THEN CAST(YEAR(FirstOfMonth) AS VARCHAR) + ' PYE'
+			ELSE CAST(YEAR(FirstOfMonth) AS VARCHAR)
+		END AS DT_Detail_YTD,
+
+	/* DT_YTD_MTD_Detail - PYE, YTD MTD, YTD */
+		CASE 
+			WHEN YEAR(FirstOfMonth) = YEAR(GETDATE()) THEN 
+				CASE 
+					WHEN MONTH(FirstOfMonth) <= MONTH(DATEADD(MONTH, -1, GETDATE())) THEN 'CY YTD'
+					ELSE 'YTD'
+				END
+			WHEN YEAR(FirstOfMonth) = YEAR(DATEADD(YEAR, -1, GETDATE())) THEN 
+				CASE 
+					WHEN MONTH(FirstOfMonth) <= MONTH(DATEADD(MONTH, -1, GETDATE())) THEN 'PY YTD'
+					ELSE 'PYE'
+				END
+			ELSE CAST(YEAR(FirstOfMonth) AS VARCHAR)
+		END AS DT_Detail_YTD_MTD,
+
+		CASE 
+			WHEN YEAR(FirstOfMonth) = YEAR(GETDATE()) THEN 
+				CASE 
+					WHEN MONTH(FirstOfMonth) <= MONTH(DATEADD(MONTH, -1, GETDATE())) THEN 0
+					ELSE -1
+				END
+			WHEN YEAR(FirstOfMonth) = YEAR(DATEADD(YEAR, -1, GETDATE())) THEN 0
+			ELSE CAST(YEAR(FirstOfMonth) AS VARCHAR)
+		END AS DT_Future_YTD_CY_YN,
+
+
+		CASE 
+   			WHEN 
+       			(YEAR(FirstOfMonth) = YEAR(GETDATE()) AND MONTH(FirstOfMonth) > 5)
+       			OR 
+       			(YEAR(FirstOfMonth) = YEAR(DATEADD(YEAR, -1, GETDATE())) AND MONTH(FirstOfMonth) > 5)
+   			THEN -1
+   			WHEN 
+       			YEAR(FirstOfMonth) IN (YEAR(GETDATE()), YEAR(DATEADD(YEAR, -1, GETDATE())))
+   			THEN 0
+   			ELSE CAST(YEAR(FirstOfMonth) AS VARCHAR)
+		END AS DT_Future_YTD_CY_PY_YN,
+
+
+	/* DT_YTD_MTD_Detail_YYYY - 2024_04 PYE, 2025_03 MTD YTD */
+		CASE 
+			WHEN YEAR(FirstOfMonth) = YEAR(GETDATE()) THEN 
+				CAST(YEAR(FirstOfMonth) AS VARCHAR) + '_' + 
+				CASE 
+					WHEN MONTH(FirstOfMonth) <= MONTH(DATEADD(MONTH, -1, GETDATE())) THEN RIGHT('0' + CAST(MONTH(DATEADD(MONTH, -1, GETDATE())) AS VARCHAR), 2) + ' CY YTD'
+					ELSE RIGHT('0' + CAST(MONTH(GETDATE()) AS VARCHAR), 2) + ' CYE'
+				END
+			WHEN YEAR(FirstOfMonth) = YEAR(DATEADD(YEAR, -1, GETDATE())) THEN 
+				CAST(YEAR(FirstOfMonth) AS VARCHAR) + '_' + 
+				CASE 
+					WHEN MONTH(FirstOfMonth) <= MONTH(DATEADD(MONTH, -1, GETDATE())) THEN RIGHT('0' + CAST(MONTH(DATEADD(MONTH, -1, GETDATE())) AS VARCHAR), 2) + ' PY YTD'
+					ELSE RIGHT('0' + CAST(MONTH(GETDATE()) AS VARCHAR), 2) + ' PYE'
+				END
+			ELSE CAST(YEAR(FirstOfMonth) AS VARCHAR)
+		END AS DT_Detail_YTD_MTD_YYYY,
+		
+		CASE 
+   			WHEN MONTH(FirstOfMonth) = 1 AND YEAR(FirstOfMonth) = YEAR(DATEADD(YEAR, -1, GETDATE())) THEN -1
+   			ELSE 0
+		END AS DT_BOP_2Yr_Flag_YN,
+
+		CASE 
+   			WHEN MONTH(FirstOfMonth) = 1 THEN -1
+   			ELSE 0
+		END AS DT_BOP_Annual_Flag_YN,
+
+	 CASE 
+   		WHEN FirstOfMonth >= DATEADD(MONTH, -12, EOMONTH(GETDATE(), -1)) 
+        	 AND FirstOfMonth <= EOMONTH(GETDATE(), -1)
+   		THEN -1
+   		ELSE 0
+ 	  END AS DT_IsRolling12M_YN,
+
+
+        CASE 
+            WHEN 
+                YEAR(FirstOfMonth) IN (YEAR(GETDATE()), YEAR(DATEADD(YEAR, -1, GETDATE())))
+                AND MONTH(FirstOfMonth) < MONTH(GETDATE())
+            THEN MONTH(FirstOfMonth) - MONTH(DATEADD(MONTH, -1, GETDATE()))
+            ELSE NULL
+        END AS DT_YTD_PM_MonthNo,
+
+
+		CASE 
+			WHEN FirstOfMonth >= DATEADD(YEAR, -2, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1))
+			THEN DATEDIFF(MONTH, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1), FirstOfMonth)
+			ELSE NULL
+		END AS DT_Rolling_Prev_MonthNo,
+
+
+
+	/* Row Number */
+		 ROW_NUMBER() OVER (ORDER BY FirstOfMonth) AS DT_RowNumber
+
+	FROM DateGenerator;
+
+GO
